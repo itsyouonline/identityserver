@@ -23,9 +23,9 @@ type Service struct {
 }
 
 //NewService creates and initializes a Service
-func NewService() (service *Service) {
+func NewService(cookieSecret string) (service *Service) {
 	service = &Service{}
-	service.initializeSessions()
+	service.initializeSessions(cookieSecret)
 	return
 }
 
