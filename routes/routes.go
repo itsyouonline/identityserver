@@ -16,7 +16,9 @@ import (
 func GetRouter() http.Handler {
 	r := mux.NewRouter().StrictSlash(true)
 
-	siteservice := siteservice.NewService()
+	cookieSecret := identityservice.GetCookieSecret()
+
+	siteservice := siteservice.NewService(cookieSecret)
 	siteservice.AddRoutes(r)
 
 	apiRouter := r.PathPrefix("/api").Subrouter()

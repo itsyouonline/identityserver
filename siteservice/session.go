@@ -17,11 +17,10 @@ const (
 	SessionInteractive SessionType = iota
 )
 
-func (service *Service) initializeSessions() {
+func (service *Service) initializeSessions(cookieSecret string) {
 	service.Sessions = make(map[SessionType]*sessions.CookieStore)
 
-	//TODO: https://github.com/itsyouonline/identityserver/issues/6
-	cookieStoreSecret := "TODO: ISSUE #6"
+	cookieStoreSecret := cookieSecret
 
 	registrationSessionStore := sessions.NewCookieStore([]byte(cookieStoreSecret))
 	registrationSessionStore.Options.HttpOnly = true
