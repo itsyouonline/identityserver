@@ -1,13 +1,13 @@
 package main
 
 import (
-	"net/http"
 	"os"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/codegangsta/cli"
 
 	"github.com/itsyouonline/identityserver/db"
+	"github.com/itsyouonline/identityserver/https"
 	"github.com/itsyouonline/identityserver/routes"
 )
 
@@ -21,6 +21,7 @@ func main() {
 
 	var debugLogging bool
 	var bindAddress, dbConnectionString string
+	var tlsCert, tlsKey string
 
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
@@ -39,6 +40,18 @@ func main() {
 			Usage:       "Mongodb connection string",
 			Value:       "127.0.0.1:27017",
 			Destination: &dbConnectionString,
+		},
+		cli.StringFlag{
+			Name:        "cert, s",
+			Usage:       "TLS certificate path",
+			Value:       "",
+			Destination: &tlsCert,
+		},
+		cli.StringFlag{
+			Name:        "key, k",
+			Usage:       "TLS private key path",
+			Value:       "",
+			Destination: &tlsKey,
 		},
 	}
 
@@ -59,8 +72,8 @@ func main() {
 		// Get router!
 		r := routes.GetRouter()
 
-		log.Info("Listening on ", bindAddress)
-		log.Fatal(http.ListenAndServe(bindAddress, r))
+		// Go make magic over HTTPS
+		log.Fatal(https.ListenAndServeTLS(bindAddress, tlsCert, tlsKey, r))
 	}
 
 	app.Run(os.Args)
