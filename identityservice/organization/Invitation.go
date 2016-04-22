@@ -1,7 +1,11 @@
 package organization
 
+import (
+	"time"
+)
+
 type Invitation struct {
-	Created Date   `json:"created"`
-	Role    string `json:"role"`
-	User    string `json:"user"`
+	Created time.Time `json:"created"`
+	Role    string    `json:"role"`
+	User    string    `json:"user"`
 }

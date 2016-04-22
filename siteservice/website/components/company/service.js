@@ -12,7 +12,7 @@
 
         var service = {
             create: create
-        }
+        };
         return service;
 
         function create(name, taxnr){

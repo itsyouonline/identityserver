@@ -1,6 +1,9 @@
 package invitations
 
-import "gopkg.in/mgo.v2/bson"
+import (
+	"gopkg.in/mgo.v2/bson"
+	"time"
+)
 
 type InvitationStatus string
 
@@ -22,4 +25,5 @@ type JoinOrganizationInvitation struct {
 	Role         string           `json:"role"`
 	User         string           `json:"user"`
 	Status       InvitationStatus `json:"status"`
+	Created      time.Time        `json:"created"`
 }

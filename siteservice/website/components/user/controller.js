@@ -190,7 +190,7 @@
         }
 
         function showEmailDetailDialog(ev, label, emailaddress){
-            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))
+            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
             $mdDialog.show({
                 controller: EmailDetailDialogController,
                 templateUrl: 'components/user/views/emailaddressdialog.html',
@@ -218,7 +218,7 @@
         }
 
         function showAddEmailDialog(ev) {
-            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))
+            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
             $mdDialog.show({
                 controller: EmailDetailDialogController,
                 templateUrl: 'components/user/views/emailaddressdialog.html',
@@ -241,7 +241,7 @@
         }
 
         function showPhonenumberDetailDialog(ev, label, phonenumber){
-            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))
+            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
             $mdDialog.show({
                 controller: GenericDetailDialogController,
                 templateUrl: 'components/user/views/phonenumberdialog.html',
@@ -270,7 +270,7 @@
         }
 
         function showAddPhonenumberDialog(ev) {
-            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))
+            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
             $mdDialog.show({
                 controller: GenericDetailDialogController,
                 templateUrl: 'components/user/views/phonenumberdialog.html',
@@ -295,7 +295,7 @@
 
 
         function showAddressDetailDialog(ev, label, address){
-            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))
+            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
             $mdDialog.show({
                 controller: GenericDetailDialogController,
                 templateUrl: 'components/user/views/addressdialog.html',
@@ -324,7 +324,7 @@
         }
 
         function showAddAddressDialog(ev) {
-            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))
+            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
             $mdDialog.show({
                 controller: GenericDetailDialogController,
                 templateUrl: 'components/user/views/addressdialog.html',
@@ -451,7 +451,7 @@
         $scope.username = username;
 
         $scope.cancel = cancel;
-        $scope.validationerrors = {}
+        $scope.validationerrors = {};
         $scope.create = create;
         $scope.update = update;
         $scope.deleteEmailAddress = deleteEmailAddress;
