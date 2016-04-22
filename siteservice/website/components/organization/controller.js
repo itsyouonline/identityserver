@@ -256,7 +256,7 @@
 
         $scope.cancel = cancel;
         $scope.invite = invite;
-        $scope.validationerrors = {}
+        $scope.validationerrors = {};
 
 
         function cancel(){

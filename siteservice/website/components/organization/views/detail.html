@@ -40,7 +40,10 @@
                                 <md-list class="md-dense" ng-if="vm.hasEditPermission && vm.invitations.length > 0">
                                     <md-subheader>Pending invitations</md-subheader>
                                     <md-list-item class="md-1-line" ng-repeat="invite in vm.invitations">
-                                            <h4 flex="30"> {{ invite.user }}</h4><h4 flex class="md-subhead">{{ {member:"Member",owner:"Owner"}[invite.role] }}</h4>
+                                        <h4 flex="33" ng-bind="::invite.user"></h4>
+                                        <h4 flex="33" class="md-subheader capitalize" ng-bind="::invite.role"></h4>
+                                        <h4 flex="33" class="md-subheader"
+                                            ng-bind="::invite.created | date : 'd MMM y H:mm:ss'"></h4>
                                     </md-list-item>
                                 </md-list>
 

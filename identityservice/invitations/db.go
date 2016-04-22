@@ -50,7 +50,7 @@ func (o *InvitationManager) GetPendingByOrganization(globalid string) ([]JoinOrg
 	return orgRequests, err
 }
 
-//Get get an invitation by it's content, not really this usefull, TODO: just make an exists method
+//Get get an invitation by it's content, not really this useful, TODO: just make an exists method
 func (o *InvitationManager) Get(username string, organization string, role string, status InvitationStatus) (*JoinOrganizationInvitation, error) {
 	var orgRequest JoinOrganizationInvitation
 
@@ -68,7 +68,6 @@ func (o *InvitationManager) Get(username string, organization string, role strin
 
 // Save save/update an invitation
 func (o *InvitationManager) Save(invite *JoinOrganizationInvitation) error {
-
 	_, err := o.collection.Upsert(
 		bson.M{
 			"user":         invite.User,

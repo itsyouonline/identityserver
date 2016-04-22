@@ -1,10 +1,13 @@
 package company
 
-import "gopkg.in/mgo.v2/bson"
+import (
+	"gopkg.in/mgo.v2/bson"
+	"time"
+)
 
 type Company struct {
 	Id            bson.ObjectId `json:"-" bson:"_id,omitempty"`
-	Expire        Date          `json:"expire"`
+	Expire        time.Time     `json:"expire"`
 	Globalid      string        `json:"globalid"`
 	Info          []string      `json:"info"`
 	Organizations []string      `json:"organizations"`

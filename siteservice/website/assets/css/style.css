@@ -1,7 +1,11 @@
 body { margin: 0; padding: 0; width: 100%;font-family: arial }
 h2 { font-weight: normal; font-size: 40px; text-align: center; margin: 0; padding: 0;color: #FFFFFF;}
 h3 { font-weight: normal; font-size: 16px; text-align: center; margin: 5px 0; padding: 0; z-index: 1; position: relative; }
-h4 { font-weight: margin: 5px 0; padding: 0; z-index: 1; position: relative; }
+
+h4 {
+    margin: 5px 0;
+    padding: 0;
+}
 .center { margin: 0 auto; }
 .content { margin: 0 auto; width: 960px; }
 .clear { clear: both; }
@@ -260,4 +264,8 @@ footer { background: #3091BB; color: #FFF; padding: 20px 0; text-align: center; 
 .tree li.creating a {
     background: rgba(255, 165, 0, 0.3);
     color: #000000;
+}
+
+.capitalize {
+    text-transform: capitalize;
 }

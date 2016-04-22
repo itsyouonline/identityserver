@@ -192,7 +192,7 @@
         }
 
         function deleteAuthorization(username, grantedTo) {
-            var url = apiURL + '/' +  encodeURIComponent(authorization.username) + '/authorizations/' + encodeURIComponent(authorization.grantedTo)
+            var url = apiURL + '/' +  encodeURIComponent(authorization.username) + '/authorizations/' + encodeURIComponent(authorization.grantedTo);
             return genericHttpCall($http.delete, url);
         }
 
