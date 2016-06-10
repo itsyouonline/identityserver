@@ -189,7 +189,7 @@ func (service *Service) renderSMSConfirmationPage(w http.ResponseWriter, request
 
 //renderEmailConfirmationPage renders a small mobile friendly confirmation page after a user follows a link in an email
 func (service *Service) renderEmailConfirmationPage(w http.ResponseWriter, request *http.Request, text string) {
-	htmlData, err := html.Asset(smsconfirmationPage)
+	htmlData, err := html.Asset(emailconfirmationPage)
 	if err != nil {
 		log.Error(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

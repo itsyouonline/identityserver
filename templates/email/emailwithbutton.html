@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>{{.Title}}</title>
+    <link href="https://fonts.googleapis.com/css?family=Wellfleet:400" rel="stylesheet" type="text/css">
+</head>
+<body style="margin:0; padding:0; width:100%;">
+<div style="margin:0;padding:0;width:100%;font-family:'Arial',sans-serif;">
+    <div style="width:100%;background:rgba(48,145,187,0.92);height:80px;position:relative;">
+        <div style="width:600px;">
+            <div style="width: 540px;  padding: 0 30px;">
+                <div style="padding: 20px 0 0 0;">
+                    <a href="https://itsyou.online"
+                       style="text-decoration:none;float:left;font-size:30px;color:#FFF;font-family:Wellfleet,sans-serif;font-weight:bold;">
+                        ItsYou.Online</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="margin: 30px auto 0; width: 600px;">
+        <div style="width:540px; padding: 20px 30px 0;">
+            <p style="color: #222222; font-family: 'Arial', sans-serif; font-size: 16px; font-weight: normal; line-height: 24px; margin: 0 0 10px; padding: 0; text-align: left;">
+                Hello {{.Username}}!
+            </p>
+            <p style="color: #222222; font-family: 'Arial', sans-serif; font-size: 16px; font-weight: normal; line-height: 24px; margin: 0 0 10px; padding: 0; text-align: left;">
+                {{.Text}}
+            </p>
+            <div style="padding: 20px 0 30px; text-align: center;">
+                <a href="{{.Url}}"
+                   style="background: #4183c4;border-radius:3px;color:#ffffff;display:inline-block;font-family:'Arial',sans-serif;font-size:17px;font-weight:bold;letter-spacing:normal;margin:0 auto;padding:12px 24px;text-align:center;text-decoration:none;width:auto!important;">
+                    {{.ButtonText}}</a>
+            </div>
+            <hr style="background: #d9d9d9;border:none;color:#d9d9d9;min-height:1px;margin:10px 0 20px;"/>
+            <p style="color: #777777;font-family:'Arial',sans-serif;font-size:12px;font-weight:normal;line-height:19px;margin:0 0 10px;padding:0;text-align:left;">
+                Button not working? Paste the following link into your browser:
+            <p style="font-family:'Arial',sans-serif;font-size:12px;font-weight:normal;line-height:19px;margin:0 0 10px;padding:0;text-align:left;word-break:break-all;">
+                <a href="{{.Url}}" style="color: #4183c4;text-decoration: underline;">{{.Url}}</a>
+            </p>
+            <p style="color: #777777;font-family:'Arial',sans-serif;font-size:12px;font-weight:normal;line-height:19px;margin:0 0 10px;padding:0;text-align:left;">
+                {{.Reason}}</p>
+            <div style="margin: 50px 0 0 0;">
+                <p style="text-align: center;">
+                    ItsYou.Online
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -10,12 +10,12 @@ import (
 	"net/url"
 )
 
-//SMSService is the interface an sms communicaction channel should have to be used by the IYOPhonenumberValidationService
+//EmailService is the interface for an email communication channel, should be used by the IYOEmailAddressValidationService
 type EmailService interface {
 	Send(receipients []string, subject string, message string) (err error)
 }
 
-//IYOPhonenumberValidationService is the itsyou.online implementation of a PhonenumberValidationService
+//IYOEmailAddressValidationService is the itsyou.online implementation of a EmailAddressValidationService
 type IYOEmailAddressValidationService struct {
 	EmailService EmailService
 }
@@ -34,12 +34,27 @@ func (service *IYOEmailAddressValidationService) RequestValidation(request *http
 		return
 	}
 	validationurl := fmt.Sprintf("%s?c=%s&k=%s", confirmationurl, url.QueryEscape(info.Secret), url.QueryEscape(info.Key))
-	message, err := tools.RenderTemplate("templates/email/emailvalidation.html", struct{ Url string }{Url: validationurl})
+	templateParameters := struct {
+		Url        string
+		Username   string
+		Title      string
+		Text       string
+		ButtonText string
+		Reason     string
+	}{
+		Url:        validationurl,
+		Username:   username,
+		Title:      "It'sYou.Online email verification",
+		Text:       fmt.Sprintf("To verify your email address %s on ItsYou.Online, click the button below.", email),
+		ButtonText: "Verify email",
+		Reason:     " You’re receiving this email because you recently created a new ItsYou.Online account or added a new email address. If this wasn’t you, please ignore this email.",
+	}
+	message, err := tools.RenderTemplate("templates/email/emailwithbutton.html", templateParameters)
 	if err != nil {
 		return
 	}
 
-	go service.EmailService.Send([]string{email}, "ItsYouOnline Email Validation", message)
+	go service.EmailService.Send([]string{email}, "ItsYou.Online email verification", message)
 	key = info.Key
 	return
 }
@@ -56,11 +71,26 @@ func (service *IYOEmailAddressValidationService) RequestPasswordReset(request *h
 	}
 
 	passwordreseturl := fmt.Sprintf("https://%s/login#/resetpassword?token=%s", request.Host, url.QueryEscape(token.Token))
-	message, err := tools.RenderTemplate("templates/email/passwordreset.html", struct{ Url string }{Url: passwordreseturl})
+	templateParameters := struct {
+		Url        string
+		Username   string
+		Title      string
+		Text       string
+		ButtonText string
+		Reason     string
+	}{
+		Url:        passwordreseturl,
+		Username:   username,
+		Title:      "It's You Online password reset",
+		Text:       "To reset your ItsYou.Online password, click the button below.",
+		ButtonText: "Reset password",
+		Reason:     "You’re receiving this email because you recently requested to reset your password at ItsYou.Online. If this wasn’t you, please ignore this email.",
+	}
+	message, err := tools.RenderTemplate("templates/email/emailwithbutton.html", templateParameters)
 	if err != nil {
 		return
 	}
-	go service.EmailService.Send(emails, "ItsYouOnline Password Reset", message)
+	go service.EmailService.Send(emails, "ItsYou.Online password reset", message)
 	key = token.Token
 	return
 }

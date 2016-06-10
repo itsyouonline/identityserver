@@ -1,4 +1,9 @@
-body { margin: 0; padding: 0; width: 100%;font-family: arial }
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    font-family: 'Arial', sans-serif;
+}
 h2 { font-weight: normal; font-size: 40px; text-align: center; margin: 0; padding: 0;color: #FFFFFF;}
 h3 { font-weight: normal; font-size: 16px; text-align: center; margin: 5px 0; padding: 0; z-index: 1; position: relative; }
 
@@ -55,8 +60,20 @@ md-dialog > md-dialog-content > h2 {
 /*= QUOTES AND SOME ELEMENTS
 --------------------------------------------------------*/
 .quotes { font-family: 'arial', serif; font-weight: normal; font-size: 29px; text-align: left; margin: 50px auto; line-height: 39px; }
-.author_name_white { font-family:arial; margin: 70px 0 0 75px; color: #fff; font-size: 20px; }
-.author_name_gray { font-family:arial; margin: 70px 0 0 75px; color: #94a4a4; font-size: 20px; }
+
+.author_name_white {
+    font-family: 'Arial', sans-serif;
+    margin: 70px 0 0 75px;
+    color: #fff;
+    font-size: 20px;
+}
+
+.author_name_gray {
+    font-family: 'Arial', sans-serif;
+    margin: 70px 0 0 75px;
+    color: #94a4a4;
+    font-size: 20px;
+}
 .quotes_container { width: 800px; margin: 0 auto; }
 /*= BUTTONS
 --------------------------------------------------------*/

@@ -54,7 +54,7 @@
                                             <div flex="60" flex-gt-xs="65">
                                                 <md-list>
                                                     <div ng-repeat="(label, email) in vm.user.email" layout="row">
-                                                        <md-list-item class="md-2-line" flex
+                                                        <md-list-item class="md-2-line" flex="60"
                                                                       ng-click="vm.showEmailDetailDialog($event, label, email)">
                                                             <div class="md-list-item-text">
                                                                 <h4>{{ email }}</h4>
@@ -90,9 +90,9 @@
                                             <div flex="60" flex-gt-xs="65">
                                                 <md-list>
                                                     <div ng-repeat="(label, phone) in vm.user.phone" layout="row">
-                                                        <md-list-item class="md-2-line"
+                                                        <md-list-item class="md-2-line" flex="60"
                                                                       ng-click="vm.showPhonenumberDetailDialog($event, label, phone)"
-                                                                      flex aria-label="Phone {{ label }} - {{ phone }}">
+                                                                      aria-label="Phone {{ label }} - {{ phone }}">
                                                             <div class="md-list-item-text">
                                                                 <h4 ng-bind="phone"></h4>
                                                                 <p ng-bind="label"></p>
