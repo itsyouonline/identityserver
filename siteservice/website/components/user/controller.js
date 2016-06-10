@@ -51,11 +51,13 @@
         vm.loadUser = loadUser;
         vm.loadAuthorizations = loadAuthorizations;
         vm.loadVerifiedPhones = loadVerifiedPhones;
+        vm.loadAPIKeys = loadAPIKeys;
         vm.showAuthorizationDetailDialog = showAuthorizationDetailDialog;
         vm.showChangePasswordDialog = showChangePasswordDialog;
         vm.showEditNameDialog = showEditNameDialog;
         vm.verifyPhone = verifyPhone;
         vm.verifyEmailAddress = verifyEmailAddress;
+        vm.showAPIKeyDialog = showAPIKeyDialog;
 
         var genericDetailControllerParams = ['$scope', '$mdDialog', 'username', '$window', 'label', 'data',
             'createFunction', 'updateFunction', 'deleteFunction', GenericDetailDialogController];
@@ -160,6 +162,18 @@
                 .then(function (data) {
                     vm.user.verifiedEmails = data;
                     vm.loaded.verifiedEmails = true;
+                });
+        }
+
+        function loadAPIKeys() {
+            if (vm.loaded.APIKeys) {
+                return;
+            }
+            UserService
+                .getAPIKeys(vm.username)
+                .then(function (data) {
+                    vm.APIKeys = data;
+                    vm.loaded.APIKeys = true;
                 });
         }
 
@@ -361,7 +375,6 @@
                 });
 
             function updatePhoneNumber(data) {
-                console.log(data);
                 // no data is provided when dialog is closed because another dialog opened (in case a confirmation is asked)
                 if (data) {
                     if (data.newLabel) {
@@ -836,6 +849,118 @@
                             .targetEvent(event)
                     );
                 });
+        }
+
+        function showAPIKeyDialog(event, APIKey) {
+            $mdDialog.show({
+                controller: ['$scope', '$mdDialog', 'UserService', 'username', 'APIKey', APIKeyDialogController],
+                controllerAs: 'ctrl',
+                templateUrl: 'components/user/views/APIKeyDialog.html',
+                targetEvent: event,
+                fullscreen: $mdMedia('sm') || $mdMedia('xs'),
+                clickOutsideToClose: true,
+                locals: {
+                    UserService: UserService,
+                    username: vm.username,
+                    APIKey: APIKey
+                }
+            })
+                .then(
+                    function (data) {
+                        if (data.originalLabel != data.newLabel) {
+                            if (data.originalLabel) {
+                                var originalKey = getApiKey(data.originalLabel);
+                                if (data.newLabel) {
+                                    // update
+                                    originalKey.label = data.newLabel;
+                                }
+                                else {
+                                    // remove
+                                    vm.APIKeys.splice(vm.APIKeys.indexOf(originalKey), 1);
+                                }
+                            }
+                            else {
+                                // add
+                                vm.APIKeys.push(data.APIKey);
+                            }
+                        }
+                    });
+
+            function getApiKey(label) {
+                return vm.APIKeys.filter(function (k) {
+                    return k.label === label;
+                })[0];
+            }
+
+            function APIKeyDialogController($scope, $mdDialog, UserService, username, APIKey) {
+                var ctrl = this;
+                ctrl.APIKey = APIKey || {secret: ""};
+                ctrl.originalLabel = APIKey ? APIKey.label : null;
+                ctrl.savedLabel = APIKey ? APIKey.label : null;
+                ctrl.label = APIKey ? APIKey.label : null;
+
+                ctrl.cancel = cancel;
+                ctrl.create = createAPIKey;
+                ctrl.update = updateAPIKey;
+                ctrl.delete = deleteAPIKey;
+
+                ctrl.modified = false;
+
+                function cancel() {
+                    if (ctrl.modified) {
+                        $mdDialog.hide({originalLabel: ctrl.originalLabel, newLabel: ctrl.label, APIKey: ctrl.APIKey});
+                    }
+                    else {
+                        $mdDialog.cancel();
+                    }
+                }
+
+                function createAPIKey() {
+                    ctrl.validationerrors = {};
+                    UserService.createAPIKey(username, ctrl.label).then(
+                        function (data) {
+                            ctrl.modified = true;
+                            ctrl.APIKey = data;
+                            ctrl.savedLabel = data.label;
+                        },
+                        function (reason) {
+                            if (reason.status == 409) {
+                                $scope.APIKeyForm.label.$setValidity('duplicate', false);
+                            }
+                            else {
+                                $window.location.href = "error" + reason.status;
+                            }
+                        }
+                    );
+                }
+
+                function updateAPIKey() {
+                    UserService.updateAPIKey(username, ctrl.savedLabel, ctrl.label).then(
+                        function (data) {
+                            $mdDialog.hide({originalLabel: ctrl.savedLabel, newLabel: ctrl.label});
+                        },
+                        function (reason) {
+                            if (reason.status == 409) {
+                                $scope.APIKeyForm.label.$setValidity('duplicate', false);
+                            }
+                            else {
+                                $window.location.href = "error" + reason.status;
+                            }
+                        }
+                    );
+                }
+
+                function deleteAPIKey() {
+                    UserService.deleteAPIKey(username, APIKey.label).then(
+                        function (data) {
+                            $mdDialog.hide({originalLabel: APIKey.label, newLabel: ""});
+                        },
+                        function (reason) {
+                            $window.location.href = "error" + reason.status;
+                        }
+                    );
+                }
+            }
         }
 
         /**

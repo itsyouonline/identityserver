@@ -1,0 +1,54 @@
+<md-dialog ng-cloak>
+    <form name="APIKeyForm">
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2><span ng-if="!ctrl.APIKey.apikey">New </span>API Key</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="ctrl.cancel()">
+                    <md-icon md-svg-src="assets/img/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content" layout="column" style="min-width:350px;">
+                <div layout>
+                    <md-input-container>
+                        <label>Label</label>
+                        <input ng-model="ctrl.label" minlength="2" required type="text" md-autofocus="true"
+                               name="label" ng-change="APIKeyForm.label.$setValidity('duplicate', true);">
+                        <div ng-messages="APIKeyForm.label.$error">
+                            <div ng-message="minlength">At least 2 characters are required</div>
+                            <div ng-message="duplicate">This label is already used</div>
+                        </div>
+                    </md-input-container>
+                </div>
+                <md-input-container flex>
+                    <label>API key</label>
+                    <input ng-model="ctrl.APIKey.apikey" type="text" readonly="readonly"
+                           placeholder="- generated when saved -"/>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <md-button class="md-warn" ng-click="ctrl.delete()" ng-if="ctrl.APIKey.apikey">
+                Delete
+            </md-button>
+            <span flex></span>
+            <md-button ng-click="ctrl.cancel()" ng-if="!ctrl.APIKey.apikey || ctrl.originalLabel">
+                Cancel
+            </md-button>
+            <md-button class="md-primary" type="submit" ng-click="ctrl.create()" style="margin-right:20px;"
+                       ng-if="!ctrl.APIKey.apikey">
+                Create
+            </md-button>
+            <md-button class="md-primary" type="submit" ng-click="ctrl.update()" style="margin-right:20px;"
+                       ng-if="ctrl.APIKey.apikey && ctrl.originalLabel">
+                Save
+            </md-button>
+            <md-button class="md-primary" ng-click="ctrl.cancel()" style="margin-right:20px;"
+                       ng-if="ctrl.APIKey.apikey && (!ctrl.originalLabel)">
+                OK
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

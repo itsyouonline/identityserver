@@ -92,10 +92,10 @@
                                                     <div ng-repeat="(label, phone) in vm.user.phone" layout="row">
                                                         <md-list-item class="md-2-line"
                                                                       ng-click="vm.showPhonenumberDetailDialog($event, label, phone)"
-                                                                      flex>
+                                                                      flex aria-label="Phone {{ label }} - {{ phone }}">
                                                             <div class="md-list-item-text">
-                                                                <h4>{{ ::phone }}</h4>
-                                                                <p>{{ ::label }}</p>
+                                                                <h4 ng-bind="phone"></h4>
+                                                                <p ng-bind="label"></p>
                                                             </div>
                                                         </md-list-item>
                                                         <div flex></div>
@@ -339,18 +339,43 @@
                         <!--</md-tab-body>-->
                         <!--</md-tab>-->
 
-                        <md-tab md-on-select="vm.tabSelected(vm.loadUser)">
-                            <md-tab-label><i class="fa fa-lock"></i>&nbsp;Security</md-tab-label>
+                        <md-tab md-on-select="vm.tabSelected(vm.loadAPIKeys)">
+                            <md-tab-label><i class="fa fa-cog"></i>&nbsp;Settings</md-tab-label>
                             <md-tab-body>
-                                <div layout="row" layout-align="center center" ng-if="!vm.loaded.user">
+                                <div layout="row" layout-align="center center" ng-if="!vm.loaded.APIKeys">
                                     <md-progress-circular md-mode="indeterminate"
                                                           md-diameter="100"></md-progress-circular>
                                 </div>
-                                <div ng-show="vm.loaded.user">
-                                    <md-list>
+                                <div ng-show="vm.loaded.APIKeys">
+                                    <md-list flex="100" flex-gt-xs="70" flex-gt-sm="50" flex-gt-md="40">
+                                        <md-subheader class="md-no-sticky">API keys</md-subheader>
                                         <md-list-item>
                                             <span flex-gt-xs="5"></span>
-                                            <div flex="10" flex-gt-sm="5"><i class="fa fa-2x fa-key"></i>
+                                            <div flex="20"><i class="fa fa-2x fa-key"></i>
+                                                <md-tooltip>API keys</md-tooltip>
+                                            </div>
+                                            <div flex="60" flex-gt-xs="65">
+                                                <md-list>
+                                                    <md-list-item ng-repeat="APIKey in vm.APIKeys"
+                                                                  ng-click="vm.showAPIKeyDialog($event, APIKey)"
+                                                                  aria-label="{{ APIKey.label }}">
+                                                        <div class="md-list-item-text">
+                                                            <h4 ng-bind="APIKey.label"></h4>
+                                                        </div>
+                                                    </md-list-item>
+                                                </md-list>
+                                            </div>
+                                            <div flex layout="row">
+                                                <md-button class="md-primary" ng-click="vm.showAPIKeyDialog($event)">
+                                                    <i class="fa fa-plus"></i> Add
+                                                </md-button>
+                                            </div>
+                                        </md-list-item>
+                                        <md-divider md-inset></md-divider>
+                                        <md-subheader class="md-no-sticky">Security</md-subheader>
+                                        <md-list-item>
+                                            <span flex-gt-xs="5"></span>
+                                            <div flex="15"><i class="fa fa-2x fa-lock"></i>
                                                 <md-tooltip>Change password</md-tooltip>
                                             </div>
                                             <div flex="60" flex-gt-xs="65">

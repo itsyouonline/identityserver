@@ -94,7 +94,11 @@
             sendPhoneVerificationCode: sendPhoneVerificationCode,
             verifyPhone: verifyPhone,
             getVerifiedEmailAddresses: getVerifiedEmailAddresses,
-            sendEmailAddressVerification: sendEmailAddressVerification
+            sendEmailAddressVerification: sendEmailAddressVerification,
+            getAPIKeys: getAPIKeys,
+            createAPIKey: createAPIKey,
+            updateAPIKey: updateAPIKey,
+            deleteAPIKey: deleteAPIKey
         };
 
         function genericHttpCall(httpFunction, url, data) {
@@ -262,6 +266,32 @@
         function sendEmailAddressVerification(username, label){
             var url = apiURL + '/' + encodeURIComponent(username) + '/emailaddresses/' + encodeURIComponent(label) + '/validate';
             return genericHttpCall($http.post, url);
+        }
+
+        function getAPIKeys(username) {
+            var url = apiURL + '/' + encodeURIComponent(username) + '/apikeys';
+            return genericHttpCall($http.get, url);
+        }
+
+        function createAPIKey(username, label) {
+            var url = apiURL + '/' + encodeURIComponent(username) + '/apikeys';
+            var data = {
+                label: label
+            };
+            return genericHttpCall($http.post, url, data);
+        }
+
+        function updateAPIKey(username, oldLabel, newLabel) {
+            var url = apiURL + '/' + encodeURIComponent(username) + '/apikeys/' + encodeURIComponent(oldLabel);
+            var data = {
+                label: newLabel
+            };
+            return genericHttpCall($http.put, url, data);
+        }
+
+        function deleteAPIKey(username, label) {
+            var url = apiURL + '/' + encodeURIComponent(username) + '/apikeys/' + encodeURIComponent(label);
+            return genericHttpCall($http.delete, url);
         }
     }
 })();
