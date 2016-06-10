@@ -50,13 +50,8 @@ md-dialog > md-dialog-content > h2 {
     position: relative;
     z-index: 2;
 }
-#nav { width: 473px; float: right; margin-top: 30px; }
 #logo a { text-decoration: none; float: left; font-size: 30px; margin-top: 20px; color: #FFF; font-family: Wellfleet; font-weight: bold; }
-#nav ul { list-style: none; display: block; margin: 0 auto; list-style: none; padding: 0; }
-#nav li { margin-top: 9px; display: inline; padding-left: 21px; }
-#nav li a { color: #fff; opacity:0.6; font-size: 16px; text-decoration: none; font-family: 'arvo'; }
-#nav li a.active { color: #FFF; opacity:1; }
-#nav li a:hover { color: #fff; opacity:1; }
+
 /*= QUOTES AND SOME ELEMENTS
 --------------------------------------------------------*/
 .quotes { font-family: 'arial', serif; font-weight: normal; font-size: 29px; text-align: left; margin: 50px auto; line-height: 39px; }
@@ -193,7 +188,6 @@ ul.built { list-style: none; margin: 0 auto; width: 730px; }
 }
 #slide3 .content { background: rgba(72, 72, 72, 0.2); }
 #slide5 .content { background: rgba(175, 175, 175, 0.2); }
-footer { background: #3091BB; color: #FFF; padding: 20px 0; text-align: center; font-family: 'arvo'; font-size: 16px; }
 #slide7 {background: url(../img/bg.png) repeat;height: 120px;padding: 49px 0 0 0;}
 #slide7.footer {
     background: none;
