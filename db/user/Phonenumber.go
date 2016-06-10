@@ -6,7 +6,7 @@ import "regexp"
 type Phonenumber string
 
 var (
-	phoneRegex = regexp.MustCompile(`^\+?[0-9]+$`)
+	phoneRegex = regexp.MustCompile(`^\+[0-9]+$`)
 )
 
 //IsValid checks if a phonenumber is in a valid format

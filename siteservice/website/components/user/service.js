@@ -148,11 +148,13 @@
         }
 
         function registerNewPhonenumber(username, label, phonenumber) {
+            phonenumber = phonenumber.replace(/ /g, '');
             var url = apiURL + '/' + encodeURIComponent(username) + '/phonenumbers';
             return genericHttpCall($http.post, url, {label: label, phonenumber: phonenumber});
         }
 
         function updatePhonenumber(username, oldlabel, newlabel, phonenumber) {
+            phonenumber = phonenumber.replace(/ /g, '');
             var url = apiURL + '/' + encodeURIComponent(username) + '/phonenumbers/' + encodeURIComponent(oldlabel) ;
             return genericHttpCall($http.put, url, {label: newlabel, phonenumber: phonenumber});
         }

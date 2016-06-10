@@ -5,9 +5,11 @@
             <md-input-container>
                 <label>Phone number</label>
                 <input ng-model="vm.phonenumber" minlength="4" ng-required name="phonenumber" autocomplete="off"
-                       ng-pattern="'\\+?[0-9]*'" ng-change="vm.resetValidation()">
+                       ng-pattern="/^\+[0-9 ]*$/" ng-change="vm.resetValidation()">
                 <div ng-messages="phoneconfirmationform.phonenumber.$error">
-                    <div ng-message="pattern">Invalid phone number</div>
+                    <div ng-message="pattern">Invalid phone number. Phone number must start with the country code.
+                        Example: +32471202020
+                    </div>
                     <div ng-message="invalid_phonenumber">An invalid phone number was given</div>
                 </div>
             </md-input-container>

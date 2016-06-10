@@ -11,7 +11,7 @@
 
         function submit() {
             var data = {
-                phonenumber: vm.phonenumber
+                phonenumber: vm.phonenumber.replace(' ', '')
             };
             $http
                 .post('/register/resendsms', data)

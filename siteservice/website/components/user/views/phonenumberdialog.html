@@ -26,11 +26,13 @@
                     <span flex="5"></span>
                     <md-input-container flex="80">
                         <label>Phone number</label>
-                        <input ng-model="data" pattern="\+?[0-9 ]+" required minlength="4" type="text"
+                        <input ng-model="data" ng-pattern="/^\+[0-9 ]*$/" required minlength="4" type="text"
                                name="phonenumberinput">
                         <div ng-messages="dataform.phonenumberinput.$error">
                             <div ng-message="minlength">Not enough digits</div>
-                            <div ng-message="pattern">Invalid phonenumber</div>
+                            <div ng-message="pattern">Invalid phone number. Phone number must contain the country code.
+                                Example: +32471202020
+                            </div>
                         </div>
                         <div ng-messages="validationerrors" md-auto-hide="false">
                             <div ng-message="cannot_delete_last_verified_phone_number">You cannot update your last
