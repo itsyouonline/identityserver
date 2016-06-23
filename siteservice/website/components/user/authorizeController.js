@@ -25,8 +25,9 @@
         vm.showPhonenumberDialog = addPhone;
         vm.showAddressDialog = addAddress;
         vm.showBankAccountDialog = bank;
+        vm.showDigitalWalletAddressDialog = digitalWalletAddress;
 
-        var properties = ['addresses', 'emailaddresses', 'phonenumbers', 'bankaccounts'];
+        var properties = ['addresses', 'emailaddresses', 'phonenumbers', 'bankaccounts', 'digitalwallet'];
         $scope.requested = {
             organizations: {},
             facebook: false,
@@ -73,7 +74,8 @@
                 });
                 angular.forEach(scopes, function (scope, i) {
                     var splitPermission = scope.split(':');
-                    var permissionLabel = splitPermission[splitPermission.length - 1];
+                    // Empty label -> 'main'
+                    var permissionLabel = splitPermission.length > 2 && splitPermission[2] ? splitPermission[2] : 'main';
                     if (scope === 'user:name') {
                         $scope.requested.name = true;
                         $scope.authorizations.name = true;
@@ -93,6 +95,12 @@
                     else if (scope.startsWith('user:bankaccount:')) {
                         $scope.requested.bankaccounts.push(permissionLabel);
                     }
+                    else if (scope.startsWith('user:digitalwalletaddress:')) {
+                        $scope.requested.digitalwallet.push({
+                            label: permissionLabel,
+                            currency: splitPermission.length === 4 ? splitPermission[3] : ''
+                        });
+                    }
                     else if (scope === 'user:github') {
                         $scope.requested.github = true;
                         $scope.authorizations.github = true;
@@ -107,16 +115,11 @@
                         return;
                     }
                     // loop over requests
-                    // Empty label -> "main"
-                    angular.forEach(value, function (requestedLabel) {
-                        if (!requestedLabel) {
-                            $scope.requested[property].splice($scope.requested[property].indexOf(requestedLabel), 1);
-                            requestedLabel = 'main';
-                            $scope.requested[property].push(requestedLabel);
-                        }
-                    });
                     angular.forEach(value, function (requestedLabel) {
                         // select first by default, None if the user did not configure this property yet
+                        if (typeof requestedLabel === 'object') {
+                            requestedLabel = requestedLabel.label;
+                        }
                         var authorization = {
                             requestedlabel: requestedLabel,
                             reallabel: vm.user[property].length ? vm.user[property][0].label : ''
@@ -162,6 +165,10 @@
 
         function bank(event, label) {
             selectDefault(UserDialogService.bankAccount, event, label, 'bankaccounts');
+        }
+
+        function digitalWalletAddress(event, label) {
+            selectDefault(UserDialogService.digitalWalletAddressDetail, event, label, 'digitalwallet');
         }
 
         function selectDefault(fx, event, label, property) {

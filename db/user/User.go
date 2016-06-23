@@ -74,13 +74,13 @@ func (u *User) GetAddressByLabel(label string) (address Address, err error) {
 	return
 }
 
-func (u *User) GetDigitalAssetAddressByLabel(label string) (currency DigitalAssetAddress, err error) {
-	for _, currency = range u.DigitalWallet {
-		if currency.Label == label {
+func (u *User) GetDigitalAssetAddressByLabel(label string) (walletAddress DigitalAssetAddress, err error) {
+	for _, walletAddress = range u.DigitalWallet {
+		if walletAddress.Label == label {
 			return
 		}
 	}
-	err = errors.New("Could not find DigitalAssetAddress with Label " + currency.Label)
+	err = errors.New("Could not find DigitalAssetAddress with Label " + walletAddress.Label)
 	return
 }
 

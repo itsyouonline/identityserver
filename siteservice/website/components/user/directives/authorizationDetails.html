@@ -56,7 +56,7 @@
         <i class="fa fa-at">
             <md-tooltip>Email address</md-tooltip>
         </i>
-        Email address <span ng-if="label && label !== 'main'">for {{ ::label }}</span>
+        Email address <span ng-if="label !== 'main'">for {{ ::label }}</span>
     </p>
     <md-input-container>
         <label>Email</label>
@@ -73,7 +73,7 @@
 <md-list-item ng-repeat="label in requested.phonenumbers">
     <p><i class="fa fa-phone">
         <md-tooltip>Phone number</md-tooltip>
-    </i> Phone number <span ng-if="label && label !== 'main'">for {{ ::label }}</span>
+    </i> Phone number <span ng-if="label !== 'main'">for {{ ::label }}</span>
     </p>
     <md-input-container>
         <label>Phone number {{ authorizations.phone[label] }}</label>
@@ -91,7 +91,7 @@
 <md-list-item ng-repeat="label in requested.addresses">
     <p><i class="fa fa-envelope-o">
         <md-tooltip>Address</md-tooltip>
-    </i> Address <span ng-if="label && label !== 'main'">for {{ ::label }}</span>
+    </i> Address <span ng-if="label !== 'main'">for {{ ::label }}</span>
     </p>
     <md-input-container>
         <label>Address</label>
@@ -113,7 +113,7 @@
     <p><i class="fa fa-bank">
         <md-tooltip>Bank account</md-tooltip>
     </i>
-        Bank account <span ng-if="label != '' && label != 'main'">for {{ ::label }}</span>
+        Bank account <span ng-if="label != 'main'">for {{ ::label }}</span>
     </p>
     <md-input-container>
         <label>Bank account</label>
@@ -123,6 +123,26 @@
                 {{ ::bank.label + ' - ' + bank.bic + ', ' + bank.iban + ', ' + bank.country }}
             </md-option>
             <md-option ng-click="vm.showBankAccountDialog($event, label)" ng-if="isNew">
+                <i class="fa fa-plus"></i> Create new
+            </md-option>
+        </md-select>
+    </md-input-container>
+</md-list-item>
+<md-list-item ng-repeat="address in requested.digitalwallet">
+    <p><i class="fa fa-money">
+        <md-tooltip>Digital wallet address</md-tooltip>
+    </i>
+        Digital wallet address <span ng-if="address.label != 'main'">for {{ ::address.label }}</span>
+        <span ng-if="address.currency">(currency {{ ::address.currency }})</span>
+    </p>
+    <md-input-container>
+        <label>Digital wallet address</label>
+        <md-select ng-model="getAuthorizationByLabel('digitalwallet', address.label).reallabel">
+            <md-option value="">None</md-option>
+            <md-option ng-repeat="address in vm.user.digitalwallet" value="{{::address.label}}">
+                {{ ::address.label + ' - ' + address.address + ' - ' + address.currencysymbol }}
+            </md-option>
+            <md-option ng-click="vm.showDigitalWalletAddressDialog($event, address.label)" ng-if="isNew">
                 <i class="fa fa-plus"></i> Create new
             </md-option>
         </md-select>

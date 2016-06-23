@@ -11,7 +11,6 @@
                 link: function (scope, element, attr) {
                     scope.save = save;
                     scope.getAuthorizationByLabel = getAuthorizationByLabel;
-
                     function getAuthorizationByLabel(property, requestedLabel) {
                         return scope.authorizations[property].filter(function (val) {
                             return val.requestedlabel === requestedLabel;
