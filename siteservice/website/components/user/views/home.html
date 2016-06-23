@@ -234,6 +234,36 @@
                                             </md-button>
                                         </div>
                                     </md-list-item>
+                                    <md-divider md-inset></md-divider>
+                                    <md-list-item>
+                                        <span flex-gt-xs="5"></span>
+                                        <div flex="15"><i class="fa fa-2x fa-money"></i>
+                                            <md-tooltip>Digital wallet</md-tooltip>
+                                        </div>
+                                        <div flex="60" flex-gt-xs="65">
+                                            <md-list>
+                                                <md-list-item class="md-3-line"
+                                                              ng-repeat="address in vm.user.digitalwallet track by address.label"
+                                                              ng-click="vm.showDigitalWalletAddressDetail($event, address)"
+                                                              aria-label="Digital wallet address {{ address.label }}">
+                                                    <div class="md-list-item-text">
+                                                        <h3 ng-bind="address.address"></h3>
+                                                        <h4>Expires <span
+                                                                ng-bind="address.expiry | date:'dd/MM/yyyy'"></span>
+                                                        </h4>
+                                                        <h4>Symbol: <span ng-bind="address.currencysymbol"></span></h4>
+                                                        <p ng-bind="address.label"></p>
+                                                    </div>
+                                                </md-list-item>
+                                            </md-list>
+                                        </div>
+                                        <div flex="20" layout="row" layout-align="center center">
+                                            <md-button class="md-primary"
+                                                       ng-click="vm.showDigitalWalletAddressDetail($event)">
+                                                <i class="fa fa-plus"></i> Add
+                                            </md-button>
+                                        </div>
+                                    </md-list-item>
                                 </md-list>
                             </div>
                         </md-tab-body>

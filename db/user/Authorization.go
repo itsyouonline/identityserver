@@ -7,6 +7,7 @@ import "strings"
 type Authorization struct {
 	Addresses      []AuthorizationMap `json:"addresses,omitempty"`
 	BankAccounts   []AuthorizationMap `json:"bankaccounts,omitempty"`
+	DigitalWallet  []AuthorizationMap `json:"digitalwallet,omitempty"`
 	EmailAddresses []AuthorizationMap `json:"emailaddresses,omitempty"`
 	Facebook       bool               `json:"facebook,omitempty"`
 	Github         bool               `json:"github,omitempty"`
@@ -49,6 +50,9 @@ func (authorization Authorization) FilterAuthorizedScopes(requestedscopes []stri
 		if strings.HasPrefix(scope, "user:bankaccount") && labelledPropertyIsAuthorized(scope, "user:bankaccount", authorization.BankAccounts) {
 			authorizedScopes = append(authorizedScopes, scope)
 		}
+		if strings.HasPrefix(scope, "user:digitalwalletaddress") && labelledPropertyIsAuthorized(scope, "user:digitalwalletaddress", authorization.DigitalWallet) {
+			authorizedScopes = append(authorizedScopes, scope)
+		}
 		if strings.HasPrefix(scope, "user:email") && labelledPropertyIsAuthorized(scope, "user:email", authorization.EmailAddresses) {
 			authorizedScopes = append(authorizedScopes, scope)
 		}
@@ -78,9 +82,9 @@ func labelledPropertyIsAuthorized(scope string, scopePrefix string, authorizedLa
 		return
 	}
 	if strings.HasPrefix(scope, scopePrefix+":") {
-		requestedLabel := strings.TrimPrefix(scope, scopePrefix+":")
+		requestedLabel := strings.Split(strings.TrimPrefix(scope, scopePrefix+":"), ":")[0]
 		for _, authorizationmap := range authorizedLabels {
-			if authorizationmap.RequestedLabel == requestedLabel {
+			if authorizationmap.RequestedLabel == requestedLabel || authorizationmap.RequestedLabel == "main" && requestedLabel == "" {
 				authorized = true
 				return
 			}

@@ -132,5 +132,10 @@
             }
             return original.apply($location, [path]);
         };
+        if (!String.prototype.startsWith) {
+            String.prototype.startsWith = function (hashstack, needle) {
+                return haystack.lastIndexOf(needle, 0) === 0;
+            };
+        }
     }
 })();

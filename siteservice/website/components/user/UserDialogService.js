@@ -24,7 +24,8 @@
             github: github,
             addGithub: addGithub,
             showSimpleDialog: showSimpleDialog,
-            createOrganization: createOrganization
+            createOrganization: createOrganization,
+            digitalWalletAddressDetail: digitalWalletAddressDetail
         };
 
         function init(scope) {
@@ -416,6 +417,44 @@
                 locals: {
                     parentOrganization: parentOrganization
                 }
+            });
+        }
+
+        function digitalWalletAddressDetail(event, walletAddress) {
+            walletAddress = walletAddress || {expiry: new Date()};
+            var originalWalletAddress = JSON.parse(JSON.stringify(walletAddress));
+            walletAddress.expiry = typeof walletAddress.expiry !== 'object' ? new Date(walletAddress.expiry) : walletAddress.expiry;
+            if (walletAddress.expiry.getYear() < 2000) {
+                walletAddress.expiry = new Date();
+            }
+            return $q(function (resolve, reject) {
+                $mdDialog.show({
+                    controller: genericDetailControllerParams,
+                    templateUrl: 'components/user/views/digitalWalletAddressDialog.html',
+                    targetEvent: event,
+                    fullscreen: $mdMedia('sm') || $mdMedia('xs'),
+                    locals: {
+                        user: vm.user,
+                        data: walletAddress,
+                        createFunction: UserService.createDigitalWalletAddress,
+                        updateFunction: UserService.updateDigitalWalletAddress,
+                        deleteFunction: UserService.deleteDigitalWalletAddress
+                    }
+                }).then(
+                    function (data) {
+                        if (data.fx === 'delete') {
+                            vm.user.digitalwallet.splice(vm.user.digitalwallet.indexOf(walletAddress), 1);
+                        }
+                        else if (data.fx === 'create') {
+                            vm.user.digitalwallet.push(data.data);
+                        }
+                        resolve(data);
+                    }, function (response) {
+                        angular.forEach(originalWalletAddress, function (value, key) {
+                            walletAddress[key] = value;
+                        });
+                        reject(response);
+                    });
             });
         }
 

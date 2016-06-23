@@ -68,6 +68,10 @@
 
     function UserService($http, $q) {
         var apiURL = 'api/users';
+        var GET = $http.get,
+            POST = $http.post,
+            PUT = $http.put,
+            DELETE = $http.delete;
 
         return {
             get: get,
@@ -102,7 +106,10 @@
             getTwoFAMethods: getTwoFAMethods,
             getAuthenticatorSecret: getAuthenticatorSecret,
             setAuthenticator: setAuthenticator,
-            removeAuthenticator: removeAuthenticator
+            removeAuthenticator: removeAuthenticator,
+            createDigitalWalletAddress: createDigitalWalletAddress,
+            updateDigitalWalletAddress: updateDigitalWalletAddress,
+            deleteDigitalWalletAddress: deleteDigitalWalletAddress
         };
 
         function genericHttpCall(httpFunction, url, data) {
@@ -317,6 +324,21 @@
         function removeAuthenticator(username) {
             var url = apiURL + '/' + encodeURIComponent(username) + '/totp';
             return genericHttpCall($http.delete, url);
+        }
+
+        function createDigitalWalletAddress(username, walletAddress) {
+            var url = apiURL + '/' + encodeURIComponent(username) + '/digitalwallet';
+            return genericHttpCall(POST, url, walletAddress);
+        }
+
+        function updateDigitalWalletAddress(username, oldLabel, walletAddress) {
+            var url = apiURL + '/' + encodeURIComponent(username) + '/digitalwallet/' + encodeURIComponent(oldLabel);
+            return genericHttpCall(PUT, url, walletAddress);
+        }
+
+        function deleteDigitalWalletAddress(username, label) {
+            var url = apiURL + '/' + encodeURIComponent(username) + '/digitalwallet/' + encodeURIComponent(label);
+            return genericHttpCall(DELETE, url);
         }
     }
 })();

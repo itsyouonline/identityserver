@@ -59,3 +59,5 @@ If the user is no member of the <globalid> organization, the oauth flow continue
 ## `user:facebook`
 
 ## `user:bankaccount[:<label>]`
+
+## `user:digitalwalletaddress:[<label>]:[<currency>]`

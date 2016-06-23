@@ -500,12 +500,25 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 			bank, err := userobj.GetBankAccountByLabel(bankmap.RealLabel)
 			if err == nil {
 				newbank := user.BankAccount{
-					Label:   bankmap.RealLabel,
+					Label:   bankmap.RequestedLabel,
 					Bic:     bank.Bic,
 					Country: bank.Country,
 					Iban:    bank.Iban,
 				}
 				respBody.BankAccounts = append(respBody.BankAccounts, newbank)
+			} else {
+				log.Debug(err)
+			}
+		}
+	}
+	if authorization.DigitalWallet != nil {
+		respBody.DigitalWallet = make([]user.DigitalAssetAddress, 0)
+
+		for _, addressMap := range authorization.DigitalWallet {
+			walletAddress, err := userobj.GetDigitalAssetAddressByLabel(addressMap.RealLabel)
+			if err == nil {
+				walletAddress.Label = addressMap.RequestedLabel
+				respBody.DigitalWallet = append(respBody.DigitalWallet, walletAddress)
 			} else {
 				log.Debug(err)
 			}
