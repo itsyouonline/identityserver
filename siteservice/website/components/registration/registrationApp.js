@@ -2,7 +2,8 @@
     'use strict';
     angular
         .module('itsyouonline.registration', [
-            'ngMaterial', 'ngMessages', 'ngRoute', 'monospaced.qrcode', 'itsyouonline.shared', 'itsyouonline.header'])
+            'ngMaterial', 'ngMessages', 'ngRoute', 'monospaced.qrcode',
+            'itsyouonline.shared', 'itsyouonline.header', 'itsyouonline.validation'])
         .config(['$mdThemingProvider', themingConfig])
         .config(['$routeProvider', routeConfig]);
 
@@ -28,6 +29,30 @@
         $mdThemingProvider
             .theme('default')
             .primaryPalette('blueish');
+    }
+
+    function httpConfig($httpProvider) {
+        $httpProvider.interceptors.push('authenticationInterceptor');
+        //initialize get if not there
+        if (!$httpProvider.defaults.headers.get) {
+            $httpProvider.defaults.headers.get = {};
+        }
+        //disable IE ajax request caching
+        $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
+    }
+
+    function authenticationInterceptor($q, $window) {
+        return {
+            'responseError': function (response) {
+                if (response.status === 401 || response.status === 403 || response.status === 419) {
+                    $window.location.href = '/register';
+                } else if (rejection.status.toString().startsWith('5')) {
+                    $window.location.href = 'error' + rejection.status;
+                }
+
+                return $q.reject(response);
+            }
+        };
     }
 
     function routeConfig($routeProvider) {
