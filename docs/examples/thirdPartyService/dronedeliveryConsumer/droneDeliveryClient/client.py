@@ -9,8 +9,8 @@ class Client:
         self.url = BASE_URI
         self.session = requests.Session()
         self.auth_header = ''
-    
-    def set_auth_header(val):
+
+    def set_auth_header(self, val):
         ''' set authorization header value'''
         self.auth_header = val
 
@@ -29,7 +29,6 @@ class Client:
         uri = uri + build_query_string(query_params)
         return self.session.get(uri, headers=headers)
 
-
     def deliveries_post(self, data, headers=None, query_params=None):
         """
         Create/request a new delivery
@@ -45,7 +44,6 @@ class Client:
         uri = uri + build_query_string(query_params)
         return self.session.post(uri, data, headers=headers)
 
-
     def deliveries_byDeliveryId_get(self, deliveryId, headers=None, query_params=None):
         """
         Get information on a specific delivery
@@ -57,10 +55,9 @@ class Client:
             else:
                 headers['Authorization'] = self.auth_header
 
-        uri = self.url + "/deliveries/"+deliveryId
+        uri = self.url + "/deliveries/" + deliveryId
         uri = uri + build_query_string(query_params)
         return self.session.get(uri, headers=headers)
-
 
     def deliveries_byDeliveryId_patch(self, data, deliveryId, headers=None, query_params=None):
         """
@@ -73,10 +70,9 @@ class Client:
             else:
                 headers['Authorization'] = self.auth_header
 
-        uri = self.url + "/deliveries/"+deliveryId
+        uri = self.url + "/deliveries/" + deliveryId
         uri = uri + build_query_string(query_params)
         return self.session.patch(uri, data, headers=headers)
-
 
     def deliveries_byDeliveryId_delete(self, deliveryId, headers=None, query_params=None):
         """
@@ -89,10 +85,9 @@ class Client:
             else:
                 headers['Authorization'] = self.auth_header
 
-        uri = self.url + "/deliveries/"+deliveryId
+        uri = self.url + "/deliveries/" + deliveryId
         uri = uri + build_query_string(query_params)
         return self.session.delete(uri, headers=headers)
-
 
     def drones_get(self, headers=None, query_params=None):
         """
@@ -109,7 +104,6 @@ class Client:
         uri = uri + build_query_string(query_params)
         return self.session.get(uri, headers=headers)
 
-
     def drones_post(self, data, headers=None, query_params=None):
         """
         Add a new drone to the fleet
@@ -125,7 +119,6 @@ class Client:
         uri = uri + build_query_string(query_params)
         return self.session.post(uri, data, headers=headers)
 
-
     def drones_byDroneId_get(self, droneId, headers=None, query_params=None):
         """
         Get information on a specific drone
@@ -137,10 +130,9 @@ class Client:
             else:
                 headers['Authorization'] = self.auth_header
 
-        uri = self.url + "/drones/"+droneId
+        uri = self.url + "/drones/" + droneId
         uri = uri + build_query_string(query_params)
         return self.session.get(uri, headers=headers)
-
 
     def drones_byDroneId_patch(self, data, droneId, headers=None, query_params=None):
         """
@@ -153,10 +145,9 @@ class Client:
             else:
                 headers['Authorization'] = self.auth_header
 
-        uri = self.url + "/drones/"+droneId
+        uri = self.url + "/drones/" + droneId
         uri = uri + build_query_string(query_params)
         return self.session.patch(uri, data, headers=headers)
-
 
     def drones_byDroneId_delete(self, droneId, headers=None, query_params=None):
         """
@@ -169,10 +160,9 @@ class Client:
             else:
                 headers['Authorization'] = self.auth_header
 
-        uri = self.url + "/drones/"+droneId
+        uri = self.url + "/drones/" + droneId
         uri = uri + build_query_string(query_params)
         return self.session.delete(uri, headers=headers)
-
 
     def drones_byDroneId_deliveries_get(self, droneId, headers=None, query_params=None):
         """
@@ -185,6 +175,6 @@ class Client:
             else:
                 headers['Authorization'] = self.auth_header
 
-        uri = self.url + "/drones/"+droneId+"/deliveries"
+        uri = self.url + "/drones/" + droneId + "/deliveries"
         uri = uri + build_query_string(query_params)
         return self.session.get(uri, headers=headers)
