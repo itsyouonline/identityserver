@@ -81,15 +81,18 @@ from clients.python import itsyouonline
 import requests
 
 itsyouonline_client = itsyouonline.Client()
-itsyouonline_client_applicationid = 'XXXXXXXXX'
-itsyouonline_client_secret = 'YYYYYYYYY'
+itsyouonline_client_applicationid = 'FILL_IN_APPLICATIONID'
+itsyouonline_client_secret = 'FILL_IN_CLIENTSECRET'
 itsyouonline_client.oauth.LoginViaClientCredentials(client_id=itsyouonline_client_applicationid,client_secret=itsyouonline_client_secret)
 
 
 def getjwt():
     uri = "https://itsyou.online/v1/oauth/jwt?aud=dronedelivery&scope="
     r = requests.post(uri, headers=itsyouonline_client.oauth.session.headers)
-    return r.text
+    if r.status_code != 200:
+        return r.text
+    else:
+        return r.status_code
 
 
 dronedelivery_consumer_client = Client()
@@ -115,14 +118,16 @@ Then we add this code to dronedeliveryService/deliveries.py deliveries_get:
 
 ```
 pubkey = "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAES5X8XrfKdx9gYayFITc89wad4usrk0n2\n7MjiGYvqalizeSWTHEpnd7oea9IQ8T5oJjMVH5cc0H5tFSKilFFeh//wngxIyny6\n6+Vq5t5B0V0Ehy01+2ceEon2Y0XDkIKv\n-----END PUBLIC KEY-----"
-    webtoken = []
 
     header = request.headers.get("Authorization")
     if not header or not header.startswith("bearer "):
         return 'Unauthorized', 401
-        webtoken = header.split()
-        decoded_jwt = jwt.decode(webtoken[1], pubkey, algorithms=["ES384"], audience="dronedelivery")
-    if data["iss"] == "itsyouonline":
+    webtoken = header.split()
+    decoded_jwt = jwt.decode(webtoken[1], pubkey, algorithms=["ES384"], audience="dronedelivery")
+    print(decoded_jwt)
+    if decoded_jwt["iss"] != "itsyouonline":
+        return 'Unauthorized', 401
+    else:
         data = {
             "id": "4",
             "at": "Tue, 08 Jul 2014 13:00:00 GMT",
@@ -131,9 +136,7 @@ pubkey = "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAES5X8XrfKdx
             "status": "completed",
             "droneId": "f"
         }
-        return Response(json.dumps(data), mimetype='application/json')
-    else:
-        return 'Unauthorized', 401
+    return Response(json.dumps(data), mimetype='application/json')
 ```
 
 Start up the server, run dronedeliveryConsumer.py and your application has been secured by itsyou.online!

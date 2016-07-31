@@ -3,8 +3,8 @@ from clients.python import itsyouonline
 import requests
 
 itsyouonline_client = itsyouonline.Client()
-itsyouonline_client_applicationid = 'Zfv5-Ew9Blv900ZyWz5BvBvuTes9'
-itsyouonline_client_secret = 'CiLj3xMpBaiYzBXJ0iAe_HLPWaTi'
+itsyouonline_client_applicationid = 'FILL_IN_APPLICATIONID'
+itsyouonline_client_secret = 'FILL_IN_CLIENTSECRET'
 itsyouonline_client.oauth.LoginViaClientCredentials(client_id=itsyouonline_client_applicationid,
                                                     client_secret=itsyouonline_client_secret)
 
@@ -12,7 +12,10 @@ itsyouonline_client.oauth.LoginViaClientCredentials(client_id=itsyouonline_clien
 def getjwt():
     uri = "https://itsyou.online/v1/oauth/jwt?aud=dronedelivery&scope="
     r = requests.post(uri, headers=itsyouonline_client.oauth.session.headers)
-    return r.text
+    if r.status_code != 200:
+        return r.text
+    else:
+        return r.status_code
 
 
 dronedelivery_consumer_client = Client()
