@@ -71,6 +71,11 @@ func (service *Service) AccessTokenHandler(w http.ResponseWriter, r *http.Reques
 	clientSecret := r.FormValue("client_secret")
 	clientID := r.FormValue("client_id")
 
+	//Also accept some alternatives
+	if grantType == "authorization_code" {
+		grantType = ""
+	}
+
 	if clientSecret == "" || clientID == "" || (grantType == "" && code == "") {
 		log.Debug("Required parameter missing in the request")
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
@@ -85,6 +90,7 @@ func (service *Service) AccessTokenHandler(w http.ResponseWriter, r *http.Reques
 		if grantType == ClientCredentialsGrantCodeType {
 			at, httpStatusCode = clientCredentialsTokenHandler(clientID, clientSecret, mgr, r)
 		} else {
+			log.Debug("Invalid grant_type")
 			httpStatusCode = http.StatusBadRequest
 		}
 	} else {
@@ -140,8 +146,8 @@ func (service *Service) AccessTokenHandler(w http.ResponseWriter, r *http.Reques
 		},
 	}
 
-	json.NewEncoder(w).Encode(&response)
 	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(&response)
 }
 
 func clientCredentialsTokenHandler(clientID string, secret string, mgr *Manager, r *http.Request) (at *AccessToken, httpStatusCode int) {

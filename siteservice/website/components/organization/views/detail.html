@@ -142,7 +142,7 @@
                                         <p>
                                             Organization logo
                                             <md-tooltip>
-                                                The logo is displayed when the user logs in from an external site using oauth2
+                                                This logo is displayed when a user logs in to an external site using OAuth2
                                             </md-tooltip>
                                         </p>
                                     </div>
@@ -151,19 +151,11 @@
                                     <div>
                                         <canvas id="logoview" height="240px" width="500px" ng-show="vm.logo"></canvas>
                                     </div>
-                                    <div ng-if="!vm.logo">
+                                    <div>
                                         <md-button class="md-primary" ng-click="vm.showLogoDialog($event)">
-                                            <i class="fa fa-plus"></i> Set organization logo
+                                            <span ng-if="vm.logo">Change</span><span ng-if="!vm.logo">Set</span> organization logo
                                             <md-tooltip>
-                                                The logo is displayed when the user logs in from an external site using oauth2
-                                            </md-tooltip>
-                                        </md-button>
-                                    </div>
-                                    <div ng-if="vm.logo">
-                                        <md-button class="md-primary" ng-click="vm.showLogoDialog($event)">
-                                            Change organization logo
-                                            <md-tooltip>
-                                                Change the logo that is displayed zhen the user logs in from an external site using oauth2
+                                                This logo is displayed when a user logs in to an external site using OAuth2
                                             </md-tooltip>
                                         </md-button>
                                     </div>

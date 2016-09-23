@@ -110,7 +110,7 @@ func (service *Service) ProcessLoginForm(w http.ResponseWriter, request *http.Re
 		Password string `json:"password"`
 	}{}
 
-	if err := json.NewDecoder(request.Body).Decode(&values); err != nil {
+	if err = json.NewDecoder(request.Body).Decode(&values); err != nil {
 		log.Debug("Error decoding the login request:", err)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
@@ -376,7 +376,7 @@ func (service *Service) MobileSMSConfirmation(w http.ResponseWriter, request *ht
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-	service.renderSMSConfirmationPage(w, request, "You should be logged in within a few seconds")
+	service.renderSMSConfirmationPage(w, request, "You will be logged in within a few seconds")
 }
 
 //Check2FASMSConfirmation is called by the sms code form to check if the sms is already confirmed on the mobile phone

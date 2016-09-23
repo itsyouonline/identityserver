@@ -232,6 +232,9 @@ func (m *Manager) DeleteFacebookAccount(username string) (err error) {
 // GetAuthorizationsByUser returns all authorizations for a specific user
 func (m *Manager) GetAuthorizationsByUser(username string) (authorizations []Authorization, err error) {
 	err = m.getAuthorizationCollection().Find(bson.M{"username": username}).All(&authorizations)
+	if authorizations == nil {
+		authorizations = []Authorization{}
+	}
 	return
 }
 
