@@ -21,6 +21,7 @@ import (
 	"github.com/itsyouonline/identityserver/credentials/password"
 	"github.com/itsyouonline/identityserver/credentials/totp"
 	"github.com/itsyouonline/identityserver/db/user"
+	organizationdb "github.com/itsyouonline/identityserver/db/organization"
 	validationdb "github.com/itsyouonline/identityserver/db/validation"
 	"github.com/itsyouonline/identityserver/identityservice/organization"
 	"github.com/itsyouonline/identityserver/tools"
@@ -136,8 +137,17 @@ func (service *Service) ProcessLoginForm(w http.ResponseWriter, request *http.Re
 		return
 	}
 
+	queryValues := request.URL.Query()
+	client := queryValues.Get("client_id")
+	// Remove last 2FA entry if an invalid password is entered
 	validcredentials := userexists && validpassword
 	if !validcredentials {
+		if client != "" {
+			l2faMgr := organizationdb.NewLast2FAManager(request)
+			if l2faMgr.Exists(client, u.Username) {
+				l2faMgr.RemoveLast2FA(client, u.Username)
+			}
+		}
 		w.WriteHeader(422)
 		return
 	}
@@ -148,6 +158,31 @@ func (service *Service) ProcessLoginForm(w http.ResponseWriter, request *http.Re
 		return
 	}
 	loginSession.Values["username"] = u.Username
+	//check if 2fa validity has passed
+	if client != "" {
+		l2faMgr := organizationdb.NewLast2FAManager(request)
+		if l2faMgr.Exists(client, u.Username) {
+			timestamp, err := l2faMgr.GetLast2FA(client, u.Username)
+			if err != nil {
+				log.Error(err)
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+			mgr := organizationdb.NewManager(request)
+			seconds, err := mgr.GetValidity(client)
+			if err != nil {
+				log.Error(err)
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+			timeconverted := time.Time(timestamp)
+			if timeconverted.Add(time.Second * time.Duration(seconds)).After(time.Now()) {
+				service.loginUser(w, request, u.Username)
+				return
+			}
+		}
+	}
+
 	sessions.Save(request, w)
 	w.WriteHeader(http.StatusNoContent)
 }
@@ -314,6 +349,10 @@ func (service *Service) ProcessTOTPConfirmation(w http.ResponseWriter, request *
 		w.WriteHeader(422)
 		return
 	}
+
+	//add last 2fa date if logging in with oauth2
+	service.storeLast2FALogin(request, username)
+
 	service.loginUser(w, request, username)
 }
 
@@ -456,7 +495,24 @@ func (service *Service) Process2FASMSConfirmation(w http.ResponseWriter, request
 	}
 	userMgr := user.NewManager(request)
 	userMgr.RemoveExpireDate(username)
+
+	//add last 2fa date if logging in with oauth2
+	service.storeLast2FALogin(request, username)
+
 	service.loginUser(w, request, username)
+}
+
+func (service *Service) storeLast2FALogin(request *http.Request, username string) {
+	//add last 2fa date if logging in with oauth2
+	queryValues := request.URL.Query()
+	client := queryValues.Get("client_id")
+	if client != "" {
+		l2faMgr := organizationdb.NewLast2FAManager(request)
+		err := l2faMgr.SetLast2FA(client, username)
+		if err != nil {
+			log.Debug("Error while setting the last 2FA login ", err)
+		}
+	}
 }
 
 func (service *Service) loginUser(w http.ResponseWriter, request *http.Request, username string) {

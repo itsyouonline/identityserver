@@ -34,7 +34,9 @@
             removeMember: removeMember,
             getLogo: getLogo,
             setLogo: setLogo,
-            deleteLogo: deleteLogo
+            deleteLogo: deleteLogo,
+            getValidityDuration: getValidityDuration,
+            SetValidityDuration: SetValidityDuration
         };
 
         function genericHttpCall(httpFunction, url, data) {
@@ -286,6 +288,19 @@
         function deleteLogo(globalid) {
             var url = apiURL + '/' + encodeURIComponent(globalid) + '/logo';
             return genericHttpCall(DELETE, url);
+        }
+
+        function getValidityDuration(globalid) {
+            var url = apiURL + '/' + encodeURIComponent(globalid) + '/2fa/validity';
+            return genericHttpCall(GET, url);
+        }
+
+        function SetValidityDuration(globalid, secondsduration) {
+            var url = apiURL + '/' + encodeURIComponent(globalid) + '/2fa/validity';
+            var data = {
+                secondsvalidity: secondsduration
+            };
+            return genericHttpCall(PUT, url, data);
         }
     }
 })();

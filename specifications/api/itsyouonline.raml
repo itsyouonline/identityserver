@@ -1126,7 +1126,7 @@ securedBy: [ oauth_2_0 ]
     delete:
       securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
       displayName: DeleteOrganization
-      description: Deletes an organization and all data linked to it (join-organization-invitations, oauth_access_tokens, oauth_clients)
+      description: Deletes an organization and all data linked to it (join-organization-invitations, oauth_access_tokens, oauth_clients, logo)
       responses:
         401:
           description: Unauthorized
@@ -1149,6 +1149,7 @@ securedBy: [ oauth_2_0 ]
         description: Get the Logo from an organization
         responses:
           200:
+            description: logo retrieved successfully
             body:
               application/json:
                 type: string
@@ -1183,11 +1184,42 @@ securedBy: [ oauth_2_0 ]
         responses:
           401:
             description: Unauthorized
+          403:
+            description: No permission for this action
           404:
             description: Organization not found
           204:
             description: Logo deleted
 
+    /2fa:
+      /validity:
+        get:
+          displayName: Get2faValidityTime
+          description: Get the 2FA validity time for the organization, in seconds
+          responses:
+            200:
+              description: Get the 2FA validity time for this organization
+              body:
+                application/json:
+                  type: int
+            404:
+              description: Organization not found
+        post:
+          displayName: Set2faValidityTime
+          securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
+          description: Update the 2FA validity time for the organization
+          body:
+            application/json:
+              type: int
+            responses:
+              200:
+                description: Updated successfully
+              401:
+                description: Unauthorized
+              403:
+                description: No permission for this action
+              404:
+                description: Organization not found
 
     /members:
       put:

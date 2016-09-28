@@ -99,6 +99,12 @@ type OrganizationsInterface interface { // CreateNewOrganization is the handler 
 	// DeleteOrganizationLogo is the handler for DELETE /organizations/globalid/logo
 	// Removes the Logo from an organization
 	DeleteOrganizationLogo(http.ResponseWriter, *http.Request)
+	// Get2faValidityTime is the handler for GET /organizations/globalid/2fa/validity
+	// Get the 2fa validity time for the organization, in seconds
+	Get2faValidityTime(w http.ResponseWriter, r *http.Request)
+	// Set2faValidityTime is the handler for PUT /organizations/globalid/2fa/validity
+	// Sets the 2fa validity time for the organization, in seconds
+	Set2faValidityTime(w http.ResponseWriter, r *http.Request)
 }
 
 // OrganizationsInterfaceRoutes is routing for /organizations root endpoint
@@ -132,7 +138,8 @@ func OrganizationsInterfaceRoutes(r *mux.Router, i OrganizationsInterface) {
 	r.Handle("/organizations/{globalid}/registry/{key}", alice.New(newOauth2oauth_2_0Middleware([]string{}).Handler).Then(http.HandlerFunc(i.GetOrganizationRegistryEntry))).Methods("GET")
 	r.Handle("/organizations/{globalid}/registry/{key}", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.DeleteOrganizationRegistryEntry))).Methods("DELETE")
 	r.Handle("/organizations/{globalid}/logo", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.SetOrganizationLogo))).Methods("PUT")
-	//r.Handle("/organizations/{globalid}/logo", alice.New(newOauth2oauth_2_0Middleware([]string{}).Handler).Then(http.HandlerFunc(i.GetOrganizationLogo))).Methods("GET")
 	r.Handle("/organizations/{globalid}/logo", http.HandlerFunc(i.GetOrganizationLogo)).Methods("GET")
 	r.Handle("/organizations/{globalid}/logo", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.DeleteOrganizationLogo))).Methods("DELETE")
+	r.Handle("/organizations/{globalid}/2fa/validity", http.HandlerFunc(i.Get2faValidityTime)).Methods("GET")
+	r.Handle("/organizations/{globalid}/2fa/validity", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.Set2faValidityTime))).Methods("PUT")
 }

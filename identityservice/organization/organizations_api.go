@@ -848,9 +848,7 @@ func (api OrganizationsAPI) DeleteOrganization(w http.ResponseWriter, r *http.Re
 		return
 	}
 	if logoMgr.Exists(globalid) {
-		log.Info("document exists, attempt to remove")
 		err = logoMgr.Remove(globalid)
-		log.Info("document should be gone now")
 		if handleServerError(w, "removing organization logo", err) {
 			return
 		}
@@ -866,6 +864,10 @@ func (api OrganizationsAPI) DeleteOrganization(w http.ResponseWriter, r *http.Re
 	if handleServerError(w, "removing organization oauth accesstokens", err) {
 		return
 	}
+	err = oauthMgr.DeleteAllForOrganization(globalid)
+	if handleServerError(w, "removing client secrets", err) {
+		return
+	}
 	err = oauthMgr.RemoveClientsById(globalid)
 	if handleServerError(w, "removing organization oauth clients", err) {
 		return
@@ -877,6 +879,11 @@ func (api OrganizationsAPI) DeleteOrganization(w http.ResponseWriter, r *http.Re
 	}
 	err = oauthMgr.RemoveClientsById(globalid)
 	if handleServerError(w, "removing organization oauth clients", err) {
+		return
+	}
+	l2faMgr := organization.NewLast2FAManager(r)
+	err = l2faMgr.RemoveByOrganization(globalid)
+	if handleServerError(w, "removing organization 2FA history", err) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
@@ -1009,7 +1016,7 @@ func (api OrganizationsAPI) GetOrganizationLogo(w http.ResponseWriter, r *http.R
 
 	logo, err := logoMgr.GetLogo(globalid)
 
-	if err != nil && err.Error() != "not found" {
+	if err != nil && err != mgo.ErrNotFound {
 		log.Error("Error getting logo", err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
@@ -1042,6 +1049,68 @@ func (api OrganizationsAPI) DeleteOrganizationLogo(w http.ResponseWriter, r *htt
 	w.Header().Set("Content-Type", "application/json")
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// Get2faValidityTime is the handler for GET /organizations/globalid/2fa/validity
+// Get the 2fa validity time for the organization, in seconds
+func (api OrganizationsAPI) Get2faValidityTime(w http.ResponseWriter, r *http.Request) {
+	globalid := mux.Vars(r)["globalid"]
+	mgr := organization.NewManager(r)
+
+	validity, err := mgr.GetValidity(globalid)
+	if err != nil && err != mgo.ErrNotFound {
+		log.Error("Error while getting validity duration: ", err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if err == mgo.ErrNotFound {
+		log.Error("Error while getting validity duration: organization nout found")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	response := struct {
+		SecondsValidity int `json:"secondsvalidity"`
+	} {
+		SecondsValidity: validity,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
+// Set2faValidityTime is the handler for PUT /organizations/globalid/2fa/validity
+// Sets the 2fa validity time for the organization, in days
+func (api OrganizationsAPI) Set2faValidityTime(w http.ResponseWriter, r *http.Request) {
+	globalid := mux.Vars(r)["globalid"]
+
+	body := struct {
+		SecondsValidity int `json:"secondsvalidity"`
+	}{}
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		log.Error("Error while setting 2FA validity time: ", err.Error())
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	mgr := organization.NewManager(r)
+	seconds := body.SecondsValidity
+
+	if seconds < 0 {
+		seconds = 0
+	} else if seconds > 2678400 {
+		seconds = 2678400
+	}
+
+	err := mgr.SetValidity(globalid, seconds)
+	if err != nil {
+		log.Error("Error while setting 2FA validity time: ", err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func writeErrorResponse(responseWriter http.ResponseWriter, httpStatusCode int, message string) {

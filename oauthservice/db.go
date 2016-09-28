@@ -181,6 +181,12 @@ func (m *Manager) DeleteClient(clientID, label string) (err error) {
 	return
 }
 
+//DeleteAllForOrganization removes al client secrets for the organization
+func (m *Manager) DeleteAllForOrganization(clientID string) (err error) {
+	_, err = m.getClientsCollection().RemoveAll(bson.M{"clientid": clientID})
+	return
+}
+
 //GetClient retrieves a client given a clientid and a label
 func (m *Manager) GetClient(clientID, label string) (client *Oauth2Client, err error) {
 	client = &Oauth2Client{}

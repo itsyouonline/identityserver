@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"time"
+
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
@@ -13,6 +15,7 @@ import (
 const (
 	mongoCollectionName = "organizations"
 	logoCollectionName = "organizationLogos"
+	last2FACollectionName = "last2falogin"
 )
 
 //InitModels initialize models in mongo, if required.
@@ -32,6 +35,21 @@ func InitModels() {
 	}
 
 	db.EnsureIndex(logoCollectionName, index)
+
+	index = mgo.Index {
+		Key:		[]string{"globalid", "username"},
+		Unique: true,
+	}
+
+	db.EnsureIndex(last2FACollectionName, index)
+
+	// remove last2fa entries after 31 days
+	automatic2FAExpiration := mgo.Index{
+		Key:         []string{"last2fa"},
+		ExpireAfter: time.Second * 3600 * 24 * 31,
+		Background:  true,
+	}
+	db.EnsureIndex(last2FACollectionName, automatic2FAExpiration)
 }
 
 //Manager is used to store organizations
@@ -46,6 +64,12 @@ type LogoManager struct {
 	collection *mgo.Collection
 }
 
+//Last2FAManager is used to save the date for the last 2FA login for an organization through the authorization code grant flow
+type Last2FAManager struct {
+	session 	 *mgo.Session
+	collection *mgo.Collection
+}
+
 func getCollection(session *mgo.Session) *mgo.Collection {
 	return db.GetCollection(session, mongoCollectionName)
 }
@@ -53,6 +77,11 @@ func getCollection(session *mgo.Session) *mgo.Collection {
 //get the logo collection
 func getLogoCollection(session *mgo.Session) *mgo.Collection {
 	return db.GetCollection(session, logoCollectionName)
+}
+
+//get the last 2FA collection
+func getLast2FACollection(session *mgo.Session) *mgo.Collection {
+	return db.GetCollection(session, last2FACollectionName)
 }
 
 //NewManager creates and initializes a new Manager
@@ -70,6 +99,15 @@ func NewLogoManager(r *http.Request) *LogoManager {
 	return &LogoManager{
 		session:		session,
 		collection:	getLogoCollection(session),
+	}
+}
+
+// NewLast2FAManager creates and initializes a new Last2FAManager
+func NewLast2FAManager(r *http.Request) *Last2FAManager {
+	session := db.GetDBSession(r)
+	return &Last2FAManager{
+		session:		session,
+		collection:	getLast2FACollection(session),
 	}
 }
 
@@ -160,6 +198,17 @@ func (m *Manager) Exists(globalID string) bool {
 // Exists checks if an organization and logo entry exists.
 func (m *LogoManager) Exists(globalID string) bool {
 	count, _ := m.collection.Find(bson.M{"globalid": globalID}).Count()
+
+	return count == 1
+}
+
+// Exists checks if an organization - user combination entry exists.
+func (m *Last2FAManager) Exists(globalID string, username string) bool {
+	condition := []interface{}{
+		bson.M{"globalid": globalID},
+		bson.M{"username": username},
+	}
+	count, _ := m.collection.Find(bson.M{"$and": condition}).Count()
 
 	return count == 1
 }
@@ -259,6 +308,18 @@ func (m *LogoManager) Remove(globalid string) error {
 	return m.collection.Remove(bson.M{"globalid": globalid})
 }
 
+// Remove the Last2FA entries for this organization
+func (m *Last2FAManager) RemoveByOrganization(globalid string) error {
+	_, err := m.collection.RemoveAll(bson.M{"globalid": globalid})
+	return err
+}
+
+//Remove the Last2FA entries for this user
+func (m *Last2FAManager) RemoveByUser(username string) error {
+	_, err := m.collection.RemoveAll(bson.M{"username": username})
+	return err
+}
+
 // UpdateMembership Updates a user his role in an organization
 func (m *Manager) UpdateMembership(globalid string, username string, oldrole string, newrole string) error {
 	qry := bson.M{"globalid": globalid}
@@ -288,6 +349,29 @@ func (m *Manager) RemoveUser(globalId string, username string) error {
 	return m.collection.Update(qry, update)
 }
 
+// GetValidity gets the 2FA validity duration in seconds
+func (m *Manager) GetValidity(globalId string) (int, error) {
+		var org *Organization
+		err := m.collection.Find(bson.M{"globalid": globalId}).One(&org)
+		seconds := org.SecondsValidity
+		if seconds == -1 { //special value to avoid confusion with mongo null
+			return 0, err
+		} else if seconds == 0 { //mongo null for int field, use default duration
+			return 3600 * 24 * 7, err //7 days default duration
+		} else {
+			return seconds, err
+		}
+}
+
+func (m *Manager) SetValidity(globalId string, secondsDuration int) error {
+		if secondsDuration == 0 {
+			secondsDuration = -1 //assign -1 if duration should be zero to avoid confusion with mongo null
+		}
+		return m.collection.Update(
+			bson.M{"globalid": globalId},
+			bson.M{"$set": bson.M{"secondsvalidity": secondsDuration}})
+}
+
 // SaveLogo save or update logo
 func (m *LogoManager) SaveLogo(globalId string, logo string) (*mgo.ChangeInfo, error) {
 	return m.collection.Upsert(
@@ -310,4 +394,37 @@ func (m *LogoManager) RemoveLogo(globalId string) error {
 	qry := bson.M{"globalid": globalId}
 	update := bson.M{"$unset": bson.M{"logo": 1}}
 	return m.collection.Update(qry, update)
+}
+
+// SetLast2FA Set the last successful 2FA time
+func (m *Last2FAManager) SetLast2FA(globalId string, username string) error {
+	now := time.Now()
+	condition := []interface{}{
+		bson.M{"globalid": globalId},
+		bson.M{"username": username},
+	}
+	_, err := m.collection.Upsert(
+		bson.M{"$and": condition},
+		bson.M{"$set": bson.M{"last2fa": now}})
+	return err
+}
+
+// GetLast2FA Gets the date of the last successful 2FA login, if no failed login attempts have occurred since then
+func (m *Last2FAManager) GetLast2FA(globalId string, username string) (db.DateTime, error) {
+	var l2fa *UserLast2FALogin
+	condition := []interface{}{
+		bson.M{"globalid": globalId},
+		bson.M{"username": username},
+	}
+	err := m.collection.Find(bson.M{"$and": condition}).One(&l2fa)
+	return l2fa.Last2FA, err
+}
+
+// RemoveLast2FA Removes the entry of the last successful 2FA login for this organization - user combination
+func (m *Last2FAManager) RemoveLast2FA(globalId string, username string) error {
+	condition := []interface{}{
+		bson.M{"globalid": globalId},
+		bson.M{"username": username},
+	}
+	return m.collection.Remove(bson.M{"$and": condition})
 }

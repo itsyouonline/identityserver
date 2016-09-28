@@ -3,11 +3,12 @@ package organization
 import "strings"
 
 type Organization struct {
-	DNS        []string `json:"dns"`
-	Globalid   string   `json:"globalid"`
-	Members    []string `json:"members"`
-	Owners     []string `json:"owners"`
-	PublicKeys []string `json:"publicKeys"`
+	DNS        		 	[]string `json:"dns"`
+	Globalid   		 	string   `json:"globalid"`
+	Members    		 	[]string `json:"members"`
+	Owners     		 	[]string `json:"owners"`
+	PublicKeys 		 	[]string `json:"publicKeys"`
+	SecondsValidity	int			 `json:"secondsvalidity"`
 }
 
 // IsValid performs basic validation on the content of an organizations fields

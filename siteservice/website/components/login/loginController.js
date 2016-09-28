@@ -45,10 +45,16 @@
                 login: vm.login,
                 password: vm.password
             };
-            $http.post('/login', data).then(
-                function () {
-                    // Redirect 2 factor authentication page
-                    $window.location.hash = '#/2fa';
+            var url = '/login' + $window.location.search;
+            $http.post(url, data).then(
+                function (data) {
+                  if (data.data.redirecturl) {
+                      // Skip 2FA when logging in from an external site if the 2FA validity period hasn't passed
+                      $window.location.href = data.data.redirecturl;
+                  } else {
+                      // Redirect 2 factor authentication page
+                      $window.location.hash = '#/2fa';
+                  }
                 },
                 function (response) {
                     if (response.status === 422) {
