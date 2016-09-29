@@ -4,9 +4,6 @@
         <md-card-title>
             <md-card-title-text ng-if="!vm.externalSite">
                 <span class="md-headline">Login</span>
-                <span ng-if="vm.externalSite" class="md-subhead">
-                    You are about to login to <span ng-bind="vm.externalSite"></span>.
-                </span>
                 <span class="md-subhead">
                     You can login using your username, verified email address or verified phone number.
                 </span>
@@ -24,7 +21,7 @@
                     </p>
                 </div>
         </md-card-title>
-        <md-card-content>
+        <md-card-content ng-if="!vm.externalSite">
             <div layout="column">
                 <md-input-container>
                     <label>Login</label>
@@ -40,7 +37,124 @@
                 </md-input-container>
             </div>
         </md-card-content>
-        <md-card-actions layout="row" layout-align="space-between center">
+        <md-card-content ng-if="vm.externalSite">
+            <div layout="column" ng-show="!vm.registration2fa">
+                <div layout="row">
+                    <h3 class="login-header" flex="50">I HAVE AN ITSYOU.ONLINE ACCOUNT</h3>
+                    <h3 class="login-header" flex="50">I DON'T HAVE AN ITSYOU.ONLINE ACCOUNT YET</h3>
+                </div>
+                <div layout="row" layout-align="space-around start">
+                    <div class="organization-login-section" layout="column" flex="50">
+                        <md-input-container>
+                            <label>Login</label>
+                            <input ng-model="vm.login" ng-minlength="2" required name="login" type="text" autofocus>
+                        </md-input-container>
+                        <md-input-container>
+                            <label>Password</label>
+                            <input ng-model="vm.password" required name="password" type="password"
+                                ng-change="vm.clearValidation()">
+                                <div ng-messages="loginform.password.$error">
+                                    <div ng-message="invalidcredentials">Invalid credentials</div>
+                                </div>
+                        </md-input-container>
+                        <md-input-container>
+                            <a href="#/forgotpassword" class="forgot-password">Forgot your password?</a>
+                        </md-input-container>
+                    </div>
+                    <div class="organization-login-section" layout="column" flex="50">
+                        <md-input-container>
+                            <label for="registerlogin">Username</label>
+                            <input ng-model="vm.registerlogin" md-maxlength="30" minlength="2" required name="registerlogin" type="text"
+                                   ng-pattern="/^[a-z0-9 \-_]+$/" ng-minlength="3" ng-change="vm.validateUsername()" id="login">
+                            <div ng-messages="loginform.registerlogin.$error" md-auto-hide="false">
+                                <div ng-message="duplicate_username">This username has already been taken</div>
+                                <div ng-message="invalid_username_format">Invalid username. Only characters a-z, 0-9,
+                                    dashes, underscores and space are allowed
+                                </div>
+                                <div ng-message="pattern">Invalid username. Only characters a-z, 0-9, dashes,
+                                    underscores and space are allowed
+                                </div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container>
+                            <label for="email">Email</label>
+                            <input ng-model="vm.registeremail" required name="registeremail" type="email" id="email"
+                                   ng-pattern="/^([a-zA-Z0-9_\-\.\+]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i">
+                            <div ng-messages="loginform.registeremail.$error" md-auto-hide="false">
+                                <div ng-message="email">Invalid email address</div>
+                                <div ng-message="pattern">Invalid email address</div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container>
+                            <label for="password">Password</label>
+                            <input ng-model="vm.registerpassword" required name="registerpassword" type="password" minlength="6"
+                                   ng-minlength="6" id="password">
+                            <div ng-messages="loginform.registerpassword.$error">
+                                <div ng-message="minlength">Password should contain at least 6 characters</div>
+                                <div ng-message="invalid_password">Password should contain at least 6 characters</div>
+                            </div>
+                        </md-input-container>
+                        <md-input-container>
+                            <label for="passwordvalidation">Password confirmation</label>
+                            <input ng-model="vm.passwordvalidation" required name="passwordvalidation"
+                                   password-validation="vm.registerpassword" id="passwordvalidation" type="password">
+                            <div ng-messages="loginform.passwordvalidation.$error">
+                                <div ng-message="passwordIdentical">The passwords do not match</div>
+                            </div>
+                        </md-input-container>
+                    </div>
+                </div>
+                <div layout="row" layout-align="space-around center">
+                    <md-button class="md-raised md-primary" ng-click="vm.submit()" ng-disabled="!vm.loginInfoValid()">Sign in</md-button>
+                    <md-button class="md-raised md-primary" ng-click="vm.moveOn()" ng-disabled="!vm.basicInfoValid()">Sign up</md-button>
+                </div>
+            </div>
+            <div layout="column" ng-show="vm.registration2fa">
+                <md-input-container>
+                    <label>2-Factor authentication method</label>
+                    <md-select name="twoFAMethod" ng-model="vm.twoFAMethod" ng-required style="min-width:180px;"
+                               ng-change="vm.resetValidation('twoFAMethod')">
+                        <md-option ng-value="'sms'">SMS</md-option>
+                        <md-option ng-value="'totp'">Authenticator application</md-option>
+                    </md-select>
+                </md-input-container>
+                <md-input-container ng-if="vm.twoFAMethod === 'sms'">
+                    <label for="sms">Phone number</label>
+                    <input ng-model="vm.sms" minlength="4" ng-required="vm.twoFAMethod === 'sms'"
+                           name="phonenumber" ng-pattern="/^\+[0-9 ]*$/" ng-change="vm.resetValidation('phone')"
+                           id="sms">
+                    <div ng-messages="loginform.phonenumber.$error">
+                        <div ng-message="pattern">Invalid phone number. Phone number must start with the country
+                            code. Example: +32471202020
+                        </div>
+                        <div ng-message="invalid_phonenumber">Invalid phone number</div>
+                    </div>
+                </md-input-container>
+                <md-input-container ng-if="vm.twoFAMethod === 'totp'">
+                    <label for="totpcode">2-Factor authentication code</label>
+                    <input ng-model="vm.totpcode" md-maxlength="6" minlength="6"
+                           ng-required="vm.twoFAMethod === 'totp'" id="totpcode"
+                           name="totpcode" autocomplete="off" ng-change="vm.resetValidation('totpcode')">
+                    <div ng-messages="loginform.totpcode.$error" md-auto-hide="false">
+                        <div ng-message="invalid_totpcode">An invalid code was given</div>
+                    </div>
+                </md-input-container>
+                <md-input-container ng-if="vm.twoFAMethod === 'totp'">
+                    <qrcode version="6" error-correction-level="M" size="200"
+                            data="otpauth://totp/ItsYou.online?secret={{::vm.totpsecret}}&issuer=ItsYou.Online">
+                    </qrcode>
+                    <md-tooltip>Scan this image with a 2-factor authentication app on your phone</md-tooltip>
+                </md-input-container>
+                <div layout="row">
+                    <div flex></div>
+                    <md-button ng-click="vm.register()" class="md-raised md-primary" ng-disabled="!vm.signupInfoValid()">
+                        Sign up
+                    </md-button>
+                    <div flex></div>
+                </div>
+            </div>
+        </md-card-content>
+        <md-card-actions ng-if="!vm.externalSite" layout="row" layout-align="space-between center">
             <md-button href="#/forgotpassword">Forgot your password?</md-button>
             <md-button type="submit" class="md-raised md-primary">Log in</md-button>
         </md-card-actions>

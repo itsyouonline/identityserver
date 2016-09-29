@@ -527,6 +527,15 @@ ul.built { list-style: none; margin: 0 auto; width: 730px; }
     display: block;
 }
 
+.forgot-password {
+    color: #838589;
+    text-decoration: none;
+}
+
+.login-header {
+    color: #4d738a;
+}
+
 .badge {
     color: #ffffff;
     background-color: rgba(48, 145, 187, 0.92);
