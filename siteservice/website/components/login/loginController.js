@@ -44,6 +44,8 @@
                     }
                 );
             }
+            window.addEventListener('resize', resizeLogo, false);
+            window.addEventListener('orientationchange', resizeLogo, false);
         }
 
         function renderLogo() {
@@ -58,7 +60,7 @@
                 }
                 var ctx = c.getContext("2d");
                 ctx.clearRect(0, 0, c.width, c.height);
-                ctx.drawImage(img, 0, 0);
+                ctx.drawImage(img, 0, 0, c.width, c.height);
             }
         }
 
@@ -196,6 +198,21 @@
 
         function moveOn() {
             vm.registration2fa = true;
+        }
+
+        function resizeLogo(e) {
+            var formArea = document.getElementById("form-area");
+            var logoArea = document.getElementById("login-logo");
+            var widthToHeight = 25 / 12;
+            var newWidth = formArea.clientWidth - 20;
+            if (newWidth < 500) {
+                logoArea.width = newWidth;
+                logoArea.height = (newWidth) / widthToHeight;
+            } else if (newWidth >= 500 && logoArea.width < 500) {
+                logoArea.width = 500;
+                logoArea.height = 240;
+            }
+            renderLogo();
         }
     }
 })();

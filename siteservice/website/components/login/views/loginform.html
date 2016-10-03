@@ -1,6 +1,9 @@
 <form layout="row" name="loginform" ng-submit="vm.submit()">
     <div flex></div>
-    <md-card class="form-card" flex="100" flex-gt-xs="80" flex-gt-sm="50" flex-gt-md="40" flex-gt-lg="30">
+    <md-card id="form-area" class="form-card" flex="100" flex-gt-xs="80" flex-gt-sm="50" flex-gt-md="40" flex-gt-lg="30">
+        <md-card-avatar ng-if="vm.externalSite">
+            <canvas id="login-logo" height="240px" width="500px" ng-show="vm.logo"></canvas>
+        </md-card-avatar>
         <md-card-title>
             <md-card-title-text ng-if="!vm.externalSite">
                 <span class="md-headline">Login</span>
@@ -11,12 +14,9 @@
             </md-card-title-text>
             <md-card-title-text ng-if="vm.externalSite">
                 <div layout="column">
-                    <div>
-                        <canvas id="login-logo" height="240px" width="500px" ng-show="vm.logo"></canvas>
-                    </div>
-                    <p class="loginprompt">Dear <span ng-bind="vm.externalSite"></span> customer,<br/>
-                        We make use of the independant ItsYou.Online identity management system to highly<br/>
-                        protect the access to your <span ng-bind="vm.externalSite"></span> products. Please login or create your ItsYou.Online<br/>
+                    <p class="loginprompt">Dear <span ng-bind="vm.externalSite"></span> customer,
+                        We make use of the independant ItsYou.Online identity management system to highly
+                        protect the access to your <span ng-bind="vm.externalSite"></span> products. Please login or create your ItsYou.Online
                         account to complete the <span ng-bind="vm.externalSite"></span> onboarding process.
                     </p>
                 </div>
