@@ -1,9 +1,9 @@
 (function () {
     'use strict';
     angular.module('loginApp')
-        .controller('loginController', ['$http', '$window', '$scope', '$rootScope', '$mdUtil', 'configService', 'LoginService', loginController]);
+        .controller('loginController', ['$http', '$window', '$scope', '$rootScope', '$mdUtil', '$interval', 'configService', 'LoginService', loginController]);
 
-    function loginController($http, $window, $scope, $rootScope, $mdUtil, configService, LoginService) {
+    function loginController($http, $window, $scope, $rootScope, $mdUtil, $interval, configService, LoginService) {
         var vm = this;
         configService.getConfig(function (config) {
             vm.totpsecret = config.totpsecret;
@@ -22,6 +22,8 @@
         $rootScope.registrationUrl = '/register' + $window.location.search;
         vm.logo = "";
         vm.twoFAMethod = 'sms';
+        vm.login = "";
+        vm.password = "";
         vm.validateUsername = $mdUtil.debounce(function () {
             $scope.loginform.registerlogin.$setValidity("duplicate_username", true);
             $scope.loginform.registerlogin.$setValidity("invalid_username_format", true);
@@ -33,6 +35,7 @@
             }
         }, 500, true);
 
+        var listener;
         activate();
 
         function activate() {
@@ -43,24 +46,51 @@
                         renderLogo();
                     }
                 );
+                window.addEventListener('resize', resizeLogo, false);
+                window.addEventListener('orientationchange', resizeLogo, false);
             }
-            window.addEventListener('resize', resizeLogo, false);
-            window.addEventListener('orientationchange', resizeLogo, false);
+            autoFillListener();
+            $scope.$on('$destroy', function() {
+                  // Make sure that the interval is destroyed too
+                  stopListening();
+            });
         }
 
         function renderLogo() {
             if (vm.logo !== "") {
                 var img = new Image();
+                img.onload = function() {
+                    var c = document.getElementById("login-logo");
+                    if (!c) {
+                        console.log("aborting logo render - canvas not loaded");
+                        return;
+                    }
+                    var ctx = c.getContext("2d");
+                    ctx.clearRect(0, 0, c.width, c.height);
+                    ctx.drawImage(img, 0, 0, c.width, c.height);
+                }
                 img.src = vm.logo;
 
-                var c = document.getElementById("login-logo");
-                if (!c) {
-                    console.log("aborting logo render - canvas not loaded");
-                    return;
+            }
+        }
+
+        function autoFillListener() {
+            listener = $interval(function() {
+                var login = document.getElementById("login");
+                var password = document.getElementById("password");
+                if (login.value !== vm.login) {
+                    vm.login = login.value;
                 }
-                var ctx = c.getContext("2d");
-                ctx.clearRect(0, 0, c.width, c.height);
-                ctx.drawImage(img, 0, 0, c.width, c.height);
+                if (password.value !== vm.password) {
+                    vm.password = password.value;
+                }
+            }, 100);
+        }
+
+        function stopListening() {
+            if (angular.isDefined(listener)) {
+                $interval.cancel(listener);
+                listener = undefined;
             }
         }
 
@@ -82,7 +112,7 @@
                 },
                 function (response) {
                     if (response.status === 422) {
-                        $scope.loginform.registerpassword.$setValidity("invalidcredentials", false);
+                        $scope.loginform.password.$setValidity("invalidcredentials", false);
                     }
                 }
             );

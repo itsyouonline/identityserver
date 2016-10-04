@@ -24,13 +24,13 @@
         <md-card-content ng-if="!vm.externalSite">
             <div layout="column">
                 <md-input-container>
-                    <label>Login</label>
-                    <input ng-model="vm.login" ng-minlength="2" required name="login" type="text" autofocus>
+                    <label for="login">Login</label>
+                    <input ng-model="vm.login" ng-minlength="2" required name="login" type="text" id="login" autofocus>
                 </md-input-container>
                 <md-input-container>
-                    <label>Password</label>
+                    <label for="password">Password</label>
                     <input ng-model="vm.password" required name="password" type="password"
-                           ng-change="vm.clearValidation()">
+                           ng-change="vm.clearValidation()" id="password">
                     <div ng-messages="loginform.password.$error">
                         <div ng-message="invalidcredentials">Invalid credentials</div>
                     </div>
@@ -46,13 +46,13 @@
                 <div layout="row" layout-align="space-around start">
                     <div class="organization-login-section" layout="column" flex="50">
                         <md-input-container>
-                            <label>Login</label>
-                            <input ng-model="vm.login" ng-minlength="2" required name="login" type="text" autofocus>
+                            <label for="login">Login</label>
+                            <input ng-model="vm.login" ng-minlength="2" required name="login" type="text" id="login" autofocus>
                         </md-input-container>
                         <md-input-container>
-                            <label>Password</label>
+                            <label for="password">Password</label>
                             <input ng-model="vm.password" required name="password" type="password"
-                                ng-change="vm.clearValidation()">
+                                ng-change="vm.clearValidation()" id="password">
                                 <div ng-messages="loginform.password.$error">
                                     <div ng-message="invalidcredentials">Invalid credentials</div>
                                 </div>
@@ -65,7 +65,7 @@
                         <md-input-container>
                             <label for="registerlogin">Username</label>
                             <input ng-model="vm.registerlogin" md-maxlength="30" minlength="2" required name="registerlogin" type="text"
-                                   ng-pattern="/^[a-z0-9 \-_]+$/" ng-minlength="3" ng-change="vm.validateUsername()" id="login">
+                                   ng-pattern="/^[a-z0-9 \-_]+$/" ng-minlength="3" ng-change="vm.validateUsername()" id="registerlogin">
                             <div ng-messages="loginform.registerlogin.$error" md-auto-hide="false">
                                 <div ng-message="duplicate_username">This username has already been taken</div>
                                 <div ng-message="invalid_username_format">Invalid username. Only characters a-z, 0-9,
@@ -86,9 +86,9 @@
                             </div>
                         </md-input-container>
                         <md-input-container>
-                            <label for="password">Password</label>
+                            <label for="registerpassword">Password</label>
                             <input ng-model="vm.registerpassword" required name="registerpassword" type="password" minlength="6"
-                                   ng-minlength="6" id="password">
+                                   ng-minlength="6" id="registerpassword">
                             <div ng-messages="loginform.registerpassword.$error">
                                 <div ng-message="minlength">Password should contain at least 6 characters</div>
                                 <div ng-message="invalid_password">Password should contain at least 6 characters</div>
