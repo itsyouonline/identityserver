@@ -25,7 +25,7 @@
             <div layout="column">
                 <md-input-container>
                     <label for="login">Login</label>
-                    <input ng-model="vm.login" ng-minlength="2" required name="login" type="text" id="login" autofocus>
+                    <input ng-model="vm.login" ng-minlength="2" required name="username" type="text" id="username" autofocus>
                 </md-input-container>
                 <md-input-container>
                     <label for="password">Password</label>
@@ -47,12 +47,12 @@
                     <div class="organization-login-section" layout="column" flex="50">
                         <md-input-container>
                             <label for="login">Login</label>
-                            <input ng-model="vm.login" ng-minlength="2" required name="login" type="text" id="login" autofocus>
+                            <input ng-model="vm.login" ng-minlength="2" required name="username" type="text" id="username" autocomplete="on" tabindex="1" autofocus>
                         </md-input-container>
                         <md-input-container>
                             <label for="password">Password</label>
                             <input ng-model="vm.password" required name="password" type="password"
-                                ng-change="vm.clearValidation()" id="password">
+                                ng-change="vm.clearValidation()" id="password" autocomplete="on" tabindex="2">
                                 <div ng-messages="loginform.password.$error">
                                     <div ng-message="invalidcredentials">Invalid credentials</div>
                                 </div>
@@ -65,7 +65,8 @@
                         <md-input-container>
                             <label for="registerlogin">Username</label>
                             <input ng-model="vm.registerlogin" md-maxlength="30" minlength="2" required name="registerlogin" type="text"
-                                   ng-pattern="/^[a-z0-9 \-_]+$/" ng-minlength="3" ng-change="vm.validateUsername()" id="registerlogin">
+                                   ng-pattern="/^[a-z0-9 \-_]+$/" ng-minlength="3" ng-change="vm.validateUsername()" id="registerlogin" autocomplete="off"
+                                   onfocus="this.removeAttribute('readonly');" readonly>
                             <div ng-messages="loginform.registerlogin.$error" md-auto-hide="false">
                                 <div ng-message="duplicate_username">This username has already been taken</div>
                                 <div ng-message="invalid_username_format">Invalid username. Only characters a-z, 0-9,
@@ -79,7 +80,7 @@
                         <md-input-container>
                             <label for="email">Email</label>
                             <input ng-model="vm.registeremail" required name="registeremail" type="email" id="email"
-                                   ng-pattern="/^([a-zA-Z0-9_\-\.\+]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i">
+                                   ng-pattern="/^([a-zA-Z0-9_\-\.\+]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/i" autocomplete="off">
                             <div ng-messages="loginform.registeremail.$error" md-auto-hide="false">
                                 <div ng-message="email">Invalid email address</div>
                                 <div ng-message="pattern">Invalid email address</div>
@@ -88,7 +89,7 @@
                         <md-input-container>
                             <label for="registerpassword">Password</label>
                             <input ng-model="vm.registerpassword" required name="registerpassword" type="password" minlength="6"
-                                   ng-minlength="6" id="registerpassword">
+                                   ng-minlength="6" id="registerpassword" autocomplete="off">
                             <div ng-messages="loginform.registerpassword.$error">
                                 <div ng-message="minlength">Password should contain at least 6 characters</div>
                                 <div ng-message="invalid_password">Password should contain at least 6 characters</div>
@@ -97,7 +98,7 @@
                         <md-input-container>
                             <label for="passwordvalidation">Password confirmation</label>
                             <input ng-model="vm.passwordvalidation" required name="passwordvalidation"
-                                   password-validation="vm.registerpassword" id="passwordvalidation" type="password">
+                                   password-validation="vm.registerpassword" id="passwordvalidation" type="password" autocomplete="off">
                             <div ng-messages="loginform.passwordvalidation.$error">
                                 <div ng-message="passwordIdentical">The passwords do not match</div>
                             </div>
@@ -105,7 +106,7 @@
                     </div>
                 </div>
                 <div layout="row" layout-align="space-around center">
-                    <md-button class="md-raised md-primary" ng-click="vm.submit()" ng-disabled="!vm.loginInfoValid()">Sign in</md-button>
+                    <md-button class="md-raised md-primary" ng-click="vm.submit()" ng-disabled="!vm.loginInfoValid()" tabindex="3">Sign in</md-button>
                     <md-button class="md-raised md-primary" ng-click="vm.moveOn()" ng-disabled="!vm.basicInfoValid()">Sign up</md-button>
                 </div>
             </div>

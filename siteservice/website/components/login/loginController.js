@@ -76,7 +76,7 @@
 
         function autoFillListener() {
             listener = $interval(function() {
-                var login = document.getElementById("login");
+                var login = document.getElementById("username");
                 var password = document.getElementById("password");
                 if (login.value !== vm.login) {
                     vm.login = login.value;
@@ -202,8 +202,8 @@
         }
 
         function loginInfoValid() {
-            return $scope.loginform.login
-                && $scope.loginform.login.$valid
+            return $scope.loginform.username
+                && $scope.loginform.username.$valid
                 && $scope.loginform.password.$valid;
         }
 
