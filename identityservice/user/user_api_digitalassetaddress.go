@@ -47,11 +47,19 @@ func (api UsersAPI) RegisterNewDigitalAssetAddress(w http.ResponseWriter, r *htt
 		return
 	}
 
+	u, err = userMgr.GetByName(username)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	newWallet := u.DigitalWallet
+
 	// respond with created phone number.
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 
-	json.NewEncoder(w).Encode(currency)
+	json.NewEncoder(w).Encode(newWallet)
 }
 
 // GetDigitalWallet is handler for GET /users/{username}/digitalwallet
