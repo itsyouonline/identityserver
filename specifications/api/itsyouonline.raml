@@ -1201,7 +1201,7 @@ securedBy: [ oauth_2_0 ]
               description: Get the 2FA validity time for this organization
               body:
                 application/json:
-                  type: int
+                  type: integer
             404:
               description: Organization not found
         post:
@@ -1210,16 +1210,16 @@ securedBy: [ oauth_2_0 ]
           description: Update the 2FA validity time for the organization
           body:
             application/json:
-              type: int
-            responses:
-              200:
-                description: Updated successfully
-              401:
-                description: Unauthorized
-              403:
-                description: No permission for this action
-              404:
-                description: Organization not found
+              type: integer
+          responses:
+            200:
+              description: Updated successfully
+            401:
+              description: Unauthorized
+            403:
+              description: No permission for this action
+            404:
+              description: Organization not found
 
     /members:
       put:
