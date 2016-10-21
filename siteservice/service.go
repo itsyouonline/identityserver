@@ -1,6 +1,7 @@
 package siteservice
 
 import (
+	"strconv"
 	"bytes"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -171,6 +172,24 @@ func (service *Service) ErrorPage(w http.ResponseWriter, request *http.Request) 
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
+	// check if the error is a number to prevent XSS attacks
+	errorcode, err := strconv.Atoi(errornumber)
+	if err != nil {
+		log.Info("Error code could not be converted to int")
+		// The error page already loaded so we might as well use it
+		errorcode = 400;
+		errornumber = "400"
+	}
+
+	// check if the error code is within the accepted 4xx client or 5xx server error range
+	if errorcode > 599 || errorcode < 400 {
+		log.Info("Error code out of bounds: ", errorcode)
+		errorcode = 400;
+		errornumber = "400"
+	}
+
+	// now that we confirmed the error code is valid, we can safely use it to display on the error page
 	htmlData = bytes.Replace(htmlData, []byte(`500`), []byte(errornumber), 1)
 	w.Write(htmlData)
 }
