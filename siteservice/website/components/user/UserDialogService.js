@@ -448,7 +448,7 @@
                             vm.user.digitalwallet.splice(vm.user.digitalwallet.indexOf(walletAddress), 1);
                         }
                         else if (data.fx === 'create') {
-                            vm.user.digitalwallet.push(data.data);
+                            vm.user.digitalwallet = data.data
                         }
                         resolve(data);
                     }, function (response) {
