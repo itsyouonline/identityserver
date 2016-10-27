@@ -423,9 +423,12 @@
         }
 
         function digitalWalletAddressDetail(event, walletAddress) {
-            walletAddress = walletAddress || {expire: new Date()};
+            var tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate()+1);
+            walletAddress = walletAddress || {expire: tomorrow};
             var originalWalletAddress = JSON.parse(JSON.stringify(walletAddress));
             walletAddress.expire = ['string'].indexOf(typeof walletAddress.expire) !== -1 ? new Date(walletAddress.expire) : walletAddress.expire;
+            walletAddress.minDate = tomorrow;
             if (walletAddress.expire.getFullYear() < 2000) {
                 walletAddress.expire = new Date();
             }
