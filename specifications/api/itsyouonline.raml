@@ -784,6 +784,8 @@ securedBy: [ oauth_2_0 ]
           body:
             application/json:
                 type: DigitalAssetAddress
+        400:
+          description: Expire is in the past
         409:
            description: Label is already used.
     /{label}:
@@ -803,6 +805,8 @@ securedBy: [ oauth_2_0 ]
           responses:
             201:
                 description: Updated
+            400:
+                description: Expire is in the past
             409:
                 description: The new label is already used
       delete:

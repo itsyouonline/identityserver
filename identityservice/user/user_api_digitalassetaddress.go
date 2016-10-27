@@ -3,6 +3,7 @@ package user
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
@@ -24,6 +25,11 @@ func (api UsersAPI) RegisterNewDigitalAssetAddress(w http.ResponseWriter, r *htt
 	}
 
 	if !isValidLabel(currency.Label) {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	if time.Time(currency.Expire).Before(time.Now()) {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
@@ -116,6 +122,11 @@ func (api UsersAPI) UpdateDigitalAssetAddress(w http.ResponseWriter, r *http.Req
 	}
 
 	if !isValidLabel(newcurrency.Label) {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	if time.Time(newcurrency.Expire).Before(time.Now()) {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}

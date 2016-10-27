@@ -35,7 +35,7 @@
                     <input ng-model="data.address" required type="text" name="address">
                 </md-input-container>
                 <label>Expiry date</label>
-                <md-datepicker ng-model="data.expire" md-placeholder="Expiry date" required></md-datepicker>
+                <md-datepicker ng-model="data.expire" md-placeholder="Expiry date" md-min-date="data.minDate" required></md-datepicker>
             </div>
         </md-dialog-content>
         <md-dialog-actions layout="row" layout-align="space-between center">
