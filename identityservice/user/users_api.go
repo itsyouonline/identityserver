@@ -848,15 +848,22 @@ func (api UsersAPI) DeletePhonenumber(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// check if the phonenumber is unique or if there are duplicates
+	uniqueNumber := isUniquePhonenumber(user, number.Phonenumber, label)
+
 	if err := userMgr.RemovePhone(username, label); err != nil {
 		log.Error("ERROR while saving user:\n", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-	if err := valMgr.RemoveValidatedPhonenumber(username, number.Phonenumber); err != nil {
-		log.Error("ERROR while saving user:\n", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+
+	// only remove the phonenumber from the validatedphonenumber collection if there are no duplicates
+	if uniqueNumber {
+		if err := valMgr.RemoveValidatedPhonenumber(username, number.Phonenumber); err != nil {
+			log.Error("ERROR while saving user:\n", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
 	}
 
 	w.WriteHeader(http.StatusNoContent)
