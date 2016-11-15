@@ -19,6 +19,8 @@ In order to acquire an oauth access token, a client id and client secret are req
 
 In itsyou.online, organizations map to clients in the oauth2 terminology and the organization's globalid is used as the clientid. Client secrets can be created through the UI or through the `organizations/{globalid}/apikeys` api.
 
+![AuthorizationCodeFlow](https://rawgit.com/itsyouonline/identityserver/master/docs/oauth2/AuthorizationCodeFlow.svg)
+
 ### Step 1: Authorization Code Link
 
 First, the user is given an authorization code link that looks like the following:
@@ -57,7 +59,7 @@ When the user clicks the link, they must first log in to the service, to authent
 
 ### Step 3: Application Receives Authorization Code
 
-After the the user authorizes the application some of it's information, itsyou.online redirects the user-agent to the application redirect URI, which was specified during the client registration, along with an authorization code and a state parameter passed in step 1. If the state parameters don't match, the request has been created by a third party and the process should be aborted.
+After the user authorizes the application some of it's information, itsyou.online redirects the user-agent to the application redirect URI, which was specified during the client registration, along with an authorization code and a state parameter passed in step 1. If the state parameters don't match, the request has been created by a third party and the process should be aborted.
 The redirect would look something like this (assuming the application is "petshop.com"):
 
 ```
