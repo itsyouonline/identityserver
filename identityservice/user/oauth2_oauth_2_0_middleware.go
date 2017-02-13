@@ -58,6 +58,7 @@ func (om *Oauth2oauth_2_0Middleware) Handler(next http.Handler) http.Handler {
 				return
 			}
 			if at == nil {
+				log.Debug("Access token %s not found", accessToken)
 				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 				return
 			}
@@ -75,11 +76,15 @@ func (om *Oauth2oauth_2_0Middleware) Handler(next http.Handler) http.Handler {
 		}
 		log.Debugln("Accessing user:", username, "- Accessing clientID:", clientID)
 		if username == "" || clientID == "" {
+			log.Debug("Username or client id is empty")
 			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
 		}
 
 		protectedUsername := mux.Vars(r)["username"]
+		if protectedUsername == "me" {
+			protectedUsername = username
+		}
 
 		for _, scope := range strings.Split(atscopestring, ",") {
 			scope = strings.Trim(scope, " ")
@@ -127,6 +132,7 @@ func (om *Oauth2oauth_2_0Middleware) Handler(next http.Handler) http.Handler {
 
 		context.Set(r, "client_id", clientID)
 		context.Set(r, "availablescopes", strings.Join(authorizedScopes, ","))
+		context.Set(r, "authenticateduser", username) // username from access token
 
 		// check scopes
 		log.Debug("Authorized scopes: ", authorizedScopes)

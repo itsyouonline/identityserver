@@ -186,6 +186,7 @@ func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
 	r.Handle("/users/{username}/emailaddresses/{label}/validate", alice.New(newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.ValidateEmailAddress))).Methods("POST")
 	r.Handle("/users/{username}/github", alice.New(newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.DeleteGithubAccount))).Methods("DELETE")
 	r.Handle("/users/{username}/info", alice.New(newOauth2oauth_2_0Middleware([]string{"user:info", "user:admin"}).Handler).Then(http.HandlerFunc(i.GetUserInformation))).Methods("GET")
+	r.Handle("/users/me/info", alice.New(newOauth2oauth_2_0Middleware([]string{"user:info", "user:admin"}).Handler).Then(http.HandlerFunc(i.GetUserInformation))).Methods("GET")
 	r.Handle("/users/{username}/addresses", alice.New(newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.GetUserAddresses))).Methods("GET")
 	r.Handle("/users/{username}/addresses", alice.New(newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.RegisterNewAddress))).Methods("POST")
 	r.Handle("/users/{username}/addresses/{label}", alice.New(newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.GetUserAddressByLabel))).Methods("GET")

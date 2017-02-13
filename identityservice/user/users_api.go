@@ -404,6 +404,9 @@ func (api UsersAPI) UpdatePassword(w http.ResponseWriter, r *http.Request) {
 // GetUserInformation is the handler for GET /users/{username}/info
 func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
+	if username == "me" {
+		username = context.Get(r, "authenticateduser").(string)
+	}
 	userMgr := user.NewManager(r)
 
 	userobj, err := userMgr.GetByName(username)
