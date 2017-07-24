@@ -2068,112 +2068,112 @@ securedBy: [ oauth_2_0 ]
             404:
               description: The required scope was not found.
 
-/companies:
-  post:
-    displayName: CreateCompany
-    description: Register a new company
-    body:
-      application/json:
-        type: Company
-  get:
-    displayName: GetCompanyList
-    description: Get companies. Authorization limits are applied to requesting user.
-    responses:
-      200:
-        body:
-          application/json:
-            type: Company[]
-  /{globalId}:
-    get:
-      displayName: GetCompany
-      securedBy: [oauth_2_0: { scopes: [ "company:read", "company:admin" ] } ]
-      description: Get organization info
-      responses:
-        200:
-          body:
-            application/json:
-              type: Company
-        401:
-          description: Unauthorized
-        404:
-          description: Not found
-    put:
-      displayName: UpdateCompany
-      securedBy: [oauth_2_0: { scopes: [ "company:admin" ] } ]
-      description: Update existing company. Updating ``globalId`` is not allowed.
-      responses:
-        200:
-          body:
-            application/json:
-              type: Company
-        403:
-          description: Updating globalId is Forbidden!
-    /info:
-      securedBy: [oauth_2_0: { scopes: [ "company:info" ] } ]
-      get:
-        displayName: GetCompanyInfo
-        responses:
-          200:
-            body:
-              application/json:
-                type: companyview
-    /validate:
-      get:
-        queryParameters:
-          token:
-            type: string
+# /companies:
+#   post:
+#     displayName: CreateCompany
+#     description: Register a new company
+#     body:
+#       application/json:
+#         type: Company
+#   get:
+#     displayName: GetCompanyList
+#     description: Get companies. Authorization limits are applied to requesting user.
+#     responses:
+#       200:
+#         body:
+#           application/json:
+#             type: Company[]
+#   /{globalId}:
+#     get:
+#       displayName: GetCompany
+#       securedBy: [oauth_2_0: { scopes: [ "company:read", "company:admin" ] } ]
+#       description: Get organization info
+#       responses:
+#         200:
+#           body:
+#             application/json:
+#               type: Company
+#         401:
+#           description: Unauthorized
+#         404:
+#           description: Not found
+#     put:
+#       displayName: UpdateCompany
+#       securedBy: [oauth_2_0: { scopes: [ "company:admin" ] } ]
+#       description: Update existing company. Updating ``globalId`` is not allowed.
+#       responses:
+#         200:
+#           body:
+#             application/json:
+#               type: Company
+#         403:
+#           description: Updating globalId is Forbidden!
+#     /info:
+#       securedBy: [oauth_2_0: { scopes: [ "company:info" ] } ]
+#       get:
+#         displayName: GetCompanyInfo
+#         responses:
+#           200:
+#             body:
+#               application/json:
+#                 type: companyview
+#     /validate:
+#       get:
+#         queryParameters:
+#           token:
+#             type: string
+#
+#     /contracts:
+#       get:
+#         displayName: GetCompanyContracts
+#         securedBy: [oauth_2_0: { scopes: [ "company:admin", "company:contracts:read" ] } ]
+#         description: Get the contracts where the organization is 1 of the parties. Order descending by date.
+#         queryParameters:
+#           includeExpired:
+#             type: boolean
+#             description: Include the expired contracts, by default only the active contracts are returned.
+#             required: false
+#           start:
+#             type: integer
+#             description: Start offset, useful for paging. Default is `0`.
+#             required: false
+#           max:
+#             type: integer
+#             description: Max page size, useful for paging. Default is `50`.
+#             required: false
+#             maximum: 250
+#       post:
+#           displayName: CreateCompanyContract
+#           securedBy: [oauth_2_0: { scopes: [ "company:admin" ] } ]
+#           description: Create a new contract.
+#           body:
+#             application/json:
+#               type: Contract
+#           responses:
+#             201:
+#               body:
+#                 application/json:
+#                   type: Contract
+#             401:
+#               description: Unauthorized
 
-    /contracts:
-      get:
-        displayName: GetCompanyContracts
-        securedBy: [oauth_2_0: { scopes: [ "company:admin", "company:contracts:read" ] } ]
-        description: Get the contracts where the organization is 1 of the parties. Order descending by date.
-        queryParameters:
-          includeExpired:
-            type: boolean
-            description: Include the expired contracts, by default only the active contracts are returned.
-            required: false
-          start:
-            type: integer
-            description: Start offset, useful for paging. Default is `0`.
-            required: false
-          max:
-            type: integer
-            description: Max page size, useful for paging. Default is `50`.
-            required: false
-            maximum: 250
-      post:
-          displayName: CreateCompanyContract
-          securedBy: [oauth_2_0: { scopes: [ "company:admin" ] } ]
-          description: Create a new contract.
-          body:
-            application/json:
-              type: Contract
-          responses:
-            201:
-              body:
-                application/json:
-                  type: Contract
-            401:
-              description: Unauthorized
-
-/contracts:
-  /{contractId}:
-    get:
-      displayName: GetContract
-      securedBy: [oauth_2_0: { scopes: [ "contract:read" ] } ]
-      description: Get a contract
-      responses:
-        200:
-          body:
-            application/json:
-              type: Contract
-
-    /signatures:
-      post:
-        displayName: SignContract
-        securedBy: [oauth_2_0: { scopes: [ "contract:participant" ] } ]
-        description: Sign a contract
-        body:
-          application/json:
-            type: Signature
+# /contracts:
+#   /{contractId}:
+#     get:
+#       displayName: GetContract
+#       securedBy: [oauth_2_0: { scopes: [ "contract:read" ] } ]
+#       description: Get a contract
+#       responses:
+#         200:
+#           body:
+#             application/json:
+#               type: Contract
+#
+#     /signatures:
+#       post:
+#         displayName: SignContract
+#         securedBy: [oauth_2_0: { scopes: [ "contract:participant" ] } ]
+#         description: Sign a contract
+#         body:
+#           application/json:
+#             type: Signature
