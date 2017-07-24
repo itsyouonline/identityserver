@@ -1410,20 +1410,6 @@ securedBy: [ oauth_2_0 ]
           body:
             application/json:
               type: Organization
-    put:
-      displayName: UpdateOrganization
-      securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
-      description: Update organization info
-      body:
-        application/json:
-          type: Organization
-      responses:
-        200:
-          body:
-            application/json:
-              type: Organization
-        404:
-          description: Not found
     post:
       securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
       displayName: CreateNewSubOrganization

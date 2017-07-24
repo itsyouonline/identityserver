@@ -1,7 +1,6 @@
 package organization
 
 import (
-	"errors"
 	"net/http"
 	"strings"
 
@@ -659,14 +658,6 @@ func (m *LogoManager) Create(organization *Organization) error {
 		return db.ErrDuplicate
 	}
 	return err
-}
-
-// Save an organization.
-func (m *Manager) Save(organization *Organization) error {
-	// TODO: Validation!
-
-	// TODO: Save
-	return errors.New("Save is not implemented yet")
 }
 
 // SaveMember save or update member

@@ -252,49 +252,6 @@ func (api OrganizationsAPI) GetOrganization(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(org)
 }
 
-// UpdateOrganization Updates organization info
-// It is handler for PUT /organizations/{globalid}
-func (api OrganizationsAPI) UpdateOrganization(w http.ResponseWriter, r *http.Request) {
-	globalid := mux.Vars(r)["globalid"]
-
-	var org organization.Organization
-
-	if err := json.NewDecoder(r.Body).Decode(&org); err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
-
-	orgMgr := organization.NewManager(r)
-
-	oldOrg, err := orgMgr.GetByName(globalid)
-	if err != nil {
-		if err == mgo.ErrNotFound {
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		} else {
-			handleServerError(w, "getting organization", err)
-		}
-		return
-	}
-
-	if org.Globalid != globalid {
-		http.Error(w, "Changing globalid or id is Forbidden!", http.StatusForbidden)
-		return
-	}
-
-	// Update only certain fields
-	oldOrg.PublicKeys = org.PublicKeys
-	oldOrg.DNS = org.DNS
-
-	if err := orgMgr.Save(oldOrg); err != nil {
-		log.Error("Error while saving organization: ", err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(oldOrg)
-}
-
 func (api OrganizationsAPI) inviteUser(w http.ResponseWriter, r *http.Request, role string) {
 	globalID := mux.Vars(r)["globalid"]
 	invitenotification := r.FormValue("invitenotification")
