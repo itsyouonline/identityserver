@@ -31,7 +31,7 @@
                 <md-input-container flex="80">
                     <label translate='email_address'>Email address</label>
                     <input ng-model="data.emailaddress" required type="email" name="emailaddress" md-maxlength="80"
-                           ng-pattern="/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/">
+                           ng-pattern="/[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/">
                     <div ng-messages="dataform.emailaddress.$error">
                         <div ng-message="email" translate="invalid_email_address">Invalid email address</div>
                         <div ng-message="md-maxlength" translate='emailmaxlength'>The email address cannot be longer than 80
