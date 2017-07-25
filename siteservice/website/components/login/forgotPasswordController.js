@@ -22,6 +22,9 @@
                         case 404:
                             $scope.form.login.$setValidity("invalid", false);
                             break;
+                        case 412:
+                            $scope.form.login.$setValidity("no_validated_email", false);
+                            break;
                     }
                 }
             );

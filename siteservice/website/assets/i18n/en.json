@@ -38,6 +38,7 @@
                 "user": "Username or email",
                 "userminlength": "At least 2 characters are required",
                 "userinvalid": "A user with this username or email address could not be found",
+                "novalidatedemail": "A user with this username has no validated email address",
                 "sendrecoverymail": "Send recovery email",
                 "back": "Back to login"
             },

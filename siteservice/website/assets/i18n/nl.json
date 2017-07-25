@@ -38,6 +38,7 @@
                 "user": "Gebruikersnaam of email",
                 "userminlength": "Er zijn minstens 2 tekens nodig",
                 "userinvalid": "Een gebruiker met deze gebruikersnaam of email is niet gevonden",
+                "novalidatedemail": "Een gebruiker met deze gebruikersnaam heeft geen gevalideerd email adres",
                 "sendrecoverymail": "Stuur herstel email",
                 "back": "Terug naar inloggen"
             },

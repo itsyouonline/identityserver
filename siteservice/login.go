@@ -910,14 +910,15 @@ func (service *Service) ForgotPassword(w http.ResponseWriter, request *http.Requ
 		emails = []string{validatedemail.EmailAddress}
 	} else {
 		usr, err := userMgr.GetByName(values.Login)
-		if err != nil && err != mgo.ErrNotFound {
+		if err != nil && err != mgo.ErrNotFound || usr.Username == "" {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
+
 		username = usr.Username
 		validatedemails, err := valMgr.GetByUsernameValidatedEmailAddress(username)
 		if validatedemails == nil || len(validatedemails) == 0 {
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			http.Error(w, http.StatusText(http.StatusPreconditionFailed), http.StatusPreconditionFailed)
 			return
 		}
 		if err != nil {
