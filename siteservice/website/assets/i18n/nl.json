@@ -254,6 +254,8 @@
                 "invalidpassword": "Wachtwoord moet minstens 6 tekens bevatten.",
                 "confirmpassword": "Wachtwoord bevestigen",
                 "passwordmatch": "De wachtwoorden komen niet overeen",
+                "baseinfo": "Basis informatie",
+                "2fa": "2-Factor auth",
                 "2famethod": "2-Factor authenticatie methode",
                 "sms": "SMS",
                 "app": "Authenticatie-toepassing",

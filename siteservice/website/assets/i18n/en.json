@@ -253,6 +253,8 @@
                 "invalidpassword": "Password should contain at least 6 characters.",
                 "confirmpassword": "Password confirmation",
                 "passwordmatch": "The passwords do not match",
+                "baseinfo": "Basic info",
+                "2fa": "2-factor auth",
                 "2famethod": "2-Factor authentication method",
                 "sms": "SMS",
                 "app": "Authenticator application",
