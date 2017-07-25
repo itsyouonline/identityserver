@@ -143,11 +143,17 @@ func (service *Service) RefreshJWTHandler(w http.ResponseWriter, r *http.Request
 	// Take the scope from the stored refreshtoken, it might be that certain authorizations are revoked
 	// Also validate a possible memberof:clientId scope
 	orgMgr := organization.NewManager(r)
-	username := originalToken.Claims["username"].(string)
 	clientID := originalToken.Claims["azp"].(string)
-	scope, err := verifyScopes(strings.Join(rt.Scopes, ","), username, clientID, orgMgr)
-	if err != nil {
-		return
+	username, isUser := originalToken.Claims["username"].(string)
+	// if a username is set verify the possible membership scopes.
+	scope := strings.Join(rt.Scopes, ",")
+	if isUser {
+		scope, err = verifyScopes(scope, username, clientID, orgMgr)
+		if err != nil {
+			log.Error("Error while verifying scopes for user jwt: ", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
 	}
 	originalToken.Claims["scope"] = strings.Split(scope, ",")
 
