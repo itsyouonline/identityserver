@@ -166,6 +166,8 @@
                 case 'twoFAMethod':
                     if ($scope.signupform.totpcode) {
                         $scope.signupform.totpcode.$setValidity("totpcode", true);
+                    }
+                    if ($scope.signupform.phonenumber) {
                         $scope.signupform.phonenumber.$setValidity("invalid_phonenumber", true);
                         $scope.signupform.phonenumber.$setValidity("pattern", true);
                     }
