@@ -3,7 +3,6 @@ package user
 import (
 	"errors"
 	"regexp"
-	"strings"
 
 	"github.com/itsyouonline/identityserver/db"
 	"gopkg.in/mgo.v2/bson"
@@ -128,7 +127,8 @@ func ValidatePhoneNumber(phoneNumber string) bool {
 }
 
 func ValidateEmailAddress(emailAddress string) bool {
-	return strings.Contains(emailAddress, "@") && len(emailAddress) <= 100
+	regex := regexp.MustCompile("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
+	return regex.MatchString(emailAddress) && len(emailAddress) <= 100
 }
 
 func (p PublicKey) Validate() bool {
@@ -136,7 +136,7 @@ func (p PublicKey) Validate() bool {
 }
 
 func (e EmailAddress) Validate() bool {
+
 	return validator.Validate(e) == nil &&
-		regexp.MustCompile(`^[a-zA-Z\d\-_\s]{2,50}$`).MatchString(e.Label) &&
-		len(e.EmailAddress) < 100
+		regexp.MustCompile(`^[a-zA-Z\d\-_\s]{2,50}$`).MatchString(e.Label) && ValidateEmailAddress(e.EmailAddress)
 }

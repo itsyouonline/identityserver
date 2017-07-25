@@ -141,6 +141,9 @@
                                 case 'invalid_username_format':
                                     $scope.signupform.login.$setValidity(err, false);
                                     break;
+                                case 'invalid_email_format':
+                                    $scope.signupform.email.$setValidity('email', false);
+                                    break
                                 default:
                                     console.error('Unconfigured error:', response.data.error);
                             }

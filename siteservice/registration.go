@@ -293,6 +293,15 @@ func (service *Service) ProcessRegistrationForm(w http.ResponseWriter, request *
 		json.NewEncoder(w).Encode(response)
 		return
 	}
+
+	valid = user.ValidateEmailAddress(values.Email)
+	if !valid {
+		response.Error = "invalid_email_format"
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
 	newuser := &user.User{
 		Username:       values.Login,
 		EmailAddresses: []user.EmailAddress{{Label: "main", EmailAddress: values.Email}},
