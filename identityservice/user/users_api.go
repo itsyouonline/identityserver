@@ -142,6 +142,11 @@ func (api UsersAPI) RegisterNewEmailAddress(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	if !body.Validate() {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
 	userMgr := user.NewManager(r)
 	u, err := userMgr.GetByName(username)
 	if handleServerError(w, "getting user by name", err) {
