@@ -19,6 +19,7 @@ import (
 	contractdb "github.com/itsyouonline/identityserver/db/contract"
 	organizationDb "github.com/itsyouonline/identityserver/db/organization"
 	"github.com/itsyouonline/identityserver/db/registry"
+	seeDb "github.com/itsyouonline/identityserver/db/see"
 	"github.com/itsyouonline/identityserver/db/user"
 	"github.com/itsyouonline/identityserver/db/user/apikey"
 	validationdb "github.com/itsyouonline/identityserver/db/validation"
@@ -1570,6 +1571,60 @@ func (api UsersAPI) DeleteAuthorization(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (api UsersAPI) GetSeeObjects(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+
+	seeMgr := seeDb.NewManager(r)
+	seeObjects, err := seeMgr.GetSeeObjects(username)
+
+	if err != nil {
+		log.Error("GetSeeObjects", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(seeObjects)
+}
+
+func (api UsersAPI) GetSeeObjectsByOrganization(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	organizationGlobalID := mux.Vars(r)["globalid"]
+
+	seeMgr := seeDb.NewManager(r)
+	seeObjects, err := seeMgr.GetSeeObjectsByOrganization(username, organizationGlobalID)
+	if err != nil {
+		log.Error("GetSeeObjectsByOrganization", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(seeObjects)
+}
+
+func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	organizationGlobalID := mux.Vars(r)["globalid"]
+	uniqueID := mux.Vars(r)["uniqueid"]
+
+	seeMgr := seeDb.NewManager(r)
+	seeObject, err := seeMgr.GetSeeObject(username, organizationGlobalID, uniqueID)
+
+	if db.IsNotFound(err) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		log.Error("GetSeeObject", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(seeObject)
 }
 
 func (api UsersAPI) AddAPIKey(w http.ResponseWriter, r *http.Request) {

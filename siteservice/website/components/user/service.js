@@ -117,6 +117,9 @@
             getAuthorizations: getAuthorizations,
             saveAuthorization: saveAuthorization,
             deleteAuthorization: deleteAuthorization,
+            getSeeObjects: getSeeObjects,
+            getSeeObjectsByOrganization: getSeeObjectsByOrganization,
+            getSeeObject: getSeeObject,
             registerNewBankAccount: registerNewBankAccount,
             updateBankAccount: updateBankAccount,
             deleteBankAccount: deleteBankAccount,
@@ -247,7 +250,7 @@
         }
 
         function getAuthorizations(username) {
-            var url = apiURL + '/' + encodeURIComponent(username) + '/authorizations/';
+            var url = apiURL + '/' + encodeURIComponent(username) + '/authorizations';
             return genericHttpCall($http.get, url);
         }
 
@@ -264,6 +267,21 @@
         function deleteAuthorization(authorization) {
             var url = apiURL + '/' + encodeURIComponent(authorization.username) + '/authorizations/' + encodeURIComponent(authorization.grantedTo);
             return genericHttpCall($http.delete, url);
+        }
+
+        function getSeeObjects(username) {
+            var url = apiURL + '/' + encodeURIComponent(username) + '/see';
+            return genericHttpCall($http.get, url);
+        }
+
+        function getSeeObjectsByOrganization(username, organization) {
+            var url = apiURL + '/' + encodeURIComponent(username) + '/see/' + encodeURIComponent(organization);
+            return genericHttpCall($http.get, url);
+        }
+
+        function getSeeObject(username, organization, uniqueid) {
+            var url = apiURL + '/' + encodeURIComponent(username) + '/see/' + encodeURIComponent(organization) + '/' + encodeURIComponent(uniqueid);
+            return genericHttpCall($http.get, url);
         }
 
         function deleteFacebookAccount(username) {

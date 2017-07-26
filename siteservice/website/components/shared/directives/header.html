@@ -60,6 +60,9 @@
                                     <md-button href="#/authorizations" ng-click="$mdClose.hide()"><span translate='shared.directives.header.sharedinfo'>Shared information</span></md-button>
                                 </md-menu-item>
                                 <md-menu-item class="header-menu-item">
+                                    <md-button href="#/see" ng-click="$mdClose.hide()"><span translate='shared.directives.header.see'>See</span></md-button>
+                                </md-menu-item>
+                                <md-menu-item class="header-menu-item">
                                     <md-button href="logout" ng-click="$mdClose.hide()"><span translate='shared.directives.header.signout'>Signout</span></md-button>
                                 </md-menu-item>
                             </md-menu-content>
@@ -120,6 +123,9 @@
                     </md-menu-item>
                     <md-menu-item class="header-pushmenu-item">
                         <md-button class="push-menu-button" ng-click='pushClick("/authorizations")'><span translate='shared.directives.header.sharedinfo'>Shared information</span></md-button>
+                    </md-menu-item>
+                    <md-menu-item class="header-pushmenu-item">
+                        <md-button class="push-menu-button" ng-click='pushClick("/see")'><span translate='shared.directives.header.see'>See</span></md-button>
                     </md-menu-item>
                     <md-menu-item class="header-pushmenu-item">
                         <md-button class="push-menu-button" ng-click='pushClick("/settings")'><span translate='user.views.settings.settings'>Settings</span></md-button>

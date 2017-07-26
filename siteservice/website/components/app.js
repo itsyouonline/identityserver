@@ -73,6 +73,22 @@
                     pageTitle: 'Authorizations'
                 }
             })
+            .when('/see', {
+                templateUrl: 'components/user/views/see.html',
+                controller: 'UserHomeController',
+                controllerAs: 'vm',
+                data: {
+                    pageTitle: 'See'
+                }
+            })
+            .when('/see/:globalid/:uniqueid/detail', {
+                templateUrl: 'components/user/views/seeDetail.html',
+                controller: 'SeeDetailController',
+                controllerAs: 'vm',
+                data: {
+                    pageTitle: 'See detail'
+                }
+            })
             .when('/settings', {
                 templateUrl: 'components/user/views/settings.html',
                 controller: 'UserHomeController',
