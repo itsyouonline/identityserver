@@ -64,23 +64,21 @@ func (m *Manager) GetSeeObjectsByOrganization(username string, globalID string) 
 }
 
 // GetSeeObject returns a see object
-func (m *Manager) GetSeeObject(username string, globalID string, uniqueID string) (seeObject See, err error) {
+func (m *Manager) GetSeeObject(username string, globalID string, uniqueID string) (seeObject *See, err error) {
 	qry := bson.M{"username": username, "globalid": globalID, "uniqueid": uniqueID}
 	err = m.collection.Find(qry).One(&seeObject)
 	return
 }
 
-// SaveSeeObject saves a new or updates an existing
-func (m *Manager) SaveSeeObject(see See) error {
+// Create an object
+func (m *Manager) Create(see *See) error {
+	see.ID = bson.NewObjectId()
+	err := m.collection.Insert(see)
+	return err
+}
 
-	if see.ID == "" {
-		// New Doc!
-		see.ID = bson.NewObjectId()
-		err := m.collection.Insert(see)
-		return err
-	}
-
-	_, err := m.collection.UpsertId(see.ID, see)
-
+// Update an object
+func (m *Manager) Update(see *See) error {
+	_, err := m.collection.Upsert(bson.M{"username": see.Username, "globalid": see.Globalid, "uniqueid": see.Uniqueid}, see)
 	return err
 }

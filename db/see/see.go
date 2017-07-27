@@ -3,6 +3,7 @@ package see
 import (
 	"github.com/itsyouonline/identityserver/db"
 	"gopkg.in/mgo.v2/bson"
+	validator "gopkg.in/validator.v2"
 )
 
 type See struct {
@@ -20,4 +21,8 @@ type See struct {
 	StartDate                db.DateTime   `json:"start_date"`
 	EndDate                  db.DateTime   `json:"end_date"`
 	Signature                string        `json:"signature"`
+}
+
+func (s See) Validate() bool {
+	return validator.Validate(s) == nil
 }

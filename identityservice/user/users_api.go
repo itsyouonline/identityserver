@@ -1580,7 +1580,7 @@ func (api UsersAPI) GetSeeObjects(w http.ResponseWriter, r *http.Request) {
 	seeObjects, err := seeMgr.GetSeeObjects(username)
 
 	if err != nil {
-		log.Error("GetSeeObjects", err)
+		log.Error("Failed to get see objects", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -1596,7 +1596,7 @@ func (api UsersAPI) GetSeeObjectsByOrganization(w http.ResponseWriter, r *http.R
 	seeMgr := seeDb.NewManager(r)
 	seeObjects, err := seeMgr.GetSeeObjectsByOrganization(username, organizationGlobalID)
 	if err != nil {
-		log.Error("GetSeeObjectsByOrganization", err)
+		log.Error("Failed to get see objects by organization", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -1610,20 +1610,135 @@ func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 	organizationGlobalID := mux.Vars(r)["globalid"]
 	uniqueID := mux.Vars(r)["uniqueid"]
 
+	requestingClient, validClient := context.Get(r, "client_id").(string)
+	if !validClient {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if requestingClient == "itsyouonline" {
+		requestingClient = organizationGlobalID
+	}
+
 	seeMgr := seeDb.NewManager(r)
-	seeObject, err := seeMgr.GetSeeObject(username, organizationGlobalID, uniqueID)
+	seeObject, err := seeMgr.GetSeeObject(username, requestingClient, uniqueID)
 
 	if db.IsNotFound(err) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 	if err != nil {
-		log.Error("GetSeeObject", err)
+		log.Error("Failed to get see object", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-type", "application/json")
+	json.NewEncoder(w).Encode(seeObject)
+}
+
+func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	organizationGlobalID := mux.Vars(r)["globalid"]
+	uniqueID := mux.Vars(r)["uniqueid"]
+
+	requestingClient, validClient := context.Get(r, "client_id").(string)
+	if !validClient {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if requestingClient == "itsyouonline" {
+		requestingClient = organizationGlobalID
+	}
+
+	see := seeDb.See{}
+	if err := json.NewDecoder(r.Body).Decode(&see); err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	see.Username = username
+	see.Globalid = requestingClient
+	see.Uniqueid = uniqueID
+
+	if !see.Validate() {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	seeMgr := seeDb.NewManager(r)
+	err := seeMgr.Create(&see)
+
+	if handleServerError(w, "Create see object", err) {
+		return
+	}
+
+	seeObject, err := seeMgr.GetSeeObject(username, requestingClient, uniqueID)
+
+	if db.IsNotFound(err) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		log.Error("Failed to get see object", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(seeObject)
+}
+
+func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	organizationGlobalID := mux.Vars(r)["globalid"]
+	uniqueID := mux.Vars(r)["uniqueid"]
+
+	requestingClient, validClient := context.Get(r, "client_id").(string)
+	if !validClient {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if requestingClient == "itsyouonline" {
+		requestingClient = organizationGlobalID
+	}
+
+	see := seeDb.See{}
+	if err := json.NewDecoder(r.Body).Decode(&see); err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	see.Username = username
+	see.Globalid = requestingClient
+	see.Uniqueid = uniqueID
+
+	if !see.Validate() {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	seeMgr := seeDb.NewManager(r)
+	err := seeMgr.Update(&see)
+
+	if handleServerError(w, "Create see object", err) {
+		return
+	}
+
+	seeObject, err := seeMgr.GetSeeObject(username, requestingClient, uniqueID)
+
+	if db.IsNotFound(err) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		log.Error("Failed to get see object", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(seeObject)
 }
 
