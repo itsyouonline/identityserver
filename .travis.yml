@@ -3,7 +3,7 @@ matrix:
     - language: python
       sudo: true
       dist: trusty
-      python: 2.7
+      python: 3.5
       before_script:
         - sudo apt install python-nose
         - sudo apt-get install build-essential libssl-dev libffi-dev python-dev
