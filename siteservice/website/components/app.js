@@ -47,18 +47,30 @@
         .state('organization.people', {
             url: '/people',
             templateUrl: 'components/organization/views/detailTabsPeople.html',
+            params: {
+                pageTitle: 'Organization people'
+            }
         })
         .state('organization.structure', {
             url: '/structure',
             templateUrl: 'components/organization/views/detailTabsStructure.html',
+            params: {
+                pageTitle: 'Organization stucture'
+            }
         })
         .state('organization.see', {
             url: '/see',
             templateUrl: 'components/organization/views/detailTabsSee.html',
+            params: {
+                pageTitle: 'Organization see'
+            }
         })
         .state('organization.settings', {
             url: '/settings',
             templateUrl: 'components/organization/views/detailTabsSettings.html',
+            params: {
+                pageTitle: 'Organization settings'
+            }
         })
         .state('profile', {
             url: '/profile',

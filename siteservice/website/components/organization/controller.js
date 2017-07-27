@@ -21,6 +21,7 @@
         vm.childOrganizationNames = [];
         vm.logo = "";
         vm.includemap = {};
+        vm.seeObjects = [];
         vm.loading = {
             invitations: false
         };
@@ -58,6 +59,7 @@
         vm.includeChanged = includeChanged;
         vm.showMoveSuborganizationDialog = showMoveSuborganizationDialog;
         vm.listOrganizatonTree = listOrganizatonTree;
+        vm.loadSeeObjects = loadSeeObjects;
 
         activate();
 
@@ -189,6 +191,18 @@
                 }
                 listOrganizatonTree(child);
             });
+        }
+
+        function loadSeeObjects() {
+          if (vm.seeObjects.length) {
+              return;
+          }
+          UserService.getSeeObjectsByOrganization($rootScope.user, vm.organization.globalid)
+              .then(
+                  function (data) {
+                      vm.seeObjects = data;
+                  }
+              );
         }
 
         function showInvitationDialog(ev) {

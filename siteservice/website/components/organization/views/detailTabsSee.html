@@ -1,1 +1,33 @@
-<h2>todo ruben</h2>
+<br />
+<div>
+    <p ng-show="vm.seeObjects.length == 0">No SEE</p>
+
+    <md-list>
+        <div ng-repeat="seeObject in vm.seeObjects">
+            <div flex="100" ng-click="vm.showSeeObject($event, seeObject)">
+                <div layout="row" layout-align="space-between none" class="border-top-light">
+                    <div>
+                        <md-list-item class="md-2-line">
+                            <div class="md-list-item-text">
+                                <span>{{seeObject.category }}</span>
+                                <p>{{seeObject.creation_date }}</p>
+                            </div>
+                        </md-list-item>
+                    </div>
+                    <div>
+                        <md-list-item class="md-2-line">
+                            <div class="md-list-item-text">
+                                <p>Start: {{seeObject.start_date }}</p>
+                                <p>End: {{seeObject.end_date }}</p>
+                                <md-button class="md-primary md-secondary">
+                                    <span>Details</span>
+                                </md-button>
+                            </div>
+                        </md-list-item>
+                    </div>
+                </div>
+                <div ng-if="seeObject.markdown_short_description" btf-markdown="seeObject.markdown_short_description" style="padding: 0 16px;"></div>
+            </div>
+        </div>
+    </md-list>
+</div>

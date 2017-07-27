@@ -45,15 +45,8 @@ func NewManager(r *http.Request) *Manager {
 
 // GetSeeObjects returns all see object for a specific username
 func (m *Manager) GetSeeObjects(username string) (seeObjects []See, err error) {
-	var see See
-	see.Globalid = "test"
-	see.Username = "ruben_1"
-	see.Uniqueid = "test"
-	see.Link = "https://github.com/itsyouonline/identityserver/issues/547"
-	m.SaveSeeObject(see)
-
 	qry := bson.M{"username": username}
-	err = m.collection.Find(qry).All(&seeObjects)
+	err = m.collection.Find(qry).Sort("-creationdate").All(&seeObjects)
 	if seeObjects == nil {
 		seeObjects = []See{}
 	}
@@ -63,7 +56,7 @@ func (m *Manager) GetSeeObjects(username string) (seeObjects []See, err error) {
 // GetSeeObjectsByOrganization returns all see object for a specific username / organization
 func (m *Manager) GetSeeObjectsByOrganization(username string, globalID string) (seeObjects []See, err error) {
 	qry := bson.M{"username": username, "globalid": globalID}
-	err = m.collection.Find(qry).All(&seeObjects)
+	err = m.collection.Find(qry).Sort("-creationdate").All(&seeObjects)
 	if seeObjects == nil {
 		seeObjects = []See{}
 	}

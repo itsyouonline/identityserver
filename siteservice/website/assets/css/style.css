@@ -68,6 +68,10 @@ md-dialog md-dialog-actions {
 .text_align_center {
     text-align: center
 }
+
+.border-top-light {
+  border-top: 1px solid #eff3f6;
+}
 /*= HEADER & NAVIGATION
 --------------------------------------------------------*/
 #header {
