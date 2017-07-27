@@ -2,12 +2,12 @@ describe('Organization Invite Controller test', function () {
 
     beforeEach(module('loginApp'));
 
-    beforeEach(inject(function ($http, $window, $stateParams, $mdDialog, $controller) {
+    beforeEach(inject(function ($http, $window, $routeParams, $mdDialog, $controller) {
 
         organizationInviteController = $controller('organizationInviteController', {
             $http: $http,
             $window: $window,
-            $stateParams: $stateParams,
+            $routeParams: $routeParams,
             $mdDialog: $mdDialog
         });
     }));

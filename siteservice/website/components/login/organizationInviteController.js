@@ -1,11 +1,11 @@
 (function () {
     'use strict';
     angular.module('loginApp')
-        .controller('organizationInviteController', ['$http', '$window', '$stateParams', '$mdDialog', organizationInviteController]);
+        .controller('organizationInviteController', ['$http', '$window', '$routeParams', '$mdDialog', organizationInviteController]);
 
-    function organizationInviteController($http, $window, $stateParams, $mdDialog) {
+    function organizationInviteController($http, $window, $routeParams, $mdDialog) {
         var vm = this;
-        var code = encodeURIComponent($stateParams.code);
+        var code = encodeURIComponent($routeParams.code);
         vm.loginUrl = '?invitecode=' + code + '#/';
         vm.registerUrl = '/register?invitecode=' + code + '#/';
 
