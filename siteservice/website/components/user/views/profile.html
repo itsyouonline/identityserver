@@ -122,7 +122,7 @@
                       <img ng-src="{{vm.user.facebook.picture}}" class="md-avatar"
                            alt="{{vm.user.facebook.name}}" ng-if="vm.user.facebook.id"/>
                       <div class="md-list-item-text">
-                          <h3 ng-bind="vm.user.facebook.name"></h3>
+                          <h3 class="text_align_center" ng-bind="vm.user.facebook.name"></h3>
                       </div>
                   </md-list-item>
                   <p ng-if="!vm.user.facebook.id" translate='user.views.profile.nofacebook'>You haven't added your Facebook account yet.</p>
@@ -162,7 +162,7 @@
                                 ng-click="vm.showAddressDetailDialog($event, address)"
                                 aria-label="address {{ ::address.label }}">
                       <div class="md-list-item-text">
-                          <h3>
+                          <h3 class="text_align_center">
                               <span ng-bind="address.street"></span>
                               <span ng-bind="address.nr"></span>
                           </h3>
@@ -212,7 +212,7 @@
                                 ng-click="vm.showDigitalWalletAddressDetail($event, address)"
                                 aria-label="Digital wallet address {{ address.label }}">
                       <div class="md-list-item-text">
-                          <h3 ng-bind="address.address"></h3>
+                          <h3 class="text_align_center" ng-bind="address.address"></h3>
                           <h4>
                               <span ng-if='!address.noexpiration' translate='user.views.profile.expiringwallet'
                                   translate-value-expirydate="{{address.expire | date:'dd/MM/yyyy'}}"

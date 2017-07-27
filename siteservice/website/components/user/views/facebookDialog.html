@@ -2,7 +2,7 @@
     <form name="dataform" autocomplete="off">
         <md-toolbar>
             <div class="md-toolbar-tools">
-                <h2 translate="facebook_account">Facebook account</h2>
+                <h2 class="white text_align_center" translate="facebook_account">Facebook account</h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="cancel()">
                     <md-icon md-svg-src="assets/img/ic_close_24px.svg" aria-label translate-attr="{ 'aria-label': 'closedialog' }"></md-icon>
@@ -18,7 +18,7 @@
                             <img ng-src="{{::data.picture}}" class="md-avatar"
                                  alt="{{::data.name}}"/>
                             <div class="md-list-item-text" layout="column">
-                                <h3><a ng-href="{{ ::data.link }}" ng-bind="data.name" target="_blank"></a></h3>
+                                <h3 class="text_align_center"><a ng-href="{{ ::data.link }}" ng-bind="data.name" target="_blank"></a></h3>
                             </div>
                         </md-list-item>
                     </md-list>

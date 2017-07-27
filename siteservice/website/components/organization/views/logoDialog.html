@@ -2,7 +2,7 @@
     <form name="form">
       <md-toolbar>
           <div class="md-toolbar-tools">
-              <h2><span ng-if="!logo" translate='organization.views.logodialog.newlogo'>New logo</span>
+              <h2 class="white text_align_center"><span ng-if="!logo" translate='organization.views.logodialog.newlogo'>New logo</span>
                   <span ng-if="logo" translate='organization.views.logodialog.updatelogo'>Update logo</span></h2>
               <span flex></span>
               <md-button class="md-icon-button" ng-click="cancel()">
@@ -18,7 +18,7 @@
                   <div ng-messages="validationerrors" md-auto-hide="false">
                       <div ng-message="filesize" translate='organization.views.logodialog.filetoolarge'>The file size of the (resized) file is too large.</div>
               </md-input-container>
-              <h3 class="file-drop-info" translate='organization.views.logodialog.filedrop'>Or drop a file in the area below</h3>
+              <h3 class="file-drop-info text_align_center" translate='organization.views.logodialog.filedrop'>Or drop a file in the area below</h3>
               <canvas id="logo-upload-preview" height="240px" width="500px">
               </canvas>
           </div>

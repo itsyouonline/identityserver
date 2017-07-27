@@ -5,13 +5,13 @@ body {
     font-family: 'Arial', sans-serif;
 }
 
-h2 { font-weight: normal; font-size: 40px; text-align: center; padding: 0; color: #FFFFFF; }
+h2 { font-weight: normal; font-size: 40px; padding: 0; }
 
 .homepage h2 {
     margin: 0;
 }
 
-h3 { font-weight: normal; font-size: 16px; text-align: center; margin: 5px 0; padding: 0; }
+h3 { font-weight: normal; font-size: 16px; margin: 5px 0; padding: 0; }
 
 .homapage h3 {
     z-index: 1;
@@ -59,6 +59,14 @@ md-dialog md-dialog-actions {
 
 .green {
     color: #008000;
+}
+
+.white {
+    color: #FFFFFF;
+}
+
+.text_align_center {
+    text-align: center
 }
 /*= HEADER & NAVIGATION
 --------------------------------------------------------*/

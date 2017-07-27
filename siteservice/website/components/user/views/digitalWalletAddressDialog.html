@@ -2,8 +2,8 @@
     <form name="dataform" autocomplete="off">
         <md-toolbar>
             <div class="md-toolbar-tools">
-                <h2 ng-if="::!originalLabel" translate='user.views.digitalwallet.registerwallet'>Register a digital wallet address</h2>
-                <h2 ng-if="::originalLabel" translate='user.views.digitalwallet.digitalwallet'>Digital wallet address details</h2>
+                <h2 class="white text_align_center" ng-if="::!originalLabel" translate='user.views.digitalwallet.registerwallet'>Register a digital wallet address</h2>
+                <h2 class="white text_align_center" ng-if="::originalLabel" translate='user.views.digitalwallet.digitalwallet'>Digital wallet address details</h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="cancel()">
                     <md-icon md-svg-src="assets/img/ic_close_24px.svg" aria-label translate-attr="{ 'aria-label': 'closedialog' }"></md-icon>

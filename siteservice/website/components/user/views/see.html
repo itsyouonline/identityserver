@@ -13,9 +13,12 @@
             <div ng-show="vm.loaded.see">
                 <p ng-show="vm.seeObjects.length == 0">No SEE</p>
                 <p ng-show="vm.seeObjects.length > 0">Yes SEE:</p>
+
                 <md-list>
                     <md-list-item ng-repeat="seeObject in vm.seeObjects">
-                        <p ng-click="vm.showSeeObject($event, seeObject)">{{ seeObject }}</p>
+                        <div ng-click="vm.showSeeObject($event, seeObject)">{{ seeObject }}
+                            <btf-markdown ng-if="seeObject.markdown_short_description">{{ seeObject.markdown_short_description }}</btf-markdown>
+                        </div>
                     </md-list-item>
                 </md-list>
             </div>

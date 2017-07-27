@@ -2,10 +2,10 @@
     <form name="dataform">
         <md-toolbar>
             <div class="md-toolbar-tools">
-                <h2 ng-if="::!vm.isNew" translate='user.views.authorizationdialog.sharedinfo' translate-values='{grantedto: authorizations.grantedTo}'>
+                <h2 class="white text_align_center" ng-if="::!vm.isNew" translate='user.views.authorizationdialog.sharedinfo' translate-values='{grantedto: authorizations.grantedTo}'>
                     Information shared with <span ng-bind="::authorizations.grantedTo"></span>
                 </h2>
-                <h2 ng-if="::vm.isNew" translate='user.views.authorizationdialog.sharewith' translate-values='{grantedto: authorizations.grantedTo}'>
+                <h2 class="white text_align_center" ng-if="::vm.isNew" translate='user.views.authorizationdialog.sharewith' translate-values='{grantedto: authorizations.grantedTo}'>
                     Information to share with <span ng-bind="::authorizations.grantedTo"></span></h2>
                 <span flex></span>
                 <md-button class="md-icon-button" ng-click="vm.cancel()">

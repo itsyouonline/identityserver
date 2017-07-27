@@ -42,6 +42,8 @@ module.exports = function(config) {
           'components/common.js',
           'components/shared/country-info.js',
           'components/shared/directives/telinput.js',
+          'thirdpartyassets/showdown/compressed/Showdown.min.js',
+          'thirdpartyassets/angular-markdown-directive/markdown.js',
 
           // load main app and dependancies
           'components/app.js',

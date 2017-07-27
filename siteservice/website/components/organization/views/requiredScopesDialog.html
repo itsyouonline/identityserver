@@ -2,7 +2,7 @@
     <form name="vm.form">
         <md-toolbar>
             <div class="md-toolbar-tools" layout-align="space-between center">
-                <h2><span ng-if="::!vm.originalScope" translate='organization.views.requiredscopesdialog.newrequiredinfo'>New required information</span>
+                <h2 class="white text_align_center"><span ng-if="::!vm.originalScope" translate='organization.views.requiredscopesdialog.newrequiredinfo'>New required information</span>
                     <span ng-if="::vm.originalScope" translate='organization.views.requiredscopesdialog.updaterequiredinfo'>Update required information</span>
                 </h2>
                 <md-button class="md-icon-button" ng-click="vm.cancel()">

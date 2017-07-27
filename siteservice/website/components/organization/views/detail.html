@@ -101,7 +101,7 @@
                                 <md-list-item class="md-3-line" ng-repeat="invite in vm.invitations track by $index"
                                               aria-label="Invite" ng-if="!vm.loading.invitations">
                                     <div class="md-list-item-text">
-                                        <h3 ng-bind="::invite.user || invite.phonenumber || invite.emailaddress"></h3>
+                                        <h3 class="text_align_center" ng-bind="::invite.user || invite.phonenumber || invite.emailaddress"></h3>
                                         <h4 ng-if="::invite.created" translate="invited_on_date"
                                             translate-value-timestamp="{{invite.created | date: 'd MMM y H:mm:ss'}}">
                                            Invited on <span ng-bind="::invite.created | date: 'd MMM y H:mm:ss'"></span></h4>
@@ -182,7 +182,7 @@
                                 <md-list-item class="md-1-line" ng-repeat="dns in vm.organization.dns"
                                               ng-click="vm.showDNSDialog($event, dns)" aria-label="Dns">
                                     <div class="md-list-item-text" layout="column">
-                                        <h3 ng-bind="dns"></h3>
+                                        <h3 class="text_align_center" ng-bind="dns"></h3>
                                     </div>
                                 </md-list-item>
                             </md-list>
@@ -207,7 +207,7 @@
                                               ng-click="vm.showAPIKeyDialog($event, label)"
                                               aria-label="{{ ::label }}">
                                     <div class="md-list-item-text" layout="column">
-                                        <h3 ng-bind="label"></h3>
+                                        <h3 class="text_align_center" ng-bind="label"></h3>
                                     </div>
                                 </md-list-item>
                             </md-list>
@@ -267,7 +267,7 @@
                                               ng-repeat="scope in vm.organization.requiredscopes track by scope.scope"
                                               ng-click="vm.showRequiredScopeDialog($event, scope)">
                                     <div class="md-list-item-text">
-                                        <h3 translate="{{ vm.getScopeTranslation(scope.scope).scope.translation }}"></h3>
+                                        <h3 class="text_align_center" translate="{{ vm.getScopeTranslation(scope.scope).scope.translation }}"></h3>
                                         <p>
                                             <span translate="organization.views.detail.sharedwith"></span>
                                             <span ng-repeat="shared in scope.accessscopes track by $index">
