@@ -6,13 +6,13 @@
         .controller("InvitationDialogController", InvitationDialogController);
 
     InvitationDialogController.$inject = ['$scope', '$mdDialog', '$translate', 'organization', 'OrganizationService', 'UserDialogService'];
-    OrganizationDetailController.$inject = ['$routeParams', '$window', '$translate', 'OrganizationService', '$mdDialog', '$mdMedia',
+    OrganizationDetailController.$inject = ['$state', '$stateParams', '$window', '$translate', 'OrganizationService', '$mdDialog', '$mdMedia',
         '$rootScope', 'UserDialogService', 'UserService', 'ScopeService'];
 
-    function OrganizationDetailController($routeParams, $window, $translate, OrganizationService, $mdDialog, $mdMedia, $rootScope,
+    function OrganizationDetailController($state, $stateParams, $window, $translate, OrganizationService, $mdDialog, $mdMedia, $rootScope,
                                           UserDialogService, UserService, ScopeService) {
         var vm = this,
-            globalid = $routeParams.globalid;
+            globalid = $stateParams.globalid;
         vm.invitations = [];
         vm.apikeylabels = [];
         vm.organization = {};
@@ -24,6 +24,14 @@
         vm.loading = {
             invitations: false
         };
+        vm.selectedTab = 0;
+        if ($state.current.name === "organization.structure") {
+            vm.selectedTab = 1;
+        } else if ($state.current.name === "organization.see") {
+            vm.selectedTab = 2;
+        } else if ($state.current.name === "organization.settings") {
+            vm.selectedTab = 3;
+        }
 
         vm.initSettings = initSettings;
         vm.showInvitationDialog = showInvitationDialog;
@@ -869,7 +877,7 @@
                 var parents = splitted.slice(0, i + 1);
                 children.push({
                     name: splitted[i],
-                    url: '#/organization/' + parents.join('.')
+                    url: '#/organization/' + parents.join('.') + '/people'
                 });
             }
         }

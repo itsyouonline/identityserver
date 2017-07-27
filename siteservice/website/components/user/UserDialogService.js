@@ -821,7 +821,7 @@
                     .then(
                         function (data) {
                             cancel();
-                            $window.location.hash = '#/organization/' + encodeURIComponent(data.globalid);
+                            $window.location.hash = '#/organization/' + encodeURIComponent(data.globalid) + '/people';
                         },
                         function (reason) {
                             if (reason.status === 409) {

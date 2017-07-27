@@ -5,14 +5,14 @@
         .module("itsyouonlineApp")
         .controller("SeeDetailController", SeeDetailController);
 
-    SeeDetailController.$inject =  ['$scope', '$rootScope', '$routeParams', '$location', '$window', '$q', '$translate',
+    SeeDetailController.$inject =  ['$scope', '$rootScope', '$stateParams', '$location', '$window', '$q', '$translate',
         'UserService'];
 
-    function SeeDetailController($scope, $rootScope, $routeParams, $location, $window, $q, $translate,
+    function SeeDetailController($scope, $rootScope, $stateParams, $location, $window, $q, $translate,
                                  UserService) {
         var vm = this,
-            globalid = $routeParams.globalid,
-            uniqueid = $routeParams.uniqueid;
+            globalid = $stateParams.globalid,
+            uniqueid = $stateParams.uniqueid;
         vm.username = $rootScope.user;
         vm.loading = true;
 

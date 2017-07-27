@@ -1,0 +1,22 @@
+<div layout="column" layout-align="center start" ng-if="::vm.hasEditPermission">
+    <md-button class="md-primary"
+               ng-click="vm.showCreateOrganizationDialog($event, vm.organization.globalid)">
+        <i class="fa fa-plus"></i> <span translate='organization.views.detail.createsuborg'>Create suborganization</span>
+    </md-button>
+    <md-button class="md-primary"
+               ng-click="vm.showMoveSuborganizationDialog($event)">
+        <i class="fa fa-arrows-h"></i> <span translate='move_suborganization'>Move suborganization</span>
+    </md-button>
+</div>
+<div class="treeview">
+    <div class="tree" ng-style="vm.treeGraphStyle">
+        <ul ng-repeat="tree in vm.organizationRoot.children">
+            <li ng-class="{'active-organization': vm.organization.globalid === tree.globalid}">
+                <a ng-href="#/organization/{{ ::tree.globalid }}/people"
+                   ng-bind="::vm.getOrganizationDisplayname(tree.globalid)"></a>
+                <ng-include
+                        src="'/components/organization/views/treeItem.html'"></ng-include>
+            </li>
+        </ul>
+    </div>
+</div>

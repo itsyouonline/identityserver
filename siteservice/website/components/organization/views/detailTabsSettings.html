@@ -1,0 +1,142 @@
+<br />
+<div ng-if="::vm.hasEditPermission" flex-gt-sm="70" flex-gt-md="50">
+    <md-toolbar>
+        <div class="md-toolbar-tools" layout-align="space-between center">
+            <span translate='organization.views.detail.domains'>Domain names</span>
+            <md-button ng-click="vm.showDNSDialog($event)">
+                <i class="fa fa-plus"></i> <span translate='add'>Add</span>
+                <md-tooltip><span translate='organization.views.detail.adddomainhelp' translate-values="{organization: vm.getOrganizationDisplayname(vm.organization.globalid)}">
+                    Add a domain name owned by <span ng-bind="::vm.getOrganizationDisplayname(vm.organization.globalid)"></span></span>
+                </md-tooltip>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-list class="md-dense">
+        <md-list-item class="md-1-line" ng-repeat="dns in vm.organization.dns"
+                      ng-click="vm.showDNSDialog($event, dns)" aria-label="Dns">
+            <div class="md-list-item-text" layout="column">
+                <h3 class="text_align_center" ng-bind="dns"></h3>
+            </div>
+        </md-list-item>
+    </md-list>
+    <md-toolbar>
+        <div class="md-toolbar-tools" layout-align="space-between center">
+            <p>
+                <span translate='organization.views.detail.apiaccesskeys'>API Access keys</span>
+                <md-tooltip>
+                    <span translate='organization.views.detail.apiaccesskeyshelp'>API Access keys are needed to access the Itsyou.online api using oauth2</span>
+                </md-tooltip>
+            </p>
+            <md-button ng-click="vm.showAPIKeyCreationDialog($event)">
+                <i class="fa fa-plus"></i> <span translate='add'>Add</span>
+                <md-tooltip>
+                    <span translate='organization.views.detail.apiaccesskeyshelp'>API Access keys are needed to access the Itsyou.online api using OAuth2</span>
+                </md-tooltip>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-list class="md-dense">
+        <md-list-item class="md-1-line" ng-repeat="label in vm.apikeylabels"
+                      ng-click="vm.showAPIKeyDialog($event, label)"
+                      aria-label="{{ ::label }}">
+            <div class="md-list-item-text" layout="column">
+                <h3 class="text_align_center" ng-bind="label"></h3>
+            </div>
+        </md-list-item>
+    </md-list>
+    <md-toolbar>
+        <div class="md-toolbar-tools" layout-align="space-between center">
+            <p>
+                <span translate='organization.views.detail.logo'>Organization logo</span>
+                <md-tooltip>
+                    <span translate='organization.views.detail.logohelp'>This logo is displayed when a user logs in to an external site using OAuth2</span>
+                </md-tooltip>
+            </p>
+            <md-button ng-click="vm.showLogoDialog($event)">
+                <span ng-if="!vm.logo">
+                    <i class="fa fa-plus"></i> <span translate='add'>Add</span>
+                </span>
+                <span ng-if="vm.logo">
+                    <i class="fa fa-pencil"></i> <span translate='change'>Change</span>
+                </span>
+                <md-tooltip>
+                    <span translate='organization.views.detail.logohelp'>This logo is displayed when a user logs in to an external site using OAuth2</span>
+                </md-tooltip>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <canvas id="logoview" class="logoviewer" height="240px" width="500px" ng-show="vm.logo"></canvas>
+    <br ng-if="!vm.logo"/>
+    <md-toolbar>
+        <div class="md-toolbar-tools" layout-align="space-between center">
+            <p>
+                <span translate='organization.views.detail.description'>Organization description</span>
+                <md-tooltip>
+                    <span translate='organization.views.detail.descriptionhelp'>This description is displayed when a user logs in to an external site using OAuth2</span>
+                </md-tooltip>
+            </p>
+            <md-button ng-click="vm.showDescriptionDialog($event)">
+                <i class="fa fa-pencil"></i> <span translate='change'>Change</span>
+                <md-tooltip>
+                    <span translate='organization.views.detail.descriptionhelp'>This description is displayed when a user logs in to an external site using OAuth2</span>
+                </md-tooltip>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <br />
+    <md-toolbar>
+        <div class="md-toolbar-tools" layout-align="space-between center">
+            <span translate='organization.views.detail.requiredsharedinfo'>Required shared information</span>
+            <md-button ng-click="vm.showRequiredScopeDialog($event)">
+                <i class="fa fa-plus"></i> <span translate='add'>Add</span>
+                <md-tooltip>
+                    <span translate='organization.views.detail.addrequiredsharedinfo'>Add required shared information</span>
+                </md-tooltip>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-list>
+        <md-list-item class="md-2-line"
+                      ng-repeat="scope in vm.organization.requiredscopes track by scope.scope"
+                      ng-click="vm.showRequiredScopeDialog($event, scope)">
+            <div class="md-list-item-text">
+                <h3 class="text_align_center" translate="{{ vm.getScopeTranslation(scope.scope).scope.translation }}"></h3>
+                <p>
+                    <span translate="organization.views.detail.sharedwith"></span>
+                    <span ng-repeat="shared in scope.accessscopes track by $index">
+                        <span translate="{{ shared.split(':')[1] + 's' }}"></span><span
+                            ng-if="!$last">,</span>
+                    </span>
+                </p>
+            </div>
+        </md-list-item>
+    </md-list>
+    <md-toolbar>
+        <div class="md-toolbar-tools" layout-align="space-between center">
+            <span translate='organization.views.detail.deleteorganization'>Delete organization</span>
+        </div>
+    </md-toolbar>
+    <div layout-padding>
+        <p translate='organization.views.detail.deleteorganizationwarning'>Deleting an organization is irreversible and will delete all domain
+            names and API keys associated with it.
+        </p>
+    </div>
+    <md-button class="md-warn" ng-click="vm.showDeleteOrganizationDialog($event)" translate='organization.views.detail.deleteorganization'>
+        Delete organization
+    </md-button>
+</div>
+<div flex-gt-sm="70" flex-gt-md="50">
+
+    <md-toolbar>
+        <div class="md-toolbar-tools" layout-align="space-between center">
+            <span translate='organization.views.detail.leaveorganization'>Leave organization</span>
+        </div>
+    </md-toolbar>
+    <div layout-padding>
+        <p translate='organization.views.detail.leaveorganizationwarning'>If you leave an organization you cannot re-join it unless you are invited
+            again.</p>
+    </div>
+    <md-button class="md-warn" ng-click="vm.showLeaveOrganization($event)" translate='organization.views.detail.leaveorganization'>
+        Leave organization
+    </md-button>
+</div>

@@ -8,10 +8,10 @@
 
 
     UserHomeController.$inject = [
-        '$q', '$rootScope', '$routeParams', '$location', '$window', '$filter', '$mdMedia', '$mdDialog', '$translate',
+        '$q', '$rootScope', '$stateParams', '$location', '$window', '$filter', '$mdMedia', '$mdDialog', '$translate',
         'NotificationService', 'OrganizationService', 'UserService', 'UserDialogService'];
 
-    function UserHomeController($q, $rootScope, $routeParams, $location, $window, $filter, $mdMedia, $mdDialog, $translate,
+    function UserHomeController($q, $rootScope, $stateParams, $location, $window, $filter, $mdMedia, $mdDialog, $translate,
                                 NotificationService, OrganizationService, UserService, UserDialogService) {
         var vm = this;
         vm.username = $rootScope.user;
@@ -87,7 +87,7 @@
         init();
 
         function init() {
-            var index = TABS.indexOf($routeParams.tab);
+            var index = TABS.indexOf($stateParams.tab);
             vm.selectedTabIndex = index === -1 ? 0 : index;
             loadUser().then(function () {
                 loadVerifiedPhones();

@@ -1,12 +1,12 @@
 (function () {
     'use strict';
     angular.module('loginApp')
-        .controller('resetPasswordController', ['$http', '$window', '$routeParams', '$mdDialog', resetPasswordController]);
+        .controller('resetPasswordController', ['$http', '$window', '$stateParams', '$mdDialog', resetPasswordController]);
 
-    function resetPasswordController($http, $window, $routeParams, $mdDialog) {
+    function resetPasswordController($http, $window, $stateParams, $mdDialog) {
         var vm = this;
         vm.submit = submit;
-        var code = $routeParams.code;
+        var code = $stateParams.code;
 
         function submit() {
             var data = {

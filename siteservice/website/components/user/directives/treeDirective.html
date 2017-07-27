@@ -2,7 +2,7 @@
     <li ng-repeat="org in t" class="organizationstree">
         <div class="nodecontainer" layout="row" layout-align="start center">
             <i ng-class="{'fa fa-plus':org.childrenCollapsed, 'fa fa-minus':!org.childrenCollapsed, 'hiddenicon':!hasChildren(org)}" ng-click="collapseChildren(org)" aria-hidden="true"></i>
-            <md-button class="organizationstreenode" ng-href="#/organization/{{ ::org.link }}">{{::org.name}}</md-button>
+            <md-button class="organizationstreenode" ng-href="#/organization/{{ ::org.link }}/people">{{::org.name}}</md-button>
         </div>
         <tree src="org.children" ng-show="!org.childrenCollapsed"></tree>
     </li>
