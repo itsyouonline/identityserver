@@ -864,6 +864,7 @@
                         }
                         else if (scope === 'user:keystore') {
                             authorizations.keystore = true;
+                        }
                         else if (scope === 'user:see') {
                             authorization.see = true;
                         }
