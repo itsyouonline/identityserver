@@ -72,6 +72,15 @@
                 pageTitle: 'Organization settings'
             }
         })
+        .state('/see/detail', {
+            url: '/organization/:globalid/see/:uniqueid/detail',
+            templateUrl: 'components/organization/views/seeDetail.html',
+            controller: 'SeeDetailController',
+            controllerAs: 'vm',
+            params: {
+                pageTitle: 'See detail'
+            }
+        })
         .state('profile', {
             url: '/profile',
             templateUrl: 'components/user/views/profile.html',
@@ -106,15 +115,6 @@
             controllerAs: 'vm',
             params: {
                 pageTitle: 'Authorizations'
-            }
-        })
-        .state('/seeDetail', {
-            url: '/see/:globalid/:uniqueid/detail',
-            templateUrl: 'components/user/views/seeDetail.html',
-            controller: 'SeeDetailController',
-            controllerAs: 'vm',
-            params: {
-                pageTitle: 'See detail'
             }
         })
         .state('settings', {

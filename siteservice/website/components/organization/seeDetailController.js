@@ -11,8 +11,8 @@
     function SeeDetailController($scope, $rootScope, $stateParams, $location, $window, $q, $translate,
                                  UserService) {
         var vm = this,
-            globalid = $stateParams.globalid,
-            uniqueid = $stateParams.uniqueid;
+          uniqueid = $stateParams.uniqueid;
+        vm.globalid = $stateParams.globalid;
         vm.username = $rootScope.user;
         vm.loading = true;
         vm.isShowingFullHistory = false;
@@ -31,7 +31,7 @@
 
         function fetch(){
             UserService
-                .getSeeObject(vm.username, globalid, uniqueid, vm.isShowingFullHistory)
+                .getSeeObject(vm.username, vm.globalid, uniqueid, vm.isShowingFullHistory)
                 .then(
                     function(data) {
                         vm.seeObject = data;

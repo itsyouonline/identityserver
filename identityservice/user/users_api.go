@@ -1773,6 +1773,10 @@ func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 
 	seeMgr := seeDb.NewManager(r)
 	err := seeMgr.Update(seeView.Username, seeView.Globalid, seeView.Uniqueid, seeVersion)
+	if db.IsNotFound(err) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
 	if handleServerError(w, "Update see object", err) {
 		return
 	}

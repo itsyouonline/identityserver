@@ -1,6 +1,14 @@
 <div flex-gt-sm="80" flex="100" layout="column">
     <div class="breadcrumb-container">
-        <p ng-bind="::vm.username"></p>
+        <p>
+            <span>
+                <a class="breadcrumb-link" ng-href="#/organization/{{ vm.globalid }}/people" ng-bind="::vm.globalid"></a>
+                <span>&raquo; </span>
+            </span>
+            <span>
+                <a class="breadcrumb-link" ng-href="#/organization/{{ vm.globalid }}/see">see</a>
+            </span>
+        </p>
         <h1>See detail</h1>
     </div>
     <md-card>

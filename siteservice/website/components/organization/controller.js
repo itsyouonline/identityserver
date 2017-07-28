@@ -207,7 +207,7 @@
         }
 
         function showSeeObject(event, seeObject) {
-            $window.location.hash = '#/see/' + seeObject.globalid + '/' + seeObject.uniqueid + '/detail';
+            $window.location.hash = '#/organization/' + seeObject.globalid + '/see/' + seeObject.uniqueid + '/detail';
         }
 
         function showInvitationDialog(ev) {
