@@ -524,15 +524,37 @@ types:
       organization: string
       scopes: string[]
 
+  SeeVersion:
+    description: See version object
+    properties:
+       version: integer
+       category: string
+       link: string
+       content_type: string
+       markdown_short_description: string
+       markdown_full_description: string
+       creation_date: string
+       start_date: string
+       end_date: string
+       signature: string
+
   See:
-     description: See object
+    description: See object
+    properties:
+       username: string
+       globalid: string
+       uniqueid: string
+       versions: SeeVersion[]
+
+  SeeView:
+     description: See view object
      properties:
         username: string
         globalid: string
         uniqueid: string
-        link: string
-        category: string
         version: integer
+        category: string
+        link: string
         content_type: string
         markdown_short_description: string
         markdown_full_description: string
@@ -1464,7 +1486,7 @@ securedBy: [ oauth_2_0 ]
         200:
           body:
             application/json:
-                type: See[]
+                type: SeeView[]
         404:
           description: Not found
 
@@ -1477,22 +1499,43 @@ securedBy: [ oauth_2_0 ]
             200:
               body:
                 application/json:
-                  type: See[]
+                  type: SeeView[]
             404:
               description: Not found
         /{uniqueid}:
+          get:
+            displayName: GetSeeObject
+            securedBy: [oauth_2_0: { scopes: [ "user:admin", "user:see" ] } ]
+            description: Get a objects
+            queryParameters:
+              version:
+                type: string
+                description: What version to filter. Possible values are latest, all, index (a number). When not provided, defaults to latest.
+                default: latest
+                required: false
+                enum:
+                  - latest
+                  - all
+                  - index
+            responses:
+              200:
+                body:
+                  application/json:
+                    type: See
+              404:
+                description: Not found
           post:
             displayName: CreateSeeObject
             securedBy: [oauth_2_0: { scopes: [ "user:see" ] } ]
             description: Create new see object
             body:
               application/json:
-                type: See
+                type: SeeView
             responses:
               201:
                 body:
                   application/json:
-                    type: See
+                    type: SeeView
               404:
                 description: Not found
           put:
@@ -1501,12 +1544,12 @@ securedBy: [ oauth_2_0 ]
             description: Upates a see object
             body:
               application/json:
-                type: See
+                type: SeeView
             responses:
               201:
                 body:
                   application/json:
-                    type: See
+                    type: SeeView
               404:
                 description: Not found
 

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 
 	"fmt"
@@ -1580,15 +1581,19 @@ func (api UsersAPI) GetSeeObjects(w http.ResponseWriter, r *http.Request) {
 
 	seeMgr := seeDb.NewManager(r)
 	seeObjects, err := seeMgr.GetSeeObjects(username)
-
 	if err != nil {
 		log.Error("Failed to get see objects", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
+	list := make([]*seeDb.SeeView, len(seeObjects))
+	for i, seeObject := range seeObjects {
+		list[i] = seeObject.ConvertToSeeView(len(seeObject.Versions))
+	}
+
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(seeObjects)
+	json.NewEncoder(w).Encode(list)
 }
 
 func (api UsersAPI) GetSeeObjectsByOrganization(w http.ResponseWriter, r *http.Request) {
@@ -1603,14 +1608,33 @@ func (api UsersAPI) GetSeeObjectsByOrganization(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	list := make([]*seeDb.SeeView, len(seeObjects))
+	for i, seeObject := range seeObjects {
+		list[i] = seeObject.ConvertToSeeView(len(seeObject.Versions))
+	}
+
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(seeObjects)
+	json.NewEncoder(w).Encode(list)
 }
 
 func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	organizationGlobalID := mux.Vars(r)["globalid"]
 	uniqueID := mux.Vars(r)["uniqueid"]
+	versionStr := r.URL.Query().Get("version")
+	version := "latest"
+	versionInt := 0
+	if versionStr != "" {
+		if versionStr == "all" {
+			version = "all"
+		} else {
+			var err error
+			versionInt, err = strconv.Atoi(versionStr)
+			if err == nil {
+				version = "index"
+			}
+		}
+	}
 
 	requestingClient, validClient := context.Get(r, "client_id").(string)
 	if !validClient {
@@ -1623,7 +1647,6 @@ func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 
 	seeMgr := seeDb.NewManager(r)
 	seeObject, err := seeMgr.GetSeeObject(username, requestingClient, uniqueID)
-
 	if db.IsNotFound(err) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
@@ -1632,6 +1655,23 @@ func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 		log.Error("Failed to get see object", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
+	}
+
+	for i := range seeObject.Versions {
+		seeObject.Versions[i].Version = i + 1
+	}
+
+	if version == "latest" {
+		version = "index"
+		versionInt = len(seeObject.Versions)
+	}
+	if version == "index" {
+		if versionInt < 1 || versionInt > len(seeObject.Versions) {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			return
+		}
+		seeVersion := seeObject.Versions[versionInt-1]
+		seeObject.Versions = []seeDb.SeeVersion{seeVersion}
 	}
 
 	w.Header().Set("Content-type", "application/json")
@@ -1652,30 +1692,39 @@ func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
 		requestingClient = organizationGlobalID
 	}
 
+	seeView := seeDb.SeeView{}
+	if err := json.NewDecoder(r.Body).Decode(&seeView); err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	seeView.Username = username
+	seeView.Globalid = requestingClient
+	seeView.Uniqueid = uniqueID
+
+	if !seeView.Validate() {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+	seeVersion := seeView.ConvertToSeeVersion()
 	see := seeDb.See{}
-	if err := json.NewDecoder(r.Body).Decode(&see); err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
-
-	see.Username = username
-	see.Globalid = requestingClient
-	see.Uniqueid = uniqueID
-
-	if !see.Validate() {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
+	see.Username = seeView.Username
+	see.Globalid = seeView.Globalid
+	see.Uniqueid = seeView.Uniqueid
+	see.Versions = []seeDb.SeeVersion{*seeVersion}
 
 	seeMgr := seeDb.NewManager(r)
 	err := seeMgr.Create(&see)
-
+	if err == db.ErrDuplicate {
+		log.Debug("Duplicate see:", see)
+		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+		return
+	}
 	if handleServerError(w, "Create see object", err) {
 		return
 	}
 
 	seeObject, err := seeMgr.GetSeeObject(username, requestingClient, uniqueID)
-
 	if db.IsNotFound(err) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
@@ -1688,7 +1737,7 @@ func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(seeObject)
+	json.NewEncoder(w).Encode(seeObject.ConvertToSeeView(len(seeObject.Versions)))
 }
 
 func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
@@ -1705,30 +1754,30 @@ func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 		requestingClient = organizationGlobalID
 	}
 
-	see := seeDb.See{}
-	if err := json.NewDecoder(r.Body).Decode(&see); err != nil {
+	seeView := seeDb.SeeView{}
+	if err := json.NewDecoder(r.Body).Decode(&seeView); err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 
-	see.Username = username
-	see.Globalid = requestingClient
-	see.Uniqueid = uniqueID
+	seeView.Username = username
+	seeView.Globalid = requestingClient
+	seeView.Uniqueid = uniqueID
 
-	if !see.Validate() {
+	if !seeView.Validate() {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
+
+	seeVersion := seeView.ConvertToSeeVersion()
 
 	seeMgr := seeDb.NewManager(r)
-	err := seeMgr.Update(&see)
-
-	if handleServerError(w, "Create see object", err) {
+	err := seeMgr.Update(seeView.Username, seeView.Globalid, seeView.Uniqueid, seeVersion)
+	if handleServerError(w, "Update see object", err) {
 		return
 	}
 
 	seeObject, err := seeMgr.GetSeeObject(username, requestingClient, uniqueID)
-
 	if db.IsNotFound(err) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
@@ -1741,7 +1790,7 @@ func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(seeObject)
+	json.NewEncoder(w).Encode(seeObject.ConvertToSeeView(len(seeObject.Versions)))
 }
 
 func (api UsersAPI) AddAPIKey(w http.ResponseWriter, r *http.Request) {
