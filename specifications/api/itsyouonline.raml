@@ -523,6 +523,24 @@ types:
     properties:
       organization: string
       scopes: string[]
+
+  See:
+     description: See object
+     properties:
+        username: string
+        globalid: string
+        uniqueid: string
+        link: string
+        category: string
+        version: integer
+        content_type: string
+        markdown_short_description: string
+        markdown_full_description: string
+        creation_date: string
+        start_date: string
+        end_date: string
+        signature: string
+
 securedBy: [ oauth_2_0 ]
 /users:
   post:
@@ -1436,6 +1454,61 @@ securedBy: [ oauth_2_0 ]
                 type: KeyStoreKey
           404:
             description: No key found for this label
+
+  /{username}/see:
+    securedBy: [oauth_2_0: { scopes: [ "user:admin" ] } ]
+    get:
+      displayName: ListSeeObjects
+      description: Lists all see objects
+      responses:
+        200:
+          body:
+            application/json:
+                type: See[]
+        404:
+          description: Not found
+
+    /{globalid}:
+        get:
+          displayName: ListSeeObjectsByOrganization
+          securedBy: [oauth_2_0: { scopes: [ "user:admin", "user:see" ] } ]
+          description: Get all see objects by organization
+          responses:
+            200:
+              body:
+                application/json:
+                  type: See[]
+            404:
+              description: Not found
+        /{uniqueid}:
+          post:
+            displayName: CreateSeeObject
+            securedBy: [oauth_2_0: { scopes: [ "user:see" ] } ]
+            description: Create new see object
+            body:
+              application/json:
+                type: See
+            responses:
+              201:
+                body:
+                  application/json:
+                    type: See
+              404:
+                description: Not found
+          put:
+            displayName: UpdateSeeObject
+            securedBy: [oauth_2_0: { scopes: [ "user:see" ] } ]
+            description: Upates a see object
+            body:
+              application/json:
+                type: See
+            responses:
+              201:
+                body:
+                  application/json:
+                    type: See
+              404:
+                description: Not found
 
 /organizations:
   post:

@@ -20,6 +20,7 @@ type Authorization struct {
 	OwnerOf        OwnerOf                      `json:"ownerof,omitempty"`
 	Avatars        []AuthorizationMap           `json:"avatars,omitempty"`
 	KeyStore       bool                         `json:"keystore,omitempty"`
+	See            bool                         `json:"see,omitempty"`
 }
 
 type AuthorizationMap struct {
@@ -82,6 +83,9 @@ func (authorization Authorization) FilterAuthorizedScopes(requestedscopes []stri
 			authorizedScopes = append(authorizedScopes, scope)
 		}
 		if scope == "user:keystore" && authorization.KeyStore {
+			authorizedScopes = append(authorizedScopes, scope)
+		}
+		if scope == "user:see" && authorization.See {
 			authorizedScopes = append(authorizedScopes, scope)
 		}
 	}

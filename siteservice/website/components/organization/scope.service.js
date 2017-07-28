@@ -66,7 +66,10 @@
             }
         }, {
             scope: 'user:keystore',
-            translation: 'keystore',
+            translation: 'keystore'
+        }, {
+            scope: 'user:see',
+            translation: 'see'
         }];
 
         function getScopes() {

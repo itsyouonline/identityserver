@@ -138,7 +138,11 @@
                     }
                     else if (scope === 'user:keystore') {
                         $scope.authorizations.keystore = true;
-                    } else if (scope.startsWith('user:ownerof')) {
+                    }
+                    else if (scope === 'user:see') {
+                        $scope.authorizations.see = true;
+                    }
+                    else if (scope.startsWith('user:ownerof')) {
                         switch (splitPermission[2]) {
                             case 'email':
                                 var emailAddress = splitPermission[3];
