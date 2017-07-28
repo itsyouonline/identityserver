@@ -41,8 +41,8 @@
                             <div>
                                 <md-list-item class="md-2-line">
                                     <div class="md-list-item-text">
-                                        <p>Start: <span ng-bind="::seeVersion.start_date | date: 'd MMM y H:mm:ss'"></span></p>
-                                        <p>End: <span ng-bind="::seeVersion.end_date | date: 'd MMM y H:mm:ss'"></span></p>
+                                        <p ng-if="::seeVersion.start_date">Start: <span ng-bind="::seeVersion.start_date | date: 'd MMM y H:mm:ss'"></span></p>
+                                        <p ng-if="::seeVersion.end_date" >End: <span ng-bind="::seeVersion.end_date | date: 'd MMM y H:mm:ss'"></span></p>
 
                                     </div>
                                 </md-list-item>

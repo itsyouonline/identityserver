@@ -17,8 +17,8 @@
                     <div>
                         <md-list-item class="md-2-line">
                             <div class="md-list-item-text">
-                                <p>Start: <span ng-bind="::seeObject.start_date | date: 'd MMM y H:mm:ss'"></span></p>
-                                <p>End: <span ng-bind="::seeObject.end_date | date: 'd MMM y H:mm:ss'"></span></p>
+                                <p ng-if="::seeObject.start_date">Start: <span ng-bind="::seeObject.start_date | date: 'd MMM y H:mm:ss'"></span></p>
+                                <p ng-if="::seeObject.end_date">End: <span ng-bind="::seeObject.end_date | date: 'd MMM y H:mm:ss'"></span></p>
                                 <md-button class="md-primary md-secondary" ng-click="vm.showSeeObject($event, seeObject)">
                                     <span>Details</span>
                                 </md-button>

@@ -1716,7 +1716,6 @@ func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
 	seeMgr := seeDb.NewManager(r)
 	err := seeMgr.Create(&see)
 	if err == db.ErrDuplicate {
-		log.Debug("Duplicate see:", see)
 		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
 		return
 	}
