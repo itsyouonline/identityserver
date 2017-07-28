@@ -11,7 +11,46 @@
                                       md-diameter="50"></md-progress-circular>
             </div>
             <div ng-show="!vm.loading">
-                <p>{{ vm.seeObject }}</p>
+                <div layout="row" layout-align="space-between none">
+                    <h2>{{vm.seeObject.uniqueid}}</h2>
+
+                    <md-button class="md-primary md-secondary" ng-click="vm.toggleFullHistory($event)">
+                        <span ng-if="!vm.isShowingFullHistory">Show full history</span>
+                        <span ng-if="vm.isShowingFullHistory">Hide full history</span>
+                    </md-button>
+                </div>
+                <md-list>
+                    <div flex="100" ng-repeat="seeVersion in vm.seeObject.versions">
+                        <div layout="row" layout-align="space-between none" class="border-top-light">
+                            <div>
+                                <md-list-item class="md-2-line">
+                                    <div class="md-list-item-text">
+                                        <span>{{seeVersion.category}} - Version: {{seeVersion.version }}</span>
+                                        <p><span ng-bind="::seeVersion.creation_date | date: 'd MMM y H:mm:ss'"></span></p>
+                                    </div>
+                                </md-list-item>
+                            </div>
+                            <div>
+                                <md-list-item class="md-2-line">
+                                    <div class="md-list-item-text">
+                                        <p>Start: <span ng-bind="::seeVersion.start_date | date: 'd MMM y H:mm:ss'"></span></p>
+                                        <p>End: <span ng-bind="::seeVersion.end_date | date: 'd MMM y H:mm:ss'"></span></p>
+
+                                    </div>
+                                </md-list-item>
+                            </div>
+                        </div>
+                        <p style="padding: 0 16px;">Link: <a href="{{seeVersion.link}}">{{seeVersion.link}}</a></p>
+                        <p style="padding: 0 16px;" ng-if="seeVersion.signature">Signature: {{seeVersion.signature}}</p>
+
+                        <div ng-if="!seeVersion.isShowingFulldescription" btf-markdown="seeVersion.markdown_short_description" style="padding: 0 16px;"></div>
+                        <div ng-if="seeVersion.isShowingFulldescription" btf-markdown="seeVersion.markdown_full_description" style="padding: 0 16px;"></div>
+                        <md-button class="md-primary md-secondary" ng-click="seeVersion.isShowingFulldescription = !seeVersion.isShowingFulldescription">
+                            <span ng-if="!seeVersion.isShowingFulldescription">Show full description</span>
+                            <span ng-if="seeVersion.isShowingFulldescription">Hide full description</span>
+                        </md-button>
+                    </div>
+                </md-list>
             </div>
         </md-card-content>
     </md-card>

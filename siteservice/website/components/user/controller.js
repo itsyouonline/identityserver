@@ -29,9 +29,8 @@
         var TAB_NOTIFICATIONS = 'notifications';
         var TAB_ORGANIZATIONS = 'organizations';
         var TAB_AUTHORIZATIONS = 'authorizations';
-        var TAB_SEE = 'see';
         var TAB_SETTINGS = 'settings';
-        var TABS = [TAB_YOU, TAB_NOTIFICATIONS, TAB_ORGANIZATIONS,TAB_AUTHORIZATIONS, TAB_SEE, TAB_SETTINGS];
+        var TABS = [TAB_YOU, TAB_NOTIFICATIONS, TAB_ORGANIZATIONS,TAB_AUTHORIZATIONS, TAB_SETTINGS];
 
         vm.owner = [];
         vm.ownerTree = {};
@@ -68,8 +67,6 @@
         vm.loadOrganizations = loadOrganizations;
         vm.loadUser = loadUser;
         vm.loadAuthorizations = loadAuthorizations;
-        vm.loadSeeObjects = loadSeeObjects;
-        vm.showSeeObject = showSeeObject;
         vm.loadVerifiedPhones = loadVerifiedPhones;
         vm.loadSettings = loadSettings;
         vm.showAuthorizationDetailDialog = showAuthorizationDetailDialog;
@@ -210,23 +207,6 @@
                         vm.loaded.authorizations = true;
                     }
                 );
-        }
-
-        function loadSeeObjects() {
-            if (vm.loaded.see) {
-                return;
-            }
-            UserService.getSeeObjects(vm.username)
-                .then(
-                    function (data) {
-                        vm.seeObjects = data;
-                        vm.loaded.see = true;
-                    }
-                );
-        }
-
-        function showSeeObject(event, seeObject) {
-            $window.location.hash = '#/see/' + seeObject.globalid + '/' + seeObject.uniqueid + '/detail';
         }
 
         function loadUser() {

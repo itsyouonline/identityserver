@@ -4,29 +4,34 @@
 
     <md-list>
         <div ng-repeat="seeObject in vm.seeObjects">
-            <div flex="100" ng-click="vm.showSeeObject($event, seeObject)">
+            <div flex="100">
                 <div layout="row" layout-align="space-between none" class="border-top-light">
                     <div>
                         <md-list-item class="md-2-line">
                             <div class="md-list-item-text">
-                                <span>{{seeObject.category }}</span>
-                                <p>{{seeObject.creation_date }}</p>
+                                <span>{{seeObject.uniqueid }} - {{seeObject.category }} - Version: {{seeObject.version}}</span>
+                                <p><span ng-bind="::seeObject.creation_date | date: 'd MMM y H:mm:ss'"></span></p>
                             </div>
                         </md-list-item>
                     </div>
                     <div>
                         <md-list-item class="md-2-line">
                             <div class="md-list-item-text">
-                                <p>Start: {{seeObject.start_date }}</p>
-                                <p>End: {{seeObject.end_date }}</p>
-                                <md-button class="md-primary md-secondary">
+                                <p>Start: <span ng-bind="::seeObject.start_date | date: 'd MMM y H:mm:ss'"></span></p>
+                                <p>End: <span ng-bind="::seeObject.end_date | date: 'd MMM y H:mm:ss'"></span></p>
+                                <md-button class="md-primary md-secondary" ng-click="vm.showSeeObject($event, seeObject)">
                                     <span>Details</span>
                                 </md-button>
                             </div>
                         </md-list-item>
                     </div>
                 </div>
-                <div ng-if="seeObject.markdown_short_description" btf-markdown="seeObject.markdown_short_description" style="padding: 0 16px;"></div>
+                <div ng-if="!seeObject.isShowingFulldescription" btf-markdown="seeObject.markdown_short_description" style="padding: 0 16px;"></div>
+                <div ng-if="seeObject.isShowingFulldescription" btf-markdown="seeObject.markdown_full_description" style="padding: 0 16px;"></div>
+                <md-button class="md-primary md-secondary" ng-click="seeObject.isShowingFulldescription = !seeObject.isShowingFulldescription">
+                    <span ng-if="!seeObject.isShowingFulldescription">Show full description</span>
+                    <span ng-if="seeObject.isShowingFulldescription">Hide full description</span>
+                </md-button>
             </div>
         </div>
     </md-list>

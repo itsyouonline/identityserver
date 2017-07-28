@@ -60,6 +60,7 @@
         vm.showMoveSuborganizationDialog = showMoveSuborganizationDialog;
         vm.listOrganizatonTree = listOrganizatonTree;
         vm.loadSeeObjects = loadSeeObjects;
+        vm.showSeeObject = showSeeObject
 
         activate();
 
@@ -203,6 +204,10 @@
                       vm.seeObjects = data;
                   }
               );
+        }
+
+        function showSeeObject(event, seeObject) {
+            $window.location.hash = '#/see/' + seeObject.globalid + '/' + seeObject.uniqueid + '/detail';
         }
 
         function showInvitationDialog(ev) {

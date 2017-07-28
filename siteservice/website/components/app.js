@@ -108,15 +108,6 @@
                 pageTitle: 'Authorizations'
             }
         })
-        .state('see', {
-            url: '/see',
-            templateUrl: 'components/user/views/see.html',
-            controller: 'UserHomeController',
-            controllerAs: 'vm',
-            params: {
-                pageTitle: 'See'
-            }
-        })
         .state('/seeDetail', {
             url: '/see/:globalid/:uniqueid/detail',
             templateUrl: 'components/user/views/seeDetail.html',

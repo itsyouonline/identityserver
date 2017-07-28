@@ -279,8 +279,12 @@
             return genericHttpCall($http.get, url);
         }
 
-        function getSeeObject(username, organization, uniqueid) {
-            var url = apiURL + '/' + encodeURIComponent(username) + '/see/' + encodeURIComponent(organization) + '/' + encodeURIComponent(uniqueid);
+        function getSeeObject(username, organization, uniqueid, all) {
+            var version = "latest";
+            if (all === true) {
+              version = "all"
+            }
+            var url = apiURL + '/' + encodeURIComponent(username) + '/see/' + encodeURIComponent(organization) + '/' + encodeURIComponent(uniqueid) + '?version=' + version;
             return genericHttpCall($http.get, url);
         }
 
