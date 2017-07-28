@@ -289,4 +289,12 @@
                    ng-click="vm.verifyEmail($event, email)">Verify
         </md-button>
     </md-list-item>
+    <md-list-item ng-if="::authorizations.keystore">
+        <p><i class="fa fa-key">
+            <md-tooltip><span translate="keystore">Keystore</span></md-tooltip>
+        </i>
+            <span translate='organizationkeystore'>Your keystore for this organization</span>
+        </p>
+        <md-checkbox class="md-secondary" ng-model="authorizations.keystore"></md-checkbox>
+    </md-list-item>
 </md-list>

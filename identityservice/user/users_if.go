@@ -133,6 +133,15 @@ type UsersInterface interface { // Post is the handler for POST /users
 	DeletePublicKey(http.ResponseWriter, *http.Request)
 	// ListPublicKeys Lists all public keys
 	ListPublicKeys(http.ResponseWriter, *http.Request)
+	// GetKeyStore is the handler for GET /users/{username}/keystore
+	// Returns all the publickeys written to the user by an organizaton
+	GetKeyStore(http.ResponseWriter, *http.Request)
+	// GetKeyStoreKey is the handler for GET /users/{username}/keystore{label}
+	// Returns all specific publickey written to the user by an organizaton
+	GetKeyStoreKey(http.ResponseWriter, *http.Request)
+	// SaveKeyStoreKey is the handler for POST /users/{username}/keystore
+	// Returns all the publickeys written to the user by an organizaton
+	SaveKeyStoreKey(http.ResponseWriter, *http.Request)
 	// GetTwoFAMethods is the handler for GET /users/{username}/twofamethods
 	// Get the possible two factor authentication methods
 	GetTwoFAMethods(http.ResponseWriter, *http.Request)
@@ -211,6 +220,9 @@ func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
 	r.Handle("/users/{username}/publickeys/{label}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.GetPublicKey))).Methods("GET")
 	r.Handle("/users/{username}/publickeys/{label}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.UpdatePublicKey))).Methods("PUT")
 	r.Handle("/users/{username}/publickeys/{label}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.DeletePublicKey))).Methods("DELETE")
+	r.Handle("/users/{username}/keystore", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:keystore"}).Handler).Then(http.HandlerFunc(i.GetKeyStore))).Methods("GET")
+	r.Handle("/users/{username}/keystore/{label}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:keystore"}).Handler).Then(http.HandlerFunc(i.GetKeyStoreKey))).Methods("GET")
+	r.Handle("/users/{username}/keystore", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:keystore"}).Handler).Then(http.HandlerFunc(i.SaveKeyStoreKey))).Methods("POST")
 	r.Handle("/users/{username}/facebook", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.DeleteFacebookAccount))).Methods("DELETE")
 	r.Handle("/users/{username}/emailaddresses", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.ListEmailAddresses))).Methods("GET")
 	r.Handle("/users/{username}/emailaddresses", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.RegisterNewEmailAddress))).Methods("POST")

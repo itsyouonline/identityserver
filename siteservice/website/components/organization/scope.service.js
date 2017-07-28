@@ -64,6 +64,9 @@
             vars: {
                 label: true
             }
+        }, {
+            scope: 'user:keystore',
+            translation: 'keystore',
         }];
 
         function getScopes() {

@@ -135,6 +135,9 @@
                     }
                     else if (scope === 'user:facebook') {
                         $scope.authorizations.facebook = true;
+                    }
+                    else if (scope === 'user:keystore') {
+                        $scope.authorizations.keystore = true;
                     } else if (scope.startsWith('user:ownerof')) {
                         switch (splitPermission[2]) {
                             case 'email':

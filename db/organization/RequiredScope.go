@@ -29,6 +29,7 @@ func (requiredScope RequiredScope) IsValid() bool {
 		"user:phone",
 		"user:publickey",
 		"user:avatar",
+		"user:keystore",
 	}
 	valid := false
 	for _, scope := range possibleScopes {
@@ -78,6 +79,9 @@ func (requiredScope *RequiredScope) IsAuthorized(authorization user.Authorizatio
 		return false
 	}
 	if strings.HasPrefix(scope, "user:publickey") && !user.LabelledPropertyIsAuthorized(scope, "user:publickey", authorization.PublicKeys) {
+		return false
+	}
+	if strings.HasPrefix(scope, "user:keystore") && !authorization.KeyStore {
 		return false
 	}
 	return true

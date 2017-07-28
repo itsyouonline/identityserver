@@ -534,5 +534,7 @@
     "email_validation_link": "An email validation link has been sent.",
     "back": "Back",
     "no_email_addresses": "This user does not have any registered email addresses",
-    "has_validated_email": "This user already has at least 1 validated email address, or ongoing email address validation"
+    "has_validated_email": "This user already has at least 1 validated email address, or ongoing email address validation",
+    "keystore": "keystore",
+    "organizationkeystore": "Your keystore for this organization"
 }

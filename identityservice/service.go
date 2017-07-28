@@ -9,6 +9,7 @@ import (
 	"github.com/itsyouonline/identityserver/db"
 	companydb "github.com/itsyouonline/identityserver/db/company"
 	contractdb "github.com/itsyouonline/identityserver/db/contract"
+	"github.com/itsyouonline/identityserver/db/keystore"
 	organizationdb "github.com/itsyouonline/identityserver/db/organization"
 	"github.com/itsyouonline/identityserver/db/see"
 	userdb "github.com/itsyouonline/identityserver/db/user"
@@ -89,6 +90,8 @@ func (service *Service) AddRoutes(router *mux.Router) {
 	// Initialize registry models
 	registry.InitModels()
 
+	// Initialize keystore models
+	keystore.InitModels()
 }
 
 func generateRandomBytes(n int) ([]byte, error) {

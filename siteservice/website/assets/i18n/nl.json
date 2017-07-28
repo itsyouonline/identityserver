@@ -534,5 +534,7 @@
     "email_validation_link": "Er is een email validatie link verzonden.",
     "back": "Terug",
     "no_email_addresses": "Deze gebruiker heeft geen geregistreerde e-mailadressen",
-    "has_validated_email": "Deze gebruiker heeft al minstens 1 gevalideerd e-mailadres of doorlopende e-mailadres validatie"
+    "has_validated_email": "Deze gebruiker heeft al minstens 1 gevalideerd e-mailadres of doorlopende e-mailadres validatie",
+    "keystore": "keystore",
+    "organizationkeystore": "Jouw keystore voor deze organizatie"
 }

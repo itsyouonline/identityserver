@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"time"
 
 	"fmt"
 	"strings"
@@ -17,6 +18,7 @@ import (
 	"github.com/itsyouonline/identityserver/credentials/totp"
 	"github.com/itsyouonline/identityserver/db"
 	contractdb "github.com/itsyouonline/identityserver/db/contract"
+	"github.com/itsyouonline/identityserver/db/keystore"
 	organizationDb "github.com/itsyouonline/identityserver/db/organization"
 	"github.com/itsyouonline/identityserver/db/registry"
 	seeDb "github.com/itsyouonline/identityserver/db/see"
@@ -2028,6 +2030,97 @@ func (api UsersAPI) ListPublicKeys(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(publicKeys)
+}
+
+// GetKeyStore returns all the publickeys written to the user by an organizaton
+func (api UsersAPI) GetKeyStore(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	globalid := context.Get(r, "client_id").(string)
+
+	mgr := keystore.NewManager(r)
+	keys, err := mgr.ListKeyStoreKeys(username, globalid)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to get keystore keys: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(keys)
+}
+
+// GetKeyStoreKey returns all specific publickey written to the user by an organizaton
+func (api UsersAPI) GetKeyStoreKey(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	globalid := context.Get(r, "client_id").(string)
+	label := mux.Vars(r)["label"]
+
+	mgr := keystore.NewManager(r)
+
+	key, err := mgr.GetKeyStoreKey(username, globalid, label)
+	if db.IsNotFound(err) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		log.Error("Failed to get keystore key: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(key)
+}
+
+// SaveKeyStoreKey returns all the publickeys written to the user by an organizaton
+func (api UsersAPI) SaveKeyStoreKey(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	globalid := context.Get(r, "client_id").(string)
+
+	body := keystore.KeyStoreKey{}
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		log.Debug("Keystore key decoding failed: ", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	// set/update the username and globalid values to those from the authentication
+	body.Username = username
+	body.Globalid = globalid
+	// set the keys timestamp
+	body.KeyData.TimeStamp = db.DateTime(time.Now())
+
+	if !body.Validate() {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	mgr := keystore.NewManager(r)
+
+	// check if this user/organization already has a key under this label
+	if _, err := mgr.GetKeyStoreKey(username, globalid, body.Label); err == nil {
+		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+		return
+	}
+
+	err := mgr.Create(&body)
+	if err != nil {
+		log.Error("error while saving keystore key: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	key, err := mgr.GetKeyStoreKey(username, globalid, body.Label)
+	if err != nil {
+		log.Error("error while retrieving keystore key: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(key)
 }
 
 // UpdateName is the handler for PUT /users/{username}/name

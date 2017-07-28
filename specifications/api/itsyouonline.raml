@@ -392,6 +392,20 @@ types:
           maxLength: 250
           pattern: ^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$
 
+  KeyStoreKey:
+    properties:
+      label: Label
+      username?: string
+      globalid?: string
+      key: string
+      keydata: KeyData
+
+  KeyData:
+    properties:
+      timestamp?: datetime
+      commen?: string
+      algorithm: string
+
   Company:
     properties:
         globalid:
@@ -1385,6 +1399,43 @@ securedBy: [ oauth_2_0 ]
             description: Public key deleted
           404:
             description: Not found
+
+  /{username}/keystore:
+    securedBy: [oauth_2_0: { scopes: [ "user:keystore" ] } ]
+    get:
+      displayName: GetKeyStore
+      description: Lists all keys written to this users keystore by the accessing organization
+      responses:
+        200:
+          body:
+            application/json:
+              type: KeyStoreKey[]
+
+    post:
+      displayName: SaveKeyStoreKey
+      description: Saves a new key to this users keystore. The username, globalid and timestamp will be overwritten
+      body:
+        application/json:
+          type: KeyStoreKey
+      responses:
+        201:
+          body:
+            applicaton/json:
+              type: KeyStoreKey
+        409:
+          description: A key with this label for this organization in this user's keystore already exists
+
+    /{label}:
+      get:
+        displayName: GetKeyStoreKey
+        description: Gets the key written to this users keystore for the given label by the accessing organization
+        responses:
+          200:
+            body:
+              application/json:
+                type: KeyStoreKey
+          404:
+            description: No key found for this label
 
 /organizations:
   post:
