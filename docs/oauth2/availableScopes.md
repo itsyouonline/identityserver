@@ -60,6 +60,11 @@ keys and additional data for these keys can be stored. They are not exposed to t
 The keystore access is restricted to those keys written by the organization, all others are
 hidden. Once a key is written, it can only be retrieved, not modified or deleted.
 
+## `user:see`
+
+The `user:see` scope gives an organization access to the see documents written by the organization.
+Once a document is written, it can only be retrieved, not modified or deleted.
+
 ## `user:owneroff:email:<emailaddress>`
 
 Users need to share this verified email address to complete the authorization flow.
