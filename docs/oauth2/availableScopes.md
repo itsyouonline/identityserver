@@ -67,7 +67,7 @@ hidden. Once a key is written, it can only be retrieved, not modified or deleted
 ## `user:see`
 
 The `user:see` scope gives an organization access to the see documents written by the organization.
-Once a document is written, it can only be retrieved, not modified or deleted.
+See documents can't be modified or deleted after being uploaded, only a new version can be uploaded.
 
 ## `user:owneroff:email:<emailaddress>`
 

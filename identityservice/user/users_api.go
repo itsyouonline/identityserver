@@ -1657,12 +1657,14 @@ func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 	version := "latest"
 	versionInt := 0
 	if versionStr != "" {
-		if versionStr == "all" {
-			version = "all"
-		} else {
-			var err error
-			versionInt, err = strconv.Atoi(versionStr)
-			if err == nil {
+		var err error
+		versionInt, err = strconv.Atoi(versionStr)
+		if err == nil {
+			if versionInt == -1 {
+				version = "latest"
+			} else if versionInt == 0 {
+				version = "all"
+			} else {
 				version = "index"
 			}
 		}

@@ -280,9 +280,9 @@
         }
 
         function getSeeObject(username, organization, uniqueid, all) {
-            var version = "latest";
+            var version = "-1";
             if (all === true) {
-              version = "all"
+              version = "0"
             }
             var url = apiURL + '/' + encodeURIComponent(username) + '/see/' + encodeURIComponent(organization) + '/' + encodeURIComponent(uniqueid) + '?version=' + version;
             return genericHttpCall($http.get, url);
