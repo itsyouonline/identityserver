@@ -33,7 +33,9 @@
                             <div>
                                 <md-list-item class="md-2-line">
                                     <div class="md-list-item-text">
-                                        <span>{{seeVersion.category}} - Version: {{seeVersion.version }}</span>
+                                        <span>{{seeVersion.category}} - Version: {{seeVersion.version }}
+                                            <span ng-if="::seeVersion.signature" class="md-body-1"><i class="fa fa-check green"></i></span>
+                                        </span>
                                         <p><span ng-bind="::seeVersion.creation_date | date: 'd MMM y H:mm:ss'"></span></p>
                                     </div>
                                 </md-list-item>
