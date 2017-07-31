@@ -1576,26 +1576,6 @@ func (api UsersAPI) DeleteAuthorization(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (api UsersAPI) GetSeeObjects(w http.ResponseWriter, r *http.Request) {
-	username := mux.Vars(r)["username"]
-
-	seeMgr := seeDb.NewManager(r)
-	seeObjects, err := seeMgr.GetSeeObjects(username)
-	if err != nil {
-		log.Error("Failed to get see objects", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	list := make([]*seeDb.SeeView, len(seeObjects))
-	for i, seeObject := range seeObjects {
-		list[i] = seeObject.ConvertToSeeView(len(seeObject.Versions))
-	}
-
-	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(list)
-}
-
 func (api UsersAPI) GetSeeObjectsByOrganization(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	organizationGlobalID := mux.Vars(r)["globalid"]
@@ -1681,7 +1661,6 @@ func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	organizationGlobalID := mux.Vars(r)["globalid"]
-	uniqueID := mux.Vars(r)["uniqueid"]
 
 	requestingClient, validClient := context.Get(r, "client_id").(string)
 	if !validClient {
@@ -1700,12 +1679,21 @@ func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
 
 	seeView.Username = username
 	seeView.Globalid = requestingClient
-	seeView.Uniqueid = uniqueID
 
 	if !seeView.Validate() {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
+
+	if seeView.Signature != "" {
+		keyMgr := keystore.NewManager(r)
+		_, err := keyMgr.GetKeyStoreKey(username, requestingClient, seeView.KeyStoreLabel)
+		if db.IsNotFound(err) {
+			http.Error(w, http.StatusText(http.StatusPreconditionFailed), http.StatusPreconditionFailed)
+			return
+		}
+	}
+
 	seeVersion := seeView.ConvertToSeeVersion()
 	see := seeDb.See{}
 	see.Username = seeView.Username
@@ -1723,7 +1711,7 @@ func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	seeObject, err := seeMgr.GetSeeObject(username, requestingClient, uniqueID)
+	seeObject, err := seeMgr.GetSeeObject(username, requestingClient, seeView.Uniqueid)
 	if db.IsNotFound(err) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
@@ -1766,6 +1754,14 @@ func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 	if !seeView.Validate() {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
+	}
+	if seeView.Signature != "" {
+		keyMgr := keystore.NewManager(r)
+		_, err := keyMgr.GetKeyStoreKey(username, requestingClient, seeView.KeyStoreLabel)
+		if db.IsNotFound(err) {
+			http.Error(w, http.StatusText(http.StatusPreconditionFailed), http.StatusPreconditionFailed)
+			return
+		}
 	}
 
 	seeVersion := seeView.ConvertToSeeVersion()
@@ -1885,6 +1881,14 @@ func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	keyMgr := keystore.NewManager(r)
+	_, err = keyMgr.GetKeyStoreKey(username, requestingClient, seeView.KeyStoreLabel)
+	if db.IsNotFound(err) {
+		http.Error(w, http.StatusText(http.StatusPreconditionFailed), http.StatusPreconditionFailed)
+		return
+	}
+
+	seeObject.Versions[version-1].KeyStoreLabel = seeView.KeyStoreLabel
 	seeObject.Versions[version-1].Signature = seeView.Signature
 
 	err = seeMgr.Update(seeObject)

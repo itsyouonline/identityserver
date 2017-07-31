@@ -535,5 +535,7 @@
     "no_email_addresses": "This user does not have any registered email addresses",
     "has_validated_email": "This user already has at least 1 validated email address, or ongoing email address validation",
     "keystore": "keystore",
-    "organizationkeystore": "Your keystore for this organization"
+    "organizationkeystore": "Your keystore for this organization",
+    "see": "see",
+    "organizationsee": "Your see documents for this organization"
 }

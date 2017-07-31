@@ -297,4 +297,12 @@
         </p>
         <md-checkbox class="md-secondary" ng-model="authorizations.keystore"></md-checkbox>
     </md-list-item>
+    <md-list-item ng-if="::authorizations.see">
+        <p><i class="fa fa-file">
+            <md-tooltip><span translate="see">See</span></md-tooltip>
+        </i>
+            <span translate='organizationsee'>Your see documents for this organization</span>
+        </p>
+        <md-checkbox class="md-secondary" ng-model="authorizations.see"></md-checkbox>
+    </md-list-item>
 </md-list>

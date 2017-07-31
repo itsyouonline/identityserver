@@ -536,5 +536,7 @@
     "no_email_addresses": "Deze gebruiker heeft geen geregistreerde e-mailadressen",
     "has_validated_email": "Deze gebruiker heeft al minstens 1 gevalideerd e-mailadres of doorlopende e-mailadres validatie",
     "keystore": "keystore",
-    "organizationkeystore": "Jouw keystore voor deze organizatie"
+    "organizationkeystore": "Jouw keystore voor deze organizatie",
+    "see": "see",
+    "organizationsee": "Jouw see documenten voor deze organizatie"
 }

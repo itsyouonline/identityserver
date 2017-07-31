@@ -5,7 +5,6 @@ import (
 
 	"github.com/itsyouonline/identityserver/db"
 	"gopkg.in/mgo.v2/bson"
-	validator "gopkg.in/validator.v2"
 )
 
 type SeeVersion struct {
@@ -18,6 +17,7 @@ type SeeVersion struct {
 	CreationDate             *db.DateTime `json:"creation_date"`
 	StartDate                *db.DateTime `json:"start_date,omitempty" bson:"startdate,omitempty"`
 	EndDate                  *db.DateTime `json:"end_date,omitempty" bson:"enddate,omitempty"`
+	KeyStoreLabel            string       `json:"keystore_label"`
 	Signature                string       `json:"signature"`
 }
 
@@ -42,11 +42,16 @@ type SeeView struct {
 	CreationDate             *db.DateTime `json:"creation_date"`
 	StartDate                *db.DateTime `json:"start_date,omitempty"`
 	EndDate                  *db.DateTime `json:"end_date,omitempty"`
+	KeyStoreLabel            string       `json:"keystore_label"`
 	Signature                string       `json:"signature"`
 }
 
 func (s *SeeView) Validate() bool {
-	return validator.Validate(s) == nil
+	return len(s.Uniqueid) < 100 && len(s.Uniqueid) > 0 &&
+		len(s.Category) < 100 && len(s.Category) > 0 &&
+		len(s.Link) > 0 &&
+		len(s.MarkdownShortDescription) > 0 &&
+		len(s.MarkdownFullDescription) > 0
 }
 
 func (s *SeeView) ConvertToSeeVersion() *SeeVersion {
@@ -60,6 +65,7 @@ func (s *SeeView) ConvertToSeeVersion() *SeeVersion {
 	seeVersion.CreationDate = &now
 	seeVersion.StartDate = s.StartDate
 	seeVersion.EndDate = s.EndDate
+	seeVersion.KeyStoreLabel = s.KeyStoreLabel
 	seeVersion.Signature = s.Signature
 	return &seeVersion
 }
@@ -78,6 +84,7 @@ func (s *See) ConvertToSeeView(version int) *SeeView {
 	seeView.CreationDate = s.Versions[version-1].CreationDate
 	seeView.StartDate = s.Versions[version-1].StartDate
 	seeView.EndDate = s.Versions[version-1].EndDate
+	seeView.KeyStoreLabel = s.Versions[version-1].KeyStoreLabel
 	seeView.Signature = s.Versions[version-1].Signature
 	return &seeView
 }
