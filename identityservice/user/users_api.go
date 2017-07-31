@@ -1861,11 +1861,7 @@ func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if seeObject.Versions[version-1].StartDate != nil || seeView.StartDate != nil {
-		if seeObject.Versions[version-1].StartDate == nil {
-			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
-			return
-		}
-		if seeView.StartDate == nil {
+		if seeObject.Versions[version-1].StartDate == nil || seeView.StartDate == nil {
 			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
 			return
 		}
@@ -1875,11 +1871,7 @@ func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if seeObject.Versions[version-1].EndDate != nil || seeView.EndDate != nil {
-		if seeObject.Versions[version-1].EndDate == nil {
-			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
-			return
-		}
-		if seeView.EndDate == nil {
+		if seeObject.Versions[version-1].EndDate == nil || seeView.EndDate == nil {
 			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
 			return
 		}
