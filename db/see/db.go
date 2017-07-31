@@ -80,8 +80,13 @@ func (m *Manager) Create(see *See) error {
 	return err
 }
 
-// Update an object
-func (m *Manager) Update(username string, globalID string, uniqueID string, seeVersion *SeeVersion) error {
+// AddVersion adds a new version to the object
+func (m *Manager) AddVersion(username string, globalID string, uniqueID string, seeVersion *SeeVersion) error {
 	qry := bson.M{"username": username, "globalid": globalID, "uniqueid": uniqueID}
 	return m.collection.Update(qry, bson.M{"$push": bson.M{"versions": seeVersion}})
+}
+
+// Update adds a signature to an existing version
+func (m *Manager) Update(see *See) error {
+	return m.collection.UpdateId(see.ID, see)
 }

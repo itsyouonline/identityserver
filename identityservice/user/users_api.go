@@ -1771,7 +1771,7 @@ func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 	seeVersion := seeView.ConvertToSeeVersion()
 
 	seeMgr := seeDb.NewManager(r)
-	err := seeMgr.Update(seeView.Username, seeView.Globalid, seeView.Uniqueid, seeVersion)
+	err := seeMgr.AddVersion(seeView.Username, seeView.Globalid, seeView.Uniqueid, seeVersion)
 	if db.IsNotFound(err) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
@@ -1794,6 +1794,119 @@ func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(seeObject.ConvertToSeeView(len(seeObject.Versions)))
+}
+
+func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	organizationGlobalID := mux.Vars(r)["globalid"]
+	uniqueID := mux.Vars(r)["uniqueid"]
+	versionStr := mux.Vars(r)["version"]
+	version, err := strconv.Atoi(versionStr)
+	if err != nil {
+		log.Error("ERROR while parsing version :\n", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	requestingClient, validClient := context.Get(r, "client_id").(string)
+	if !validClient {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if requestingClient == "itsyouonline" {
+		requestingClient = organizationGlobalID
+	}
+
+	seeView := seeDb.SeeView{}
+	if err := json.NewDecoder(r.Body).Decode(&seeView); err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	seeMgr := seeDb.NewManager(r)
+	seeObject, err := seeMgr.GetSeeObject(username, requestingClient, uniqueID)
+	if db.IsNotFound(err) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		log.Error("Failed to get see object", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	if version < 1 || version > len(seeObject.Versions) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	if seeObject.Versions[version-1].Category != seeView.Category {
+		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+		return
+	}
+	if seeObject.Versions[version-1].Link != seeView.Link {
+		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+		return
+	}
+	if seeObject.Versions[version-1].ContentType != seeView.ContentType {
+		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+		return
+	}
+	if seeObject.Versions[version-1].MarkdownShortDescription != seeView.MarkdownShortDescription {
+		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+		return
+	}
+	if seeObject.Versions[version-1].MarkdownFullDescription != seeView.MarkdownFullDescription {
+		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+		return
+	}
+	if seeObject.Versions[version-1].StartDate != nil || seeView.StartDate != nil {
+		if seeObject.Versions[version-1].StartDate == nil {
+			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+			return
+		}
+		if seeView.StartDate == nil {
+			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+			return
+		}
+		if seeObject.Versions[version-1].StartDate.String() != seeView.StartDate.String() {
+			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+			return
+		}
+	}
+	if seeObject.Versions[version-1].EndDate != nil || seeView.EndDate != nil {
+		if seeObject.Versions[version-1].EndDate == nil {
+			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+			return
+		}
+		if seeView.EndDate == nil {
+			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+			return
+		}
+		if seeObject.Versions[version-1].EndDate.String() != seeView.EndDate.String() {
+			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+			return
+		}
+	}
+	if seeObject.Versions[version-1].Signature != "" {
+		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+		return
+	}
+
+	seeObject.Versions[version-1].Signature = seeView.Signature
+
+	err = seeMgr.Update(seeObject)
+	if db.IsNotFound(err) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	if handleServerError(w, "Sign see object", err) {
+		return
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(seeObject.ConvertToSeeView(version))
 }
 
 func (api UsersAPI) AddAPIKey(w http.ResponseWriter, r *http.Request) {
