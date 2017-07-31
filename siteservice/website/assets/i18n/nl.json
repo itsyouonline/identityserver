@@ -538,5 +538,16 @@
     "keystore": "keystore",
     "organizationkeystore": "Jouw keystore voor deze organizatie",
     "see": "see",
-    "organizationsee": "Jouw see documenten voor deze organizatie"
+    "organizationsee": "Jouw see documenten voor deze organizatie",
+    "version": "Versie",
+    "start": "Start",
+    "end": "Einde",
+    "details": "Details",
+    "show_full_description": "Toon volledige beschrijving",
+    "hide_full_description": "Verberg de volledige beschrijving",
+    "show_full_history": "Toon volledige geschiedenis",
+    "hide_full_history": "Verberg de volledige geschiedenis",
+    "link": "Link",
+    "no_see_documents": "U heeft geen documenten voor deze organisatie",
+    "seedetail": "See detail"
 }

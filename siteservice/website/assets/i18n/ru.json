@@ -537,5 +537,16 @@
     "keystore": "Хранилище ключей",
     "organizationkeystore": "Ваше хранилище ключей для этой организации",
     "see": "видеть",
-    "organizationsee": "Ваши документы для этой организации"
+    "organizationsee": "Ваши документы для этой организации",
+    "version": "Версия",
+    "start": "Начало",
+    "end": "Конец",
+    "details": "Детали",
+    "show_full_description": "Показать полное описание",
+    "hide_full_description": "Скрыть полное описание",
+    "show_full_history": "Показать полную историю",
+    "hide_full_history": "Скрыть полную историю",
+    "link": "Ссылка",
+    "no_see_documents": "У вас нет документов для этой организации",
+    "seedetail": "видеть деталь"
 }

@@ -537,5 +537,16 @@
     "keystore": "keystore",
     "organizationkeystore": "Your keystore for this organization",
     "see": "see",
-    "organizationsee": "Your see documents for this organization"
+    "organizationsee": "Your see documents for this organization",
+    "version": "Version",
+    "start": "Start",
+    "end": "End",
+    "details": "Details",
+    "show_full_description": "Show full description",
+    "hide_full_description": "Hide full description",
+    "show_full_history": "Show full history",
+    "hide_full_history": "Hide full history",
+    "link": "Link",
+    "no_see_documents": "You don't have any see documents for this organization",
+    "seedetail": "See detail"
 }

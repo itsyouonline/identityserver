@@ -3,7 +3,7 @@
         <p ng-if="vm.childOrganizationNames.length === 0" translate='organization.views.detail.organization'>Organization</p>
         <p ng-if="vm.childOrganizationNames.length !== 0">
             <span ng-repeat="org in vm.childOrganizationNames">
-                <a class="breadcrumb-link" ng-href="{{ ::org.url }}" ng-bind="::org.name"></a>
+                <a class="breadcrumb-link" ng-href="{{ ::org.url }}" ng-bind="::org.name" ng-click="vm.selectedTab = 0"></a>
                 <span ng-if="::!$last">&raquo; </span>
             </span>
         </p>
@@ -19,7 +19,7 @@
                     <md-tab-label><i class="fa fa-sitemap"></i>&nbsp;<span translate='organization.views.detail.structure'>Structure</span></md-tab-label>
                 </md-tab>
                 <md-tab ui-sref="organization.see" md-on-select="vm.loadSeeObjects()">
-                    <md-tab-label><i class="fa fa-file"></i>&nbsp;<span>See</span></md-tab-label>
+                    <md-tab-label><i class="fa fa-file"></i>&nbsp;<span translate='see'>See</span></md-tab-label>
                 </md-tab>
                 <md-tab ui-sref="organization.settings" flex="100" md-on-select="vm.initSettings()">
                     <md-tab-label><i class="fa fa-cog"></i>&nbsp;<span translate='organization.views.detail.settings'>Settings</span></md-tab-label>

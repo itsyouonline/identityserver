@@ -6,10 +6,14 @@
                 <span>&raquo; </span>
             </span>
             <span>
-                <a class="breadcrumb-link" ng-href="#/organization/{{ vm.globalid }}/see">see</a>
+                <a class="breadcrumb-link" ng-href="#/organization/{{ vm.globalid }}/see" translate='see'>see</a>
+                <span>&raquo; </span>
+            </span>
+            <span>
+                <a class="breadcrumb-link" ng-href="#/organization/{{ vm.globalid }}/see/{{vm.seeObject.uniqueid}}/detail">{{vm.seeObject.uniqueid}}</a>
             </span>
         </p>
-        <h1>See detail</h1>
+        <h1 translate='seedetail'>See detail</h1>
     </div>
     <md-card>
         <md-card-content>
@@ -23,8 +27,8 @@
                     <h2>{{vm.seeObject.uniqueid}}</h2>
 
                     <md-button class="md-primary md-secondary" ng-click="vm.toggleFullHistory($event)">
-                        <span ng-if="!vm.isShowingFullHistory">Show full history</span>
-                        <span ng-if="vm.isShowingFullHistory">Hide full history</span>
+                        <span ng-if="!vm.isShowingFullHistory" translate='show_full_history'>Show full history</span>
+                        <span ng-if="vm.isShowingFullHistory" translate='hide_full_history'>Hide full history</span>
                     </md-button>
                 </div>
                 <md-list>
@@ -33,31 +37,31 @@
                             <div>
                                 <md-list-item class="md-2-line">
                                     <div class="md-list-item-text">
-                                        <span>{{seeVersion.category}} - Version: {{seeVersion.version }}
+                                        <span>{{seeVersion.category}}
                                             <span ng-if="::seeVersion.signature" class="md-body-1"><i class="fa fa-check green"></i></span>
                                         </span>
                                         <p><span ng-bind="::seeVersion.creation_date | date: 'd MMM y H:mm:ss'"></span></p>
+                                        <p><span translate='version'>Version</span>: {{seeVersion.version}}</p>
                                     </div>
                                 </md-list-item>
                             </div>
                             <div>
                                 <md-list-item class="md-2-line">
                                     <div class="md-list-item-text">
-                                        <p ng-if="::seeVersion.start_date">Start: <span ng-bind="::seeVersion.start_date | date: 'd MMM y H:mm:ss'"></span></p>
-                                        <p ng-if="::seeVersion.end_date" >End: <span ng-bind="::seeVersion.end_date | date: 'd MMM y H:mm:ss'"></span></p>
+                                        <p ng-if="::seeVersion.start_date"><span translate='start'>Start</span>: <span ng-bind="::seeVersion.start_date | date: 'd MMM y H:mm:ss'"></span></p>
+                                        <p ng-if="::seeVersion.end_date" ><span translate='end'>End</span>: <span ng-bind="::seeVersion.end_date | date: 'd MMM y H:mm:ss'"></span></p>
 
                                     </div>
                                 </md-list-item>
                             </div>
                         </div>
-                        <p style="padding: 0 16px;">Link: <a href="{{seeVersion.link}}">{{seeVersion.link}}</a></p>
-                        <p style="padding: 0 16px;" ng-if="seeVersion.signature">Signature: {{seeVersion.signature}}</p>
+                        <p style="padding: 0 16px;"><span translate='link'>Link</span>: <a href="{{seeVersion.link}}">{{seeVersion.link}}</a></p>
 
                         <div ng-if="!seeVersion.isShowingFulldescription" btf-markdown="seeVersion.markdown_short_description" style="padding: 0 16px;"></div>
                         <div ng-if="seeVersion.isShowingFulldescription" btf-markdown="seeVersion.markdown_full_description" style="padding: 0 16px;"></div>
                         <md-button class="md-primary md-secondary" ng-click="seeVersion.isShowingFulldescription = !seeVersion.isShowingFulldescription">
-                            <span ng-if="!seeVersion.isShowingFulldescription">Show full description</span>
-                            <span ng-if="seeVersion.isShowingFulldescription">Hide full description</span>
+                            <span ng-if="!seeVersion.isShowingFulldescription" translate='show_full_description'>Show full description</span>
+                            <span ng-if="seeVersion.isShowingFulldescription" translate='hide_full_description'>Hide full description</span>
                         </md-button>
                     </div>
                 </md-list>
