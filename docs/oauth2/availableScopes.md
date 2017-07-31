@@ -41,6 +41,10 @@ If the user is no member of the <globalid> organization, the oauth flow continue
 
 The `:write` extension gives an application full access(read, update, delete) to a phone number
 
+## `user:validated:phone[:<label>]`
+
+## `user:validated:email[:<label>]`
+
 ## `user:github`
 
 ## `user:facebook`

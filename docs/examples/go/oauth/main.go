@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -47,7 +48,7 @@ func main() {
 		}
 		http.SetCookie(w, sessionCookie)
 
-		u, _ := url.Parse("https://itsyou.online/v1/oauth/authorize")
+		u, _ := url.Parse("https://dev.itsyou.online:8443/v1/oauth/authorize")
 		q := u.Query()
 		q.Add("client_id", s.ClientID)
 		q.Add("redirect_uri", "http://localhost:8080/callback")
@@ -87,8 +88,11 @@ func main() {
 
 		fmt.Println(s)
 
-		hc := &http.Client{}
-		req, err := http.NewRequest("POST", "https://itsyou.online/v1/oauth/access_token", nil)
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		hc := &http.Client{Transport: tr}
+		req, err := http.NewRequest("POST", "https://dev.itsyou.online:8443/v1/oauth/access_token", nil)
 		if err != nil {
 			return
 		}

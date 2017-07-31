@@ -46,12 +46,24 @@
                 label: true
             }
         }, {
+            scope: 'user:validated:email:{label}',
+            translation: 'validated_email_address',
+            vars: {
+                label: true
+            }
+        }, {
             scope: 'user:phone:{label}:{write}',
             translation: 'phone_number',
             vars: {
                 label: true,
                 write: true
             }
+          }, {
+              scope: 'user:validated:phone:{label}',
+              translation: 'validated_phone_number',
+              vars: {
+                  label: true
+              }
         }, {
             scope: 'user:publickey:{label}',
             translation: 'public_key',

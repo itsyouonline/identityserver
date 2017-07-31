@@ -34,7 +34,7 @@
         vm.verifyEmail = verifyEmail;
         vm.submit = submit;
         vm.showDigitalWalletAddressDialog = digitalWalletAddress;
-        var properties = ['avatars', 'addresses', 'emailaddresses', 'phonenumbers', 'bankaccounts', 'digitalwallet', 'publicKeys'];
+        var properties = ['avatars', 'addresses', 'emailaddresses', 'phonenumbers', 'bankaccounts', 'digitalwallet', 'publicKeys', 'validatedemailaddresses', 'validatedphonenumbers'];
         $scope.requested = {
             organizations: {}
         };
@@ -116,6 +116,7 @@
                     };
                     var listScope = listAuthorizations[userScope];
                     if (listScope) {
+                      console.log(auth)
                         auth.reallabel = vm.user[listScope].length ? vm.user[listScope][0].label : '';
                         $scope.authorizations[listScope].push(auth);
                     }
@@ -142,6 +143,22 @@
                     else if (scope === 'user:see') {
                         $scope.authorizations.see = true;
                     }
+                    else if (scope.startsWith('user:validated:')){
+                        permissionLabel = splitPermission.length > 3 && splitPermission[3] ? splitPermission[3] : 'main';
+                        auth.requestedlabel = permissionLabel;
+                        console.log(auth)
+                        console.log(vm)
+                        switch (splitPermission[2]) {
+                            case 'email':
+                                auth.reallabel = vm.user['emailaddresses'].length ? vm.user['emailaddresses'][0].label : '';
+                                $scope.authorizations['validatedemailaddresses'].push(auth);
+                              break;
+                            case 'phone':
+                                auth.reallabel = vm.user['phonenumbers'].length ? vm.user['phonenumbers'][0].label : '';
+                                $scope.authorizations['validatedphonenumbers'].push(auth);
+                              break;
+                        }
+                    }
                     else if (scope.startsWith('user:ownerof')) {
                         switch (splitPermission[2]) {
                             case 'email':
@@ -160,12 +177,35 @@
             if (Object.keys($scope.authorizations.ownerof.emailaddresses).length) {
                 getVerifiedEmails();
             }
+            if (Object.keys($scope.authorizations.validatedemailaddresses).length) {
+                getValidatedEmails()
+            }
+            if (Object.keys($scope.authorizations.validatedphonenumbers).length) {
+                getValidatedPhones();
+            }
+
         }
 
         function getVerifiedEmails() {
             UserService.getVerifiedEmailAddresses(vm.username).then(function (confirmedEmails) {
                 vm.verifiedEmails = confirmedEmails.map(function (mail) {
                     return mail.emailaddress;
+                });
+            });
+        }
+
+        function getValidatedEmails() {
+            UserService.getVerifiedEmailAddresses(vm.username).then(function (confirmedEmails) {
+                vm.validatedEmails = confirmedEmails.map(function (mail) {
+                    return mail;
+                });
+            });
+        }
+
+        function getValidatedPhones() {
+            UserService.getVerifiedPhones(vm.username).then(function (confirmedPhones) {
+                vm.validatedPhones = confirmedPhones.map(function (phone) {
+                    return phone;
                 });
             });
         }

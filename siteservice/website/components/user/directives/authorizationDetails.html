@@ -124,6 +124,54 @@
             </md-select>
         </md-input-container>
     </md-list-item>
+    <md-list-item ng-repeat="auth in authorizations.validatedemailaddresses track by auth.requestedlabel" layout="column"
+                  layout-gt-sm="row"
+                  layout-align="space-between start" layout-align-gt-sm="start center">
+        <p>
+            <i class="fa fa-at">
+                <md-tooltip><span translate='validated_email_address'>Validated email address</span></md-tooltip>
+            </i>
+                <span ng-if="::auth.requestedlabel !== 'main'" translate='validated_email_address_for' translate-values='{label: auth.requestedlabel}'>
+                    Validated email address for <span ng-bind="::auth.requestedlabel"></span>
+                </span>
+                <span ng-if="::auth.requestedlabel  === 'main'" translate='validated_email_address'>
+                    Validated email address
+                </span>
+        </p>
+        <md-input-container>
+            <label><span translate='validated_email_address'>Validated email address</span></label>
+            <md-select ng-model="auth.reallabel">
+                <md-option ng-repeat="email in vm.validatedEmails"
+                           value="{{::email.label}}"
+                           ng-bind="::email.emailaddress"></md-option>
+            </md-select>
+        </md-input-container>
+    </md-list-item>
+
+    <md-list-item ng-repeat="auth in authorizations.validatedphonenumbers track by auth.requestedlabel" layout="column"
+                  layout-gt-sm="row"
+                  layout-align="space-between start" layout-align-gt-sm="start center">
+        <p>
+            <i class="fa fa-phone">
+                <md-tooltip><span translate='validated_phone_number'>Validated phone number</span></md-tooltip>
+            </i>
+                <span ng-if="::auth.requestedlabel !== 'main'" translate='validated_phone_number_for' translate-values='{label: auth.requestedlabel}'>
+                    Validated phone number for <span ng-bind="::auth.requestedlabel"></span>
+                </span>
+                <span ng-if="::auth.requestedlabel  === 'main'" translate='validated_phone_number'>
+                    Validated phone number
+                </span>
+        </p>
+        <md-input-container>
+            <label><span translate='validated_phone_number'>Validated Phone number</span></label>
+            <md-select ng-model="auth.reallabel">
+                <md-option ng-repeat="phone in vm.validatedPhones"
+                           value="{{::phone.label}}"
+                           ng-bind="::phone.label + ' ' + phone.phonenumber"></md-option>
+            </md-select>
+        </md-input-container>
+    </md-list-item>
+
     <md-list-item ng-repeat="auth in authorizations.phonenumbers track by auth.requestedlabel" layout="column"
                   layout-gt-sm="row"
                   layout-align="center start" layout-align-gt-sm="start center">

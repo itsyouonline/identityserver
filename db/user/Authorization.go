@@ -5,22 +5,24 @@ import "strings"
 // Authorization defines what userinformation is authorized to be seen by an organization
 // For an explanation about scopes and scopemapping, see https://github.com/itsyouonline/identityserver/blob/master/docs/oauth2/scopes.md
 type Authorization struct {
-	Addresses      []AuthorizationMap           `json:"addresses,omitempty"`
-	BankAccounts   []AuthorizationMap           `json:"bankaccounts,omitempty"`
-	DigitalWallet  []DigitalWalletAuthorization `json:"digitalwallet,omitempty"`
-	EmailAddresses []AuthorizationMap           `json:"emailaddresses,omitempty"`
-	Facebook       bool                         `json:"facebook,omitempty"`
-	Github         bool                         `json:"github,omitempty"`
-	GrantedTo      string                       `json:"grantedTo"`
-	Organizations  []string                     `json:"organizations"`
-	Phonenumbers   []AuthorizationMap           `json:"phonenumbers,omitempty"`
-	PublicKeys     []AuthorizationMap           `json:"publicKeys,omitempty"`
-	Username       string                       `json:"username"`
-	Name           bool                         `json:"name"`
-	OwnerOf        OwnerOf                      `json:"ownerof,omitempty"`
-	Avatars        []AuthorizationMap           `json:"avatars,omitempty"`
-	KeyStore       bool                         `json:"keystore,omitempty"`
-	See            bool                         `json:"see,omitempty"`
+	Addresses               []AuthorizationMap           `json:"addresses,omitempty"`
+	BankAccounts            []AuthorizationMap           `json:"bankaccounts,omitempty"`
+	DigitalWallet           []DigitalWalletAuthorization `json:"digitalwallet,omitempty"`
+	EmailAddresses          []AuthorizationMap           `json:"emailaddresses,omitempty"`
+	ValidatedEmailAddresses []AuthorizationMap           `json:"validatedemailaddresses,omitempty"`
+	Facebook                bool                         `json:"facebook,omitempty"`
+	Github                  bool                         `json:"github,omitempty"`
+	GrantedTo               string                       `json:"grantedTo"`
+	Organizations           []string                     `json:"organizations"`
+	Phonenumbers            []AuthorizationMap           `json:"phonenumbers,omitempty"`
+	ValidatedPhonenumbers   []AuthorizationMap           `json:"validatedphonenumbers,omitempty"`
+	PublicKeys              []AuthorizationMap           `json:"publicKeys,omitempty"`
+	Username                string                       `json:"username"`
+	Name                    bool                         `json:"name"`
+	OwnerOf                 OwnerOf                      `json:"ownerof,omitempty"`
+	Avatars                 []AuthorizationMap           `json:"avatars,omitempty"`
+	KeyStore                bool                         `json:"keystore,omitempty"`
+	See                     bool                         `json:"see,omitempty"`
 }
 
 type AuthorizationMap struct {
@@ -71,6 +73,12 @@ func (authorization Authorization) FilterAuthorizedScopes(requestedscopes []stri
 			authorizedScopes = append(authorizedScopes, scope)
 		}
 		if strings.HasPrefix(scope, "user:phone") && LabelledPropertyIsAuthorized(scope, "user:phone", authorization.Phonenumbers) {
+			authorizedScopes = append(authorizedScopes, scope)
+		}
+		if strings.HasPrefix(scope, "user:validated:email") && LabelledPropertyIsAuthorized(scope, "user:validated:email", authorization.ValidatedEmailAddresses) {
+			authorizedScopes = append(authorizedScopes, scope)
+		}
+		if strings.HasPrefix(scope, "user:validated:phone") && LabelledPropertyIsAuthorized(scope, "user:validated:phone", authorization.ValidatedPhonenumbers) {
 			authorizedScopes = append(authorizedScopes, scope)
 		}
 		if strings.HasPrefix(scope, "user:publickey") && LabelledPropertyIsAuthorized(scope, "user:publickey", authorization.PublicKeys) {

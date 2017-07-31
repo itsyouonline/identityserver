@@ -848,6 +848,18 @@
                         else if (scope === 'user:see') {
                             authorization.see = true;
                         }
+                        else if (scope.startsWith('user:validated:')){
+                            switch (splitPermission[2]) {
+                                case 'email':
+                                    auth.reallabel = vm.user['emailaddresses'].length ? vm.user['emailaddresses'][0].label : '';
+                                    $scope.authorizations['emailaddresses'].push(auth);
+                                  break;
+                                case 'phone':
+                                    auth.reallabel = vm.user['phonenumbers'].length ? vm.user['phonenumbers'][0].label : '';
+                                    $scope.authorizations['phonenumbers'].push(auth);
+                                  break;
+                            }
+                        }
                     });
                     return showAuthorizationDetailDialog(authorization, event, isNew);
                 }

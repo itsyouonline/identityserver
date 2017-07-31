@@ -447,16 +447,18 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 	//Create an administrator authorization
 	if authorization == nil && isAdmin {
 		authorization = &user.Authorization{
-			Name:           true,
-			Github:         true,
-			Facebook:       true,
-			Addresses:      []user.AuthorizationMap{},
-			BankAccounts:   []user.AuthorizationMap{},
-			DigitalWallet:  []user.DigitalWalletAuthorization{},
-			EmailAddresses: []user.AuthorizationMap{},
-			Phonenumbers:   []user.AuthorizationMap{},
-			PublicKeys:     []user.AuthorizationMap{},
-			Avatars:        []user.AuthorizationMap{},
+			Name:                    true,
+			Github:                  true,
+			Facebook:                true,
+			Addresses:               []user.AuthorizationMap{},
+			BankAccounts:            []user.AuthorizationMap{},
+			DigitalWallet:           []user.DigitalWalletAuthorization{},
+			EmailAddresses:          []user.AuthorizationMap{},
+			ValidatedEmailAddresses: []user.AuthorizationMap{},
+			Phonenumbers:            []user.AuthorizationMap{},
+			ValidatedPhonenumbers:   []user.AuthorizationMap{},
+			PublicKeys:              []user.AuthorizationMap{},
+			Avatars:                 []user.AuthorizationMap{},
 		}
 		for _, address := range userobj.Addresses {
 			authorization.Addresses = append(authorization.Addresses, user.AuthorizationMap{RequestedLabel: address.Label, RealLabel: address.Label})
@@ -470,8 +472,15 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 		for _, a := range userobj.EmailAddresses {
 			authorization.EmailAddresses = append(authorization.EmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
 		}
+		for _, a := range userobj.EmailAddresses {
+			authorization.ValidatedEmailAddresses = append(authorization.ValidatedEmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+		}
 		for _, a := range userobj.Phonenumbers {
 			authorization.Phonenumbers = append(authorization.Phonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+		}
+		for _, a := range userobj.Phonenumbers {
+
+			authorization.ValidatedPhonenumbers = append(authorization.ValidatedPhonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
 		}
 		for _, a := range userobj.PublicKeys {
 			authorization.PublicKeys = append(authorization.PublicKeys, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
@@ -487,14 +496,16 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	respBody := &Userview{
-		Username:       userobj.Username,
-		Github:         user.GithubAccount{},
-		Facebook:       user.FacebookAccount{},
-		Addresses:      []user.Address{},
-		EmailAddresses: []user.EmailAddress{},
-		Phonenumbers:   []user.Phonenumber{},
-		BankAccounts:   []user.BankAccount{},
-		DigitalWallet:  []user.DigitalAssetAddress{},
+		Username:                userobj.Username,
+		Github:                  user.GithubAccount{},
+		Facebook:                user.FacebookAccount{},
+		Addresses:               []user.Address{},
+		EmailAddresses:          []user.EmailAddress{},
+		ValidatedEmailAddresses: []user.EmailAddress{},
+		Phonenumbers:            []user.Phonenumber{},
+		ValidatedPhonenumbers:   []user.Phonenumber{},
+		BankAccounts:            []user.BankAccount{},
+		DigitalWallet:           []user.DigitalAssetAddress{},
 		OwnerOf: user.OwnerOf{
 			EmailAddresses: []string{},
 		},
@@ -614,6 +625,47 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 				respBody.Avatars = append(respBody.Avatars, avatar)
 			} else {
 				log.Debug(err)
+			}
+		}
+	}
+
+	valMgr := validationdb.NewManager(r)
+	if authorization.ValidatedEmailAddresses != nil {
+		for _, validatedEmailMap := range authorization.ValidatedEmailAddresses {
+			email, err := userobj.GetEmailAddressByLabel(validatedEmailMap.RealLabel)
+			if err == nil {
+				validated, err := valMgr.IsEmailAddressValidated(authorization.Username, email.EmailAddress)
+				if err != nil {
+					log.Error("Failed to verify if email address is validated for this user: ", err)
+					continue
+				}
+				if !validated {
+					continue
+				}
+				email.Label = validatedEmailMap.RequestedLabel
+				respBody.ValidatedEmailAddresses = append(respBody.ValidatedEmailAddresses, email)
+			} else {
+				log.Debug(err)
+			}
+		}
+
+		if authorization.ValidatedPhonenumbers != nil {
+			for _, validatedPhoneMap := range authorization.ValidatedPhonenumbers {
+				phone, err := userobj.GetPhonenumberByLabel(validatedPhoneMap.RealLabel)
+				if err == nil {
+					validated, err := valMgr.IsPhonenumberValidated(authorization.Username, phone.Phonenumber)
+					if err != nil {
+						log.Error("Failed to verify if phone number is validated for this user: ", err)
+						continue
+					}
+					if !validated {
+						continue
+					}
+					phone.Label = validatedPhoneMap.RequestedLabel
+					respBody.ValidatedPhonenumbers = append(respBody.ValidatedPhonenumbers, phone)
+				} else {
+					log.Debug(err)
+				}
 			}
 		}
 	}

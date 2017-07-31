@@ -26,7 +26,9 @@ func (requiredScope RequiredScope) IsValid() bool {
 		"user:bankaccount",
 		"user:digitalwalletaddress",
 		"user:email",
+		"user:validated:email",
 		"user:phone",
+		"user:validated:phone",
 		"user:publickey",
 		"user:avatar",
 		"user:keystore",
@@ -76,7 +78,13 @@ func (requiredScope *RequiredScope) IsAuthorized(authorization user.Authorizatio
 	if strings.HasPrefix(scope, "user:email") && !user.LabelledPropertyIsAuthorized(scope, "user:email", authorization.EmailAddresses) {
 		return false
 	}
+	if strings.HasPrefix(scope, "user:validated:email") && !user.LabelledPropertyIsAuthorized(scope, "user:validated:email", authorization.ValidatedEmailAddresses) {
+		return false
+	}
 	if strings.HasPrefix(scope, "user:phone") && !user.LabelledPropertyIsAuthorized(scope, "user:phone", authorization.Phonenumbers) {
+		return false
+	}
+	if strings.HasPrefix(scope, "user:validated:phone") && !user.LabelledPropertyIsAuthorized(scope, "user:validated:phone", authorization.Phonenumbers) {
 		return false
 	}
 	if strings.HasPrefix(scope, "user:publickey") && !user.LabelledPropertyIsAuthorized(scope, "user:publickey", authorization.PublicKeys) {
