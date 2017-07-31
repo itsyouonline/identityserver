@@ -298,7 +298,7 @@
                 "onenotification": "Je hebt 1 ongelezen melding",
                 "unreadnotifications": "Je hebt {{count}} ongelezen meldingen",
                 "profile": "Profiel",
-                "organizations": "organisaties",
+                "organizations": "Organisaties",
                 "sharedinfo": "Gedeelde informatie",
                 "signout": "Afmelden",
                 "register": "Registreer",
@@ -377,7 +377,7 @@
                 "notsharinginfo": "Een deel van de vereiste informatie wordt niet gedeelt met {{org}}"
             },
             "organizations": {
-                "organizations": "organisaties",
+                "organizations": "Organisaties",
                 "createnew": "Maak nieuwe",
                 "organization": "Organizatie"
             },
@@ -549,8 +549,10 @@
     "details": "Details",
     "show_full_description": "Toon volledige beschrijving",
     "hide_full_description": "Verberg de volledige beschrijving",
+    "toggle_full_description": "Toggle volledige beschrijving",
     "show_full_history": "Toon volledige geschiedenis",
     "hide_full_history": "Verberg de volledige geschiedenis",
+    "toggle_full_history": "Toggle volledige geschiedenis",
     "link": "Link",
     "no_see_documents": "U heeft geen documenten voor deze organisatie",
     "seedetail": "See detail"

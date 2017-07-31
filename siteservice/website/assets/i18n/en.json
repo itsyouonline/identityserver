@@ -548,8 +548,10 @@
     "details": "Details",
     "show_full_description": "Show full description",
     "hide_full_description": "Hide full description",
+    "toggle_full_description": "Toggle full description",
     "show_full_history": "Show full history",
     "hide_full_history": "Hide full history",
+    "toggle_full_history": "Toggle full history",
     "link": "Link",
     "no_see_documents": "You don't have any see documents for this organization",
     "seedetail": "See detail"

@@ -548,8 +548,10 @@
     "details": "Детали",
     "show_full_description": "Показать полное описание",
     "hide_full_description": "Скрыть полное описание",
+    "toggle_full_description": "Переключить полное описание",
     "show_full_history": "Показать полную историю",
     "hide_full_history": "Скрыть полную историю",
+    "toggle_full_history": "Перевернуть полную историю",
     "link": "Ссылка",
     "no_see_documents": "У вас нет документов для этой организации",
     "seedetail": "видеть деталь"
