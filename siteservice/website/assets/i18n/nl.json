@@ -299,7 +299,6 @@
                 "unreadnotifications": "Je hebt {{count}} ongelezen meldingen",
                 "profile": "Profiel",
                 "organizations": "Organisaties",
-                "sharedinfo": "Gedeelde informatie",
                 "signout": "Afmelden",
                 "register": "Registreer",
                 "signin": "Inloggen",
@@ -337,7 +336,6 @@
                 "grant": "Geef toestemming"
             },
             "authorizations": {
-                "sharedinfo": "Gedeelde informatie",
                 "notsharing": "Je deelt momenteel geen informatie van je profiel",
                 "sharingorgs": "organisaties waarmee je informatie deelt:"
             },
@@ -485,8 +483,6 @@
     },
     "verify": "Valideer",
     "delete_org_with_children": "Deze organizatie heeft suborganisaties. Als je deze organizatie verwijdert, worden ook ALLE suborganisaties verwijderd. Ben je echt zeker?",
-    "reject": "Weiger",
-    "accept": "Aanvaardt",
     "username_taken": "Deze gebruikersnaam is al bezet",
     "user_with_name_exists": "Er bestaat al een gebruiker met deze naam. Kies een andere naam.",
     "avatar": "Avatar",
@@ -515,7 +511,6 @@
     "qrcode_view":"Bekijk bestaande QR code",
     "no_notifcations": "Je hebt geen meldingen.",
     "last_owner": "Je bent de laatste eigenaar van deze organizatie, dus je kan deze niet verlaten.",
-    "error": "Error",
     "new_parent_ownership": "Deze actie vereist dat u eigendomsrechten heeft op de nieuwe ouderorganizatie.",
     "new_parent_doesn't_exist": "De nieuwe ouderorganizatie bestaat niet.",
     "new_name_collision": "Deze verhuizing zou een duplicate naam veroorzaken.",

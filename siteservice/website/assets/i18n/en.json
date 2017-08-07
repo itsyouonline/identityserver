@@ -298,7 +298,6 @@
                 "unreadnotifications": "You have {{count}} unread notifications",
                 "profile": "Profile",
                 "organizations": "Organizations",
-                "sharedinfo": "Shared information",
                 "signout": "Signout",
                 "register": "Register",
                 "signin": "Sign in",
@@ -336,7 +335,6 @@
                 "grant": "Grant authorization"
             },
             "authorizations": {
-                "sharedinfo": "Shared information",
                 "notsharing": "You are currently not sharing any of your profile information",
                 "sharingorgs": "Organizations you are sharing information with:"
             },
@@ -484,8 +482,6 @@
     },
     "verify": "Verify",
     "delete_org_with_children": "This organization has children. Deleting this organization will also delete ALL these child organizations. Are you really sure?",
-    "reject": "Reject",
-    "accept": "Accept",
     "username_taken": "This username has already been taken",
     "user_with_name_exists": "A user with this name already exists. Please pick another name.",
     "avatar": "Avatar",
@@ -514,7 +510,6 @@
     "qrcode_view":"View existing QR code",
     "no_notifcations": "You have no notifications.",
     "last_owner": "You are the last owner of this organization, so you can't leave it.",
-    "error": "Error",
     "new_parent_ownership": "This action requires you to have ownership rights on the new parent organization.",
     "new_parent_doesn't_exist": "The new parent organization does not exist.",
     "new_name_collision": "This organization move would cause a duplicate name.",
