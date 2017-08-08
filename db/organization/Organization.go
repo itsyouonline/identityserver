@@ -7,7 +7,6 @@ import (
 	"github.com/itsyouonline/identityserver/db/validation"
 
 	"gopkg.in/validator.v2"
-	log "github.com/Sirupsen/logrus"
 )
 
 type Organization struct {
@@ -136,8 +135,7 @@ func ConvertUsernameToIdentifier(username string, usrMgr *user.Manager, valMgr *
 			return phone.Phonenumber, err
 		}
 	}
-	// No verified email or phone number.. Shouldn't be possible.
-	log.Errorf("User %s does not have a validated phone number or email address", username)
+	// No verified email or phone number. Fallback to username
 	return userIdentifier, err
 }
 func ConvertIdentifierToUsername(identifier string, valMgr *validation.Manager) (string, error) {

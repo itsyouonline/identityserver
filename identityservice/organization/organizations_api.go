@@ -1602,7 +1602,7 @@ func (api OrganizationsAPI) GetOrganizationUsers(w http.ResponseWriter, r *http.
 	users := []organization.OrganizationUser{}
 	for username, role := range roleMap {
 		orgUser := organization.OrganizationUser{
-			User:          getUserIdentifier(username, userIdentifierMap),
+			Username:      getUserIdentifier(username, userIdentifierMap),
 			Role:          role,
 			MissingScopes: []string{},
 		}
@@ -1626,11 +1626,35 @@ func (api OrganizationsAPI) GetOrganizationUsers(w http.ResponseWriter, r *http.
 	json.NewEncoder(w).Encode(response)
 }
 
+type sortEmailFirst []string
+
+func (s sortEmailFirst) Len() int {
+	return len(s)
+}
+func (s sortEmailFirst) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+func (s sortEmailFirst) Less(i, j int) bool {
+	if strings.Contains(s[i], "@") {
+		if !strings.Contains(s[j], "@") {
+			return true
+		} else {
+			return sort.StringsAreSorted([]string{s[i], s[j]})
+		}
+	}
+	return false
+}
+
 func getUserIdentifier(username string, userIdentifierMap map[string]string) string {
+	identifiers := []string{}
 	for identifier, uname := range userIdentifierMap {
 		if username == uname {
-			return identifier
+			identifiers = append(identifiers, identifier)
 		}
+	}
+	if len(identifiers) > 0 {
+		sort.Sort(sortEmailFirst(identifiers))
+		return identifiers[0]
 	}
 	// fallback to username
 	return username
