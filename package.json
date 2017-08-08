@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "cd node_modules/karma/bin && ./karma start ../../../karma.conf.js --singleRun"
+      "test": "node_modules/karma/bin/karma start karma.conf.js --singleRun"
   },
   "devDependencies": {
     "angular-mocks": "1.5.9",

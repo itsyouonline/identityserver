@@ -52,6 +52,8 @@ https://itsyou.online/v1/oauth/authorize?response_type=code&client_id=CLIENT_ID&
 * state=STATE
 
     A random string. It is used to protect against csrf attacks.
+    
+Optionally, a `register` query parameter with a non-empty value can be supplied to redirect the user to the registration page instead of the login page.
 
 ### Step 2: User Authorizes Application
 

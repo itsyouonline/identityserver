@@ -82,11 +82,16 @@ func validateRedirectURI(mgr ClientManager, redirectURI string, clientID string)
 	return
 }
 
-func redirecToLoginPage(w http.ResponseWriter, r *http.Request) {
+func redirectToNextPage(w http.ResponseWriter, r *http.Request) {
 	queryvalues := r.URL.Query()
 	queryvalues.Add("endpoint", r.URL.EscapedPath())
+	redirectToRegistrationPage := r.Form.Get("register") != ""
 	//TODO: redirect according the the received http method
-	http.Redirect(w, r, "/login?"+queryvalues.Encode(), http.StatusFound)
+	if redirectToRegistrationPage {
+		http.Redirect(w, r, "/register?"+queryvalues.Encode(), http.StatusFound)
+	} else {
+		http.Redirect(w, r, "/login?"+queryvalues.Encode(), http.StatusFound)
+	}
 }
 
 func redirectToScopeRequestPage(w http.ResponseWriter, r *http.Request, possibleScopes []string) {
@@ -145,7 +150,7 @@ func (service *Service) AuthorizeHandler(w http.ResponseWriter, request *http.Re
 			log.Debug("protected session")
 			protectedSession = true
 		} else {
-			redirecToLoginPage(w, request)
+			redirectToNextPage(w, request)
 			return
 		}
 	}
@@ -218,7 +223,7 @@ func (service *Service) AuthorizeHandler(w http.ResponseWriter, request *http.Re
 					return
 				}
 			}
-			redirecToLoginPage(w, request)
+			redirectToNextPage(w, request)
 			return
 		}
 		token, e := service.createItsYouOnlineAdminToken(username, request)
