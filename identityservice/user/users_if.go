@@ -105,16 +105,16 @@ type UsersInterface interface { // Post is the handler for POST /users
 	// Remove the authorization for an organization, the granted organization will no longer
 	// have access the user's information.
 	DeleteAuthorization(http.ResponseWriter, *http.Request)
-	// GetSeeObjectsByOrganization is the handler for GET /users/{username}/see/{globalid}
+	// GetSeeObjects is the handler for GET /users/{username}/see
 	// Get the list of see objects for a specific organization.
-	GetSeeObjectsByOrganization(http.ResponseWriter, *http.Request)
-	// GetSeeObject is the handler for GET /users/{username}/see/{globalid}/{uniqueid}
+	GetSeeObjects(http.ResponseWriter, *http.Request)
+	// GetSeeObject is the handler for GET /users/{username}/see/{uniqueid}
 	GetSeeObject(http.ResponseWriter, *http.Request)
-	// CreateSeeObject is the handler for POST /users/{username}/see/{globalid}/{uniqueid}
+	// CreateSeeObject is the handler for POST /users/{username}/see/{uniqueid}
 	CreateSeeObject(http.ResponseWriter, *http.Request)
-	// UpdateSeeObject is the handler for PUT /users/{username}/see/{globalid}/{uniqueid}
+	// UpdateSeeObject is the handler for PUT /users/{username}/see/{uniqueid}
 	UpdateSeeObject(http.ResponseWriter, *http.Request)
-	// SignSeeObject is the handler for PUT /users/{username}/see/{globalid}/{uniqueid}/sign
+	// SignSeeObject is the handler for PUT /users/{username}/see/{uniqueid}/sign
 	SignSeeObject(http.ResponseWriter, *http.Request)
 	// AddAPIKey Add an API Key
 	AddAPIKey(http.ResponseWriter, *http.Request)
@@ -249,11 +249,11 @@ func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
 	r.Handle("/users/{username}/authorizations/{grantedTo}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.GetAuthorization))).Methods("GET")
 	r.Handle("/users/{username}/authorizations/{grantedTo}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.UpdateAuthorization))).Methods("PUT")
 	r.Handle("/users/{username}/authorizations/{grantedTo}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.DeleteAuthorization))).Methods("DELETE")
-	r.Handle("/users/{username}/see/{globalid}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin", "user:see"}).Handler).Then(http.HandlerFunc(i.GetSeeObjectsByOrganization))).Methods("GET")
-	r.Handle("/users/{username}/see/{globalid}/{uniqueid}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin", "user:see"}).Handler).Then(http.HandlerFunc(i.GetSeeObject))).Methods("GET")
-	r.Handle("/users/{username}/see/{globalid}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:see"}).Handler).Then(http.HandlerFunc(i.CreateSeeObject))).Methods("POST")
-	r.Handle("/users/{username}/see/{globalid}/{uniqueid}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:see"}).Handler).Then(http.HandlerFunc(i.UpdateSeeObject))).Methods("PUT")
-	r.Handle("/users/{username}/see/{globalid}/{uniqueid}/sign/{version}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:see"}).Handler).Then(http.HandlerFunc(i.SignSeeObject))).Methods("PUT")
+	r.Handle("/users/{username}/see", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin", "user:see"}).Handler).Then(http.HandlerFunc(i.GetSeeObjects))).Methods("GET")
+	r.Handle("/users/{username}/see/{uniqueid}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin", "user:see"}).Handler).Then(http.HandlerFunc(i.GetSeeObject))).Methods("GET")
+	r.Handle("/users/{username}/see", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:see"}).Handler).Then(http.HandlerFunc(i.CreateSeeObject))).Methods("POST")
+	r.Handle("/users/{username}/see/{uniqueid}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:see"}).Handler).Then(http.HandlerFunc(i.UpdateSeeObject))).Methods("PUT")
+	r.Handle("/users/{username}/see/{uniqueid}/sign/{version}", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:see"}).Handler).Then(http.HandlerFunc(i.SignSeeObject))).Methods("PUT")
 	r.Handle("/users/{username}/twofamethods", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.GetTwoFAMethods))).Methods("GET")
 	r.Handle("/users/{username}/totp", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.GetTOTPSecret))).Methods("GET")
 	r.Handle("/users/{username}/totp", alice.New(newUserIndentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.SetupTOTP))).Methods("POST")

@@ -6,7 +6,7 @@
         .service("UserService", UserService)
         .service("NotificationService", NotificationService);
 
-    UserService.$inject = ['$http', '$q'];
+    UserService.$inject = ['$http', '$q', '$rootScope'];
     NotificationService.$inject = ['$http','$q'];
 
     function NotificationService($http, $q) {
@@ -101,9 +101,11 @@
             POST = $http.post,
             PUT = $http.put,
             DELETE = $http.delete;
+        var username = null;
 
         return {
             get: get,
+            getUserIdentifier: getUserIdentifier,
             registerNewEmailAddress: registerNewEmailAddress,
             updateEmailAddress: updateEmailAddress,
             deleteEmailAddress: deleteEmailAddress,
@@ -118,7 +120,6 @@
             saveAuthorization: saveAuthorization,
             deleteAuthorization: deleteAuthorization,
             getSeeObjects: getSeeObjects,
-            getSeeObjectsByOrganization: getSeeObjectsByOrganization,
             getSeeObject: getSeeObject,
             registerNewBankAccount: registerNewBankAccount,
             updateBankAccount: updateBankAccount,
@@ -152,12 +153,14 @@
             createAvatarFromFile: createAvatarFromFile,
             updateAvatarLink: updateAvatarLink,
             updateAvatarFile: updateAvatarFile,
-            deleteAvatar: deleteAvatar
+            deleteAvatar: deleteAvatar,
+            getUsername: getUsername,
+            setUsername: setUsername
         };
 
-        function genericHttpCall(httpFunction, url, data) {
+        function genericHttpCall(httpFunction, url, data, config) {
             if (data){
-                return httpFunction(url, data)
+                return httpFunction(url, data, config)
                     .then(
                         function(response) {
                             return response.data;
@@ -168,7 +171,7 @@
                     );
             }
             else {
-                return httpFunction(url)
+                return httpFunction(url, config)
                     .then(
                         function(response) {
                             return response.data;
@@ -180,9 +183,42 @@
             }
         }
 
-        function get(username) {
+        function get(refresh) {
             var url = apiURL + '/' + encodeURIComponent(username);
-            return genericHttpCall($http.get, url);
+            // cache: true prevents from doing the same request twice and just returns the value of the previous request to this url
+            return genericHttpCall(GET, url, null, {cache: !refresh});
+        }
+
+        function getUserIdentifier() {
+            var deferred = $q.defer();
+            this.get().then(function (user) {
+                if (user.firstname || user.lastname) {
+                    deferred.resolve(user.firstname + ' ' + user.lastname);
+                    return;
+                }
+                var email = user.emailaddresses.filter(function (email) {
+                    return email.verified;
+                })[0];
+                if (email) {
+                    return deferred.resolve(email.emailaddress);
+                }
+                var phone = user.phonenumbers.filter(function (phone) {
+                    return phone.verified;
+                })[0];
+                if (phone) {
+                    return deferred.resolve(phone.phonenumber);
+                }
+            });
+            return deferred.promise;
+
+        }
+
+        function getUsername() {
+            return username;
+        }
+
+        function setUsername(name) {
+            username = name;
         }
 
         function registerNewEmailAddress(username, emailaddress) {
@@ -269,23 +305,18 @@
             return genericHttpCall($http.delete, url);
         }
 
-        function getSeeObjects(username) {
+        function getSeeObjects() {
             var url = apiURL + '/' + encodeURIComponent(username) + '/see';
-            return genericHttpCall($http.get, url);
+            return genericHttpCall($http.get, url, null, {cache: true});
         }
 
-        function getSeeObjectsByOrganization(username, organization) {
-            var url = apiURL + '/' + encodeURIComponent(username) + '/see/' + encodeURIComponent(organization);
-            return genericHttpCall($http.get, url);
-        }
-
-        function getSeeObject(username, organization, uniqueid, all) {
-            var version = "-1";
-            if (all === true) {
-              version = "0"
+        function getSeeObject(uniqueId, all) {
+            var queryString = '';
+            if (all) {
+                queryString = '?version=0';
             }
-            var url = apiURL + '/' + encodeURIComponent(username) + '/see/' + encodeURIComponent(organization) + '/' + encodeURIComponent(uniqueid) + '?version=' + version;
-            return genericHttpCall($http.get, url);
+            var url = apiURL + '/' + encodeURIComponent(username) + '/see/' + encodeURIComponent(uniqueId) + queryString;
+            return genericHttpCall($http.get, url, null, {cache: true});
         }
 
         function deleteFacebookAccount(username) {

@@ -71,7 +71,7 @@
                                 ng-repeat="notification in vm.notifications.security track by notification.subject"
                                 aria-label translate-attr="{ 'aria-label': 'user.views.notifications.securitynotice'}">
                             <p ng-bind="notification.msg"></p>
-                            <md-button class="md-secondary md-raised" ng-click="vm.pageSelected(notification.tabIndex)" translate='user.views.notifications.resolve'>
+                            <md-button class="md-secondary md-raised" ng-click="vm.goToPage(notification.page)" translate='user.views.notifications.resolve'>
                                 Resolve
                             </md-button>
                         </md-list-item>

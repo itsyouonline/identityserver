@@ -12,7 +12,7 @@
         .config([init])
         .factory('authenticationInterceptor', ['$q', '$window', authenticationInterceptor])
         .directive('pagetitle', ['$rootScope', '$timeout', 'footerService', pagetitle])
-        .run(['$route', '$cookies', '$rootScope', '$location', runFunction]);
+        .run(['$rootScope', '$cookies', '$window', 'UserService', runFunction]);
 
     function stateConfig($stateProvider, $urlRouterProvider) {
         $urlRouterProvider.otherwise('/profile');
@@ -58,27 +58,11 @@
                 pageTitle: 'Organization stucture'
             }
         })
-        .state('organization.see', {
-            url: '/see',
-            templateUrl: 'components/organization/views/detailTabsSee.html',
-            params: {
-                pageTitle: 'Organization see'
-            }
-        })
         .state('organization.settings', {
             url: '/settings',
             templateUrl: 'components/organization/views/detailTabsSettings.html',
             params: {
                 pageTitle: 'Organization settings'
-            }
-        })
-        .state('/see/detail', {
-            url: '/organization/:globalid/see/:uniqueid/detail',
-            templateUrl: 'components/organization/views/seeDetail.html',
-            controller: 'SeeDetailController',
-            controllerAs: 'vm',
-            params: {
-                pageTitle: 'See detail'
             }
         })
         .state('profile', {
@@ -88,7 +72,7 @@
             controllerAs: 'vm',
             params: {
                 pageTitle: 'Profile'
-            },
+            }
         })
         .state('notifications', {
             url: '/notifications',
@@ -125,6 +109,24 @@
             params: {
                 pageTitle: 'Settings'
             }
+        })
+        .state('see', {
+            url: '/see',
+            templateUrl: 'components/see/views/see-list.html',
+            controller: 'SeeListController',
+            controllerAs: 'vm',
+            params: {
+                pageTitle: 'See'
+            }
+        })
+        .state('seeDetail', {
+            url: '/see/:uniqueid',
+            templateUrl: 'components/see/views/see-detail.html',
+            controller: 'SeeDetailController',
+            controllerAs: 'vm',
+            params: {
+                pageTitle: 'See detail'
+            }
         });
     }
 
@@ -152,11 +154,12 @@
         };
     }
 
-    function runFunction($route, $cookies, $rootScope, $location) {
+    function runFunction($rootScope, $cookies, $window, UserService) {
         $rootScope.user = $cookies.get('itsyou.online.user');
-        if (window.location.hostname === 'dev.itsyou.online') {
+        UserService.setUsername($rootScope.user);
+        if ($window.location.hostname === 'dev.itsyou.online') {
             setTimeout(function () {
-                window.location.reload();
+                $window.location.reload();
             }, 9 * 60 * 1000);
         }
         initializePolyfills();

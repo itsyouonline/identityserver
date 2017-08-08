@@ -33,6 +33,7 @@ import (
 	"github.com/itsyouonline/identityserver/tools"
 	"github.com/itsyouonline/identityserver/validation"
 	"gopkg.in/mgo.v2"
+	"gopkg.in/validator.v2"
 )
 
 // label constants containing the reserved labels for avatars
@@ -1622,22 +1623,18 @@ func (api UsersAPI) DeleteAuthorization(w http.ResponseWriter, r *http.Request) 
 	userMgr := user.NewManager(r)
 
 	err := userMgr.DeleteAuthorization(username, grantedTo)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	if handleServerError(w, "Delete authorization", err) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (api UsersAPI) GetSeeObjectsByOrganization(w http.ResponseWriter, r *http.Request) {
+func (api UsersAPI) GetSeeObjects(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
-	organizationGlobalID := mux.Vars(r)["globalid"]
 
 	seeMgr := seeDb.NewManager(r)
-	seeObjects, err := seeMgr.GetSeeObjectsByOrganization(username, organizationGlobalID)
-	if err != nil {
-		log.Error("Failed to get see objects by organization", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	seeObjects, err := seeMgr.GetSeeObjects(username)
+	if handleServerError(w, "Get see objects", err) {
 		return
 	}
 
@@ -1645,14 +1642,12 @@ func (api UsersAPI) GetSeeObjectsByOrganization(w http.ResponseWriter, r *http.R
 	for i, seeObject := range seeObjects {
 		list[i] = seeObject.ConvertToSeeView(len(seeObject.Versions))
 	}
-
 	w.Header().Set("Content-type", "application/json")
 	json.NewEncoder(w).Encode(list)
 }
 
 func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
-	organizationGlobalID := mux.Vars(r)["globalid"]
 	uniqueID := mux.Vars(r)["uniqueid"]
 	versionStr := r.URL.Query().Get("version")
 	version := "latest"
@@ -1677,7 +1672,9 @@ func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if requestingClient == "itsyouonline" {
-		requestingClient = organizationGlobalID
+		// This should never happen as the oauth 2  middleware should give a 403
+		writeErrorResponse(w, http.StatusBadRequest, "This api call is not available when logged in via the website")
+		return
 	}
 
 	seeMgr := seeDb.NewManager(r)
@@ -1715,15 +1712,17 @@ func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 
 func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
-	organizationGlobalID := mux.Vars(r)["globalid"]
 
 	requestingClient, validClient := context.Get(r, "client_id").(string)
+	log.Debug("globalId: " + requestingClient)
 	if !validClient {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 	if requestingClient == "itsyouonline" {
-		requestingClient = organizationGlobalID
+		// This should never happen as the oauth 2  middleware should give a 403
+		writeErrorResponse(w, http.StatusBadRequest, "This api call is not available when logged in via the website")
+		return
 	}
 
 	seeView := seeDb.SeeView{}
@@ -1735,8 +1734,8 @@ func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
 	seeView.Username = username
 	seeView.Globalid = requestingClient
 
-	if !seeView.Validate() {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	if errs := validator.Validate(seeView); errs != nil {
+		writeValidationError(w, http.StatusBadRequest, errs)
 		return
 	}
 
@@ -1744,7 +1743,7 @@ func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
 		keyMgr := keystore.NewManager(r)
 		_, err := keyMgr.GetKeyStoreKey(username, requestingClient, seeView.KeyStoreLabel)
 		if db.IsNotFound(err) {
-			http.Error(w, http.StatusText(http.StatusPreconditionFailed), http.StatusPreconditionFailed)
+			writeErrorResponse(w, http.StatusPreconditionFailed, "keystore_not_found")
 			return
 		}
 	}
@@ -1758,8 +1757,8 @@ func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
 
 	seeMgr := seeDb.NewManager(r)
 	err := seeMgr.Create(&see)
-	if err == db.ErrDuplicate {
-		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+	if db.IsDup(err) {
+		writeErrorResponse(w, http.StatusConflict, "id_already_in_use")
 		return
 	}
 	if handleServerError(w, "Create see object", err) {
@@ -1771,9 +1770,7 @@ func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-	if err != nil {
-		log.Error("Failed to get see object", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	if handleServerError(w, "Get see object", err) {
 		return
 	}
 
@@ -1784,7 +1781,6 @@ func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
 
 func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
-	organizationGlobalID := mux.Vars(r)["globalid"]
 	uniqueID := mux.Vars(r)["uniqueid"]
 
 	requestingClient, validClient := context.Get(r, "client_id").(string)
@@ -1793,7 +1789,9 @@ func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if requestingClient == "itsyouonline" {
-		requestingClient = organizationGlobalID
+		// This should never happen as the oauth 2  middleware should give a 403
+		writeErrorResponse(w, http.StatusBadRequest, "This api call is not available when logged in via the website")
+		return
 	}
 
 	seeView := seeDb.SeeView{}
@@ -1806,15 +1804,15 @@ func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 	seeView.Globalid = requestingClient
 	seeView.Uniqueid = uniqueID
 
-	if !seeView.Validate() {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	if errs := validator.Validate(seeView); errs != nil {
+		writeValidationError(w, http.StatusBadRequest, errs)
 		return
 	}
 	if seeView.Signature != "" {
 		keyMgr := keystore.NewManager(r)
 		_, err := keyMgr.GetKeyStoreKey(username, requestingClient, seeView.KeyStoreLabel)
 		if db.IsNotFound(err) {
-			http.Error(w, http.StatusText(http.StatusPreconditionFailed), http.StatusPreconditionFailed)
+			writeErrorResponse(w, http.StatusPreconditionFailed, "keystore_not_found")
 			return
 		}
 	}
@@ -1824,7 +1822,7 @@ func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 	seeMgr := seeDb.NewManager(r)
 	err := seeMgr.AddVersion(seeView.Username, seeView.Globalid, seeView.Uniqueid, seeVersion)
 	if db.IsNotFound(err) {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		writeErrorResponse(w, http.StatusPreconditionFailed, "document_not_found")
 		return
 	}
 	if handleServerError(w, "Update see object", err) {
@@ -1832,10 +1830,6 @@ func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	seeObject, err := seeMgr.GetSeeObject(username, requestingClient, uniqueID)
-	if db.IsNotFound(err) {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
 	if err != nil {
 		log.Error("Failed to get see object", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1843,13 +1837,11 @@ func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(seeObject.ConvertToSeeView(len(seeObject.Versions)))
 }
 
 func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
-	organizationGlobalID := mux.Vars(r)["globalid"]
 	uniqueID := mux.Vars(r)["uniqueid"]
 	versionStr := mux.Vars(r)["version"]
 	version, err := strconv.Atoi(versionStr)
@@ -1865,8 +1857,11 @@ func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if requestingClient == "itsyouonline" {
-		requestingClient = organizationGlobalID
+		// This should never happen as the oauth 2  middleware should give a 403
+		writeErrorResponse(w, http.StatusBadRequest, "This api call is not available when logged in via the website")
+		return
 	}
+
 
 	seeView := seeDb.SeeView{}
 	if err := json.NewDecoder(r.Body).Decode(&seeView); err != nil {
@@ -1880,9 +1875,7 @@ func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-	if err != nil {
-		log.Error("Failed to get see object", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	if handleServerError(w, "Get see object", err) {
 		return
 	}
 
@@ -1890,50 +1883,29 @@ func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
-
-	if seeObject.Versions[version-1].Category != seeView.Category {
+	previousVersion := seeObject.Versions[version-1]
+	if previousVersion.Category != seeView.Category ||
+		previousVersion.Link != seeView.Link ||
+		previousVersion.ContentType != seeView.ContentType ||
+		previousVersion.MarkdownShortDescription != seeView.MarkdownShortDescription ||
+		previousVersion.MarkdownFullDescription != seeView.MarkdownFullDescription ||
+		previousVersion.Signature != "" {
 		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
 		return
 	}
-	if seeObject.Versions[version-1].Link != seeView.Link {
-		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
-		return
-	}
-	if seeObject.Versions[version-1].ContentType != seeView.ContentType {
-		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
-		return
-	}
-	if seeObject.Versions[version-1].MarkdownShortDescription != seeView.MarkdownShortDescription {
-		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
-		return
-	}
-	if seeObject.Versions[version-1].MarkdownFullDescription != seeView.MarkdownFullDescription {
-		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
-		return
-	}
-	if seeObject.Versions[version-1].StartDate != nil || seeView.StartDate != nil {
-		if seeObject.Versions[version-1].StartDate == nil || seeView.StartDate == nil {
-			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
-			return
-		}
-		if seeObject.Versions[version-1].StartDate.String() != seeView.StartDate.String() {
+	if previousVersion.StartDate != nil || seeView.StartDate != nil {
+		if previousVersion.StartDate == nil || seeView.StartDate == nil ||
+			previousVersion.StartDate.String() != seeView.StartDate.String() {
 			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
 			return
 		}
 	}
-	if seeObject.Versions[version-1].EndDate != nil || seeView.EndDate != nil {
-		if seeObject.Versions[version-1].EndDate == nil || seeView.EndDate == nil {
-			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
-			return
-		}
-		if seeObject.Versions[version-1].EndDate.String() != seeView.EndDate.String() {
-			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
-			return
-		}
-	}
-	if seeObject.Versions[version-1].Signature != "" {
+	if previousVersion.EndDate != nil || seeView.EndDate != nil {
+		if previousVersion.EndDate == nil || seeView.EndDate == nil ||
+			previousVersion.EndDate.String() != seeView.EndDate.String() {
 		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
 		return
+		}
 	}
 
 	keyMgr := keystore.NewManager(r)
@@ -1943,8 +1915,8 @@ func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	seeObject.Versions[version-1].KeyStoreLabel = seeView.KeyStoreLabel
-	seeObject.Versions[version-1].Signature = seeView.Signature
+	previousVersion.KeyStoreLabel = seeView.KeyStoreLabel
+	previousVersion.Signature = seeView.Signature
 
 	err = seeMgr.Update(seeObject)
 	if db.IsNotFound(err) {
@@ -3052,6 +3024,19 @@ func writeErrorResponse(responseWrite http.ResponseWriter, httpStatusCode int, m
 		Error string `json:"error"`
 	}{
 		Error: message,
+	}
+	responseWrite.WriteHeader(httpStatusCode)
+	json.NewEncoder(responseWrite).Encode(&errorResponse)
+}
+
+func writeValidationError(responseWrite http.ResponseWriter, httpStatusCode int, err error) {
+	log.Debug(httpStatusCode, " ", err)
+	errorResponse := struct {
+		Error   string `json:"error"`
+		Message string
+	}{
+		Error:   "validation_error",
+		Message: fmt.Sprintf("%v", err.Error()),
 	}
 	responseWrite.WriteHeader(httpStatusCode)
 	json.NewEncoder(responseWrite).Encode(&errorResponse)

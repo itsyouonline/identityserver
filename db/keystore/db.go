@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/itsyouonline/identityserver/db"
-	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 

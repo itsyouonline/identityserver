@@ -12,7 +12,7 @@ describe('User Home Controller test', function() {
         userService = _UserService_;
 
         // This is set in the app bootstrap so lets just accept that this works for now
-        $rootScope.user = TEST_USER;
+        UserHomeController.setUsername(TEST_USER);
         UserHomeController = $controller('UserHomeController', function () {
             UserService: userService
         });
@@ -25,7 +25,7 @@ describe('User Home Controller test', function() {
        expect(UserHomeController).toBeDefined();
     });
 
-    it('User Home Controller username property should be set to $rootScope.user', function () {
+    it('User Home Controller username property should be set', function () {
         expect(UserHomeController.username).toBe(TEST_USER);
     });
 

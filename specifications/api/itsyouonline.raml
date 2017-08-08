@@ -1541,11 +1541,11 @@ securedBy: [ oauth_2_0 ]
           404:
             description: No key found for this label
 
-  /{username}/see/{globalid}:
+  /{username}/see:
     get:
-      displayName: ListSeeObjectsByOrganization
+      displayName: GetSeeObjects
       securedBy: [oauth_2_0: { scopes: [ "user:admin", "user:see" ] } ]
-      description: Get all see objects by organization
+      description: Get all see objects
       responses:
         200:
           body:
@@ -1565,13 +1565,15 @@ securedBy: [ oauth_2_0 ]
           body:
             application/json:
               type: SeeView
+        412:
+          description: No keystore with the specified label was found for the user
         404:
           description: Not found
     /{uniqueid}:
       get:
         displayName: GetSeeObject
         securedBy: [oauth_2_0: { scopes: [ "user:admin", "user:see" ] } ]
-        description: Get a objects
+        description: Get a see object
         queryParameters:
           version:
             type: integer

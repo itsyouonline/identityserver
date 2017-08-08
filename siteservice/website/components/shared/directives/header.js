@@ -28,7 +28,7 @@
 
                     function updateLanguage(){
                         localStorage.setItem('langKey', scope.langKey);
-                        localStorage.setItem('selectedLangKey', scope.langKey)
+                        localStorage.setItem('selectedLangKey', scope.langKey);
                         $translate.use(scope.langKey);
                     }
 

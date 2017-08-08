@@ -549,7 +549,7 @@
     "hide_full_history": "Verberg de volledige geschiedenis",
     "toggle_full_history": "Toggle volledige geschiedenis",
     "link": "Link",
-    "no_see_documents": "U heeft geen documenten voor deze organisatie",
+    "no_see_documents": "U heeft geen documenten.",
     "seedetail": "See detail",
     "smscode": "Gelieve de code uit de sms in te vullen",
     "emailcode": "Gelieve de code uit de email in te vullen",
@@ -562,4 +562,5 @@
     "email_confirmed_by_link": "Je email adres is bevestigd via de email link",
     "emailoptional": "Je email adres valideren kan eventueel later gebeuren",
     "validate_email_instruction": "Gelieve de knop of link in de email die naar je gestuurd is te gebruiken om je email adres te bevestigen"
+    "iyo_see": "See"
 }

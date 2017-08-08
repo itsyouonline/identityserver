@@ -9,11 +9,11 @@ import (
 
 type SeeVersion struct {
 	Version                  int          `json:"version" bson:"-"`
-	Category                 string       `json:"category"`
-	Link                     string       `json:"link"`
+	Category                 string       `json:"category" validate:"max=100,nonzero"`
+	Link                     string       `json:"link" validate:"nonzero"`
 	ContentType              string       `json:"content_type"`
-	MarkdownShortDescription string       `json:"markdown_short_description"`
-	MarkdownFullDescription  string       `json:"markdown_full_description"`
+	MarkdownShortDescription string       `json:"markdown_short_description" validate:"max=500,nonzero"`
+	MarkdownFullDescription  string       `json:"markdown_full_description" validate:"nonzero"`
 	CreationDate             *db.DateTime `json:"creation_date"`
 	StartDate                *db.DateTime `json:"start_date,omitempty" bson:"startdate,omitempty"`
 	EndDate                  *db.DateTime `json:"end_date,omitempty" bson:"enddate,omitempty"`
@@ -25,33 +25,15 @@ type See struct {
 	ID       bson.ObjectId `json:"-" bson:"_id,omitempty"`
 	Username string        `json:"username"`
 	Globalid string        `json:"globalid"`
-	Uniqueid string        `json:"uniqueid"`
+	Uniqueid string        `json:"uniqueid" validate:"max=100,nonzero"`
 	Versions []SeeVersion  `json:"versions"`
 }
 
 type SeeView struct {
-	Username                 string       `json:"username"`
-	Globalid                 string       `json:"globalid"`
-	Uniqueid                 string       `json:"uniqueid"`
-	Version                  int          `json:"version"`
-	Category                 string       `json:"category"`
-	Link                     string       `json:"link"`
-	ContentType              string       `json:"content_type"`
-	MarkdownShortDescription string       `json:"markdown_short_description"`
-	MarkdownFullDescription  string       `json:"markdown_full_description"`
-	CreationDate             *db.DateTime `json:"creation_date"`
-	StartDate                *db.DateTime `json:"start_date,omitempty"`
-	EndDate                  *db.DateTime `json:"end_date,omitempty"`
-	KeyStoreLabel            string       `json:"keystore_label"`
-	Signature                string       `json:"signature"`
-}
-
-func (s *SeeView) Validate() bool {
-	return len(s.Uniqueid) < 100 && len(s.Uniqueid) > 0 &&
-		len(s.Category) < 100 && len(s.Category) > 0 &&
-		len(s.Link) > 0 &&
-		len(s.MarkdownShortDescription) > 0 &&
-		len(s.MarkdownFullDescription) > 0
+	SeeVersion
+	Username string `json:"username"`
+	Globalid string `json:"globalid"`
+	Uniqueid string `json:"uniqueid" validate:"max=100,nonzero"`
 }
 
 func (s *SeeView) ConvertToSeeVersion() *SeeVersion {

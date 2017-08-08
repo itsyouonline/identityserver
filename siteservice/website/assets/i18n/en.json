@@ -548,7 +548,7 @@
     "hide_full_history": "Hide full history",
     "toggle_full_history": "Toggle full history",
     "link": "Link",
-    "no_see_documents": "You don't have any see documents for this organization",
+    "no_see_documents": "You don't have any documents.",
     "seedetail": "See detail",
     "smscode": "Please enter the code sent to you by sms",
     "emailcode": "Please enter the code sent to you by email",
@@ -560,5 +560,6 @@
     "sms_confirmed_by_link": "Your phone number has been confirmed",
     "email_confirmed_by_link": "Your email address has been confirmed via email link",
     "emailoptional": "Validating your email address can optionally be done later",
-    "validate_email_instruction": "Please use the button or link in the email sent to you to validate your email address"
+    "validate_email_instruction": "Please use the button or link in the email sent to you to validate your email address",
+    "iyo_see": "See"
 }

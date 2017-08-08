@@ -489,7 +489,7 @@
 
         function createOrganization(ev, parentOrganization) {
             $mdDialog.show({
-                controller: ['$scope', '$rootScope', '$window', '$mdDialog', 'OrganizationService', 'parentOrganization', CreateOrganizationController],
+                controller: ['$scope', '$window', '$mdDialog', 'OrganizationService', 'UserService', 'parentOrganization', CreateOrganizationController],
                 controllerAs: 'ctrl',
                 templateUrl: 'components/organization/views/createOrganizationDialog.html',
                 targetEvent: ev,
@@ -803,7 +803,7 @@
 
         }
 
-        function CreateOrganizationController($scope, $rootScope, $window, $mdDialog, OrganizationService, parentOrganization) {
+        function CreateOrganizationController($scope, $window, $mdDialog, OrganizationService, UserService, parentOrganization) {
             var ctrl = this;
             ctrl.submit = submit;
             ctrl.cancel = cancel;
@@ -817,7 +817,7 @@
                     return;
                 }
                 OrganizationService
-                    .create(ctrl.name, [], $rootScope.user, parentOrganization)
+                    .create(ctrl.name, [], UserService.getUsername(), parentOrganization)
                     .then(
                         function (data) {
                             cancel();

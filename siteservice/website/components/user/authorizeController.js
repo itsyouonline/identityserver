@@ -7,10 +7,10 @@
         .controller("AuthorizeController", AuthorizeController);
 
 
-    AuthorizeController.$inject = ['$scope', '$rootScope', '$location', '$window', '$q', '$translate',
+    AuthorizeController.$inject = ['$scope', '$location', '$window', '$q', '$translate',
         'UserService', 'UserDialogService', 'NotificationService'];
 
-    function AuthorizeController($scope, $rootScope, $location, $window, $q, $translate,
+    function AuthorizeController($scope, $location, $window, $q, $translate,
                                  UserService, UserDialogService, NotificationService) {
         var vm = this;
 
@@ -18,7 +18,7 @@
         vm.requestingorganization = queryParams['client_id'];
         vm.requestedScopes = queryParams['scope'];
         vm.requestedorganizations = [];
-        vm.username = $rootScope.user;
+        vm.username = UserService.getUsername();
 
         vm.user = {};
         vm.pendingNotifications = [];

@@ -8,13 +8,13 @@
 
 
     UserHomeController.$inject = [
-        '$q', '$rootScope', '$stateParams', '$location', '$window', '$filter', '$mdMedia', '$mdDialog', '$translate',
+        '$q', '$rootScope', '$state', '$window', '$filter', '$mdMedia', '$mdDialog', '$translate',
         'NotificationService', 'OrganizationService', 'UserService', 'UserDialogService'];
 
-    function UserHomeController($q, $rootScope, $stateParams, $location, $window, $filter, $mdMedia, $mdDialog, $translate,
+    function UserHomeController($q, $rootScope, $state, $window, $filter, $mdMedia, $mdDialog, $translate,
                                 NotificationService, OrganizationService, UserService, UserDialogService) {
         var vm = this;
-        vm.username = $rootScope.user;
+        vm.username = UserService.getUsername();
         vm.notifications = {
             invitations: [],
             approvals: [],
@@ -25,7 +25,7 @@
         var authorizationArrayProperties = ['addresses', 'emailaddresses', 'phonenumbers', 'bankaccounts', 'digitalwallet', 'publicKeys'];
         var authorizationBoolProperties = ['facebook', 'github', 'name'];
 
-        var TAB_YOU = 'you';
+        var TAB_YOU = 'profile';
         var TAB_NOTIFICATIONS = 'notifications';
         var TAB_ORGANIZATIONS = 'organizations';
         var TAB_AUTHORIZATIONS = 'authorizations';
@@ -40,15 +40,14 @@
         vm.user = {};
 
         vm.loaded = {};
-        vm.selectedTabIndex = 0;
         vm.pendingCount = 0;
 
-        vm.userIdentifier = "";
+        vm.userIdentifier = '';
 
         UserDialogService.init(vm);
 
         /*vm.tabSelected = tabSelected;*/
-        vm.pageSelected = pageSelected;
+        vm.goToPage = goToPage;
         vm.accept = accept;
         vm.reject = reject;
         vm.acceptorganizationinvite = acceptorganizationinvite;
@@ -86,27 +85,25 @@
         init();
 
         function init() {
-            var index = TABS.indexOf($stateParams.tab);
-            vm.selectedTabIndex = index === -1 ? 0 : index;
             loadUser().then(function () {
                 loadVerifiedPhones();
                 loadVerifiedEmails().then(
                     function() {
                         loadNotifications();
-                        getUserIdentifier();
                 });
+            });
+
+            UserService.getUserIdentifier().then(function (userIdentifier) {
+                vm.userIdentifier = userIdentifier;
             });
         }
 
         //redirect notification to right page
-        function pageSelected(tabNum) {
-            if(!(tabNum in TABS)) {
+        function goToPage(stateName) {
+            if (TABS.indexOf(stateName) === -1) {
                 return;
             }
-            var path = '/' + TABS[tabNum];
-            if(path !== $window.location.hash.replace('#', '')){
-                $location.path(path);
-            }
+            $state.go(stateName);
         }
 
         function loadNotifications() {
@@ -125,7 +122,7 @@
                         if (!hasVerifiedEmail) {
                             $translate(['user.controller.verifiedemails']).then(function(translations){
                                 vm.notifications.security.push({
-                                    tabIndex: 0,
+                                    page: 'profile',
                                     subject: 'verified_emails',
                                     msg: translations['user.controller.verifiedemails'],
                                     status: 'pending'
@@ -136,26 +133,6 @@
                         vm.loaded.notifications = true;
                     }
                 );
-        }
-
-        function getUserIdentifier() {
-            if (vm.user.firstname || vm.user.lastname) {
-                vm.userIdentifier = vm.user.firstname + ' ' + vm.user.lastname;
-                return
-            }
-            angular.forEach(vm.user.emailaddresses, function(email, key) {
-                if (email.verified && !vm.userIdentifier) {
-                    vm.userIdentifier = email.emailaddress;
-                }
-            });
-            if (vm.userIdentifier) {
-                return
-            }
-            angular.forEach(vm.user.phonenumbers, function(phone, key) {
-                if (phone.verified && !vm.userIdentifier) {
-                    vm.userIdentifier = phone.phonenumber;
-                }
-            });
         }
 
         function updatePendingNotificationsCount() {
@@ -237,11 +214,8 @@
 
         function loadUser() {
             return $q(function (resolve, reject) {
-                if (vm.loaded.user) {
-                    return;
-                }
                 UserService
-                    .get(vm.username)
+                    .get()
                     .then(
                         function (data) {
                             angular.forEach(authorizationArrayProperties, function (prop) {
