@@ -8,13 +8,13 @@ describe('User Home Controller test', function() {
 
     beforeEach(inject(function ($injector, $rootScope, _UserService_, $controller) {
 
-        //get reference to the service we want to trak the method of
+        //get reference to the service we want to track the method of
         userService = _UserService_;
 
         // This is set in the app bootstrap so lets just accept that this works for now
-        UserHomeController.setUsername(TEST_USER);
-        UserHomeController = $controller('UserHomeController', function () {
-            UserService: userService
+        userService.setUsername(TEST_USER);
+        UserHomeController = $controller('UserHomeController', {
+            'UserService': userService
         });
 
         spyOn(UserHomeController, 'loadUser');
