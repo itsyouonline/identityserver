@@ -313,10 +313,35 @@ func (manager *Manager) GetByUsernameValidatedPhonenumbers(username string) (val
 	return
 }
 
+// Returns all validated phone numbers for every username
+func (manager *Manager) GetValidatedPhoneNumbersByUsernames(usernames []string) (validatedPhonenumbers []ValidatedPhonenumber, err error) {
+	mgoCollection := db.GetCollection(manager.session, mongoValidatedPhonenumbers)
+	qry := bson.M{
+		"username": bson.M{
+			"$in": usernames,
+		},
+	}
+	err = mgoCollection.Find(qry).All(&validatedPhonenumbers)
+	return
+}
+
 func (manager *Manager) GetByEmailAddressValidatedEmailAddress(email string) (validatedemail *ValidatedEmailAddress, err error) {
 	validatedemail = &ValidatedEmailAddress{}
 	mgoCollection := db.GetCollection(manager.session, mongoValidatedEmailAddresses)
 	err = mgoCollection.Find(bson.M{"emailaddress": email}).One(validatedemail)
+	return
+}
+
+// Returns all validated email addresses for every username
+func (manager *Manager) GetValidatedEmailAddressesByUsernames(usernames []string) (validatedEmails []ValidatedEmailAddress, err error) {
+	mgoCollection := db.GetCollection(manager.session, mongoValidatedEmailAddresses)
+	qry := bson.M{
+		"username": bson.M{
+			"$in": usernames,
+		},
+	}
+	// Avoid returning multiple email addresses for the same user
+	err = mgoCollection.Find(qry).All(&validatedEmails)
 	return
 }
 

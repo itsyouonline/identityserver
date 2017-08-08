@@ -63,20 +63,20 @@ func ParseInvitationType(invitationType string) string {
 	return reflect.ValueOf(RequestPending).String()
 }
 
-type JoinOrganizationInvtationView struct {
-	Organization   string                  `json:"organization"`
-	Role           string                  `json:"role"`
-	User           organization.MemberView `json:"user"`
-	Status         InvitationStatus        `json:"status"`
-	Created        db.DateTime             `json:"created"`
-	Method         InviteMethod            `json:"method"`
-	EmailAddress   string                  `json:"emailaddress"`
-	PhoneNumber    string                  `json:"phonenumber"`
-	IsOrganization bool                    `json:"isorganization"`
+type JoinOrganizationInvitationView struct {
+	Organization   string           `json:"organization"`
+	Role           string           `json:"role"`
+	User           string           `json:"user"`
+	Status         InvitationStatus `json:"status"`
+	Created        db.DateTime      `json:"created"`
+	Method         InviteMethod     `json:"method"`
+	EmailAddress   string           `json:"emailaddress"`
+	PhoneNumber    string           `json:"phonenumber"`
+	IsOrganization bool             `json:"isorganization"`
 }
 
-func (inv *JoinOrganizationInvitation) ConvertToView(usrMgr *user.Manager, valMgr *validation.Manager) (*JoinOrganizationInvtationView, error) {
-	vw := &JoinOrganizationInvtationView{}
+func (inv *JoinOrganizationInvitation) ConvertToView(usrMgr *user.Manager, valMgr *validation.Manager) (*JoinOrganizationInvitationView, error) {
+	vw := &JoinOrganizationInvitationView{}
 	vw.Organization = inv.Organization
 	vw.Role = inv.Role
 	vw.Status = inv.Status
@@ -87,7 +87,7 @@ func (inv *JoinOrganizationInvitation) ConvertToView(usrMgr *user.Manager, valMg
 	vw.IsOrganization = inv.IsOrganization
 
 	var err error
-	vw.User, err = organization.ConvertUserToUserView(inv.User, usrMgr, valMgr)
+	vw.User, err = organization.ConvertUsernameToIdentifier(inv.User, usrMgr, valMgr)
 	// user can be empty if invited through email or phone number
 	if db.IsNotFound(err) {
 		err = nil

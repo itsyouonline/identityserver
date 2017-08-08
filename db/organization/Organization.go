@@ -7,6 +7,7 @@ import (
 	"github.com/itsyouonline/identityserver/db/validation"
 
 	"gopkg.in/validator.v2"
+	log "github.com/Sirupsen/logrus"
 )
 
 type Organization struct {
@@ -45,83 +46,124 @@ func (org *Organization) ConvertToView(usrMgr *user.Manager, valMgr *validation.
 	view.IncludeSubOrgsOf = org.IncludeSubOrgsOf
 
 	var err error
-	view.Members, err = convertUsernameToUserview(org.Members, usrMgr, valMgr)
+	view.Members, err = ConvertUsernamesToIdentifiers(org.Members, valMgr)
 	if err != nil {
 		return view, err
 	}
-	view.Owners, err = convertUsernameToUserview(org.Owners, usrMgr, valMgr)
+	view.Owners, err = ConvertUsernamesToIdentifiers(org.Owners, valMgr)
 
 	return view, err
 }
 
-func convertUsernameToUserview(usernames []string, usrMgr *user.Manager, valMgr *validation.Manager) ([]MemberView, error) {
-	views := []MemberView{}
-	for _, username := range usernames {
-		mv, err := ConvertUserToUserView(username, usrMgr, valMgr)
-		if err != nil {
-			return views, err
-		}
-		views = append(views, mv)
+func ConvertUsernamesToIdentifiers(usernames []string, valMgr *validation.Manager) ([]string, error) {
+	identifiers := []string{}
+	checkedUsers := map[string]bool{}
+	for _, u := range usernames {
+		checkedUsers[u] = false
 	}
-	return views, nil
+	emails, err := valMgr.GetValidatedEmailAddressesByUsernames(usernames)
+	if err != nil {
+		return identifiers, err
+	}
+	for _, validatedEmail := range emails {
+		if !checkedUsers[validatedEmail.Username] {
+			identifiers = append(identifiers, validatedEmail.EmailAddress)
+			checkedUsers[validatedEmail.Username] = true
+		}
+	}
+	checkPhoneUsernames := []string{}
+	for username, checked := range checkedUsers {
+		if !checked {
+			checkPhoneUsernames = append(checkPhoneUsernames, username)
+		}
+	}
+	validatedPhoneNumbers, err := valMgr.GetValidatedPhoneNumbersByUsernames(checkPhoneUsernames)
+	if err != nil {
+		return identifiers, err
+	}
+	for _, validatedPhone := range validatedPhoneNumbers {
+		if !checkedUsers[validatedPhone.Username] {
+			identifiers = append(identifiers, validatedPhone.Phonenumber)
+			checkedUsers[validatedPhone.Username] = true
+		}
+	}
+	return identifiers, nil
 }
 
-func ConvertUserToUserView(username string, usrMgr *user.Manager, valMgr *validation.Manager) (MemberView, error) {
-	mv := MemberView{}
-	mv.Username = username
+// MapUsernamesToIdentifiers returns a map with as key the validated information (identifier) and as value the username
+func MapUsernamesToIdentifiers(usernames []string, valMgr *validation.Manager) (map[string]string, error) {
+	identifiers := map[string]string{}
+	emails, err := valMgr.GetValidatedEmailAddressesByUsernames(usernames)
+	if err != nil {
+		return identifiers, err
+	}
+	for _, validatedEmail := range emails {
+		identifiers[validatedEmail.EmailAddress] = validatedEmail.Username
+	}
+	validatedPhoneNumbers, err := valMgr.GetValidatedPhoneNumbersByUsernames(usernames)
+	if err != nil {
+		return identifiers, err
+	}
+	for _, validatedPhone := range validatedPhoneNumbers {
+		identifiers[ validatedPhone.Phonenumber] = validatedPhone.Username
+	}
+	return identifiers, nil
+}
+
+func ConvertUsernameToIdentifier(username string, usrMgr *user.Manager, valMgr *validation.Manager) (string, error) {
+	userIdentifier := username
 	usr, err := usrMgr.GetByName(username)
 	if err != nil {
-		return mv, err
-	}
-	// check if real name is filled in
-	if usr.Firstname != "" || usr.Lastname != "" {
-		var usrId string
-		if usr.Firstname != "" {
-			usrId += usr.Firstname + " "
-		}
-		usrId += usr.Lastname
-		mv.UserIdentifier = usrId
-		return mv, err
+		return userIdentifier, err
 	}
 	// check for a validated email address
 	for _, email := range usr.EmailAddresses {
 		validated, err := valMgr.IsEmailAddressValidated(username, email.EmailAddress)
 		if err != nil {
-			return mv, err
+			return userIdentifier, err
 		}
 		if validated {
-			mv.UserIdentifier = email.EmailAddress
-			return mv, err
+			return email.EmailAddress, err
 		}
 	}
 	// try the phone numbers
 	for _, phone := range usr.Phonenumbers {
 		validated, err := valMgr.IsPhonenumberValidated(username, phone.Phonenumber)
 		if err != nil {
-			return mv, err
+			return userIdentifier, err
 		}
 		if validated {
-			mv.UserIdentifier = phone.Phonenumber
-			return mv, err
+			return phone.Phonenumber, err
 		}
 	}
-	return mv, err
+	// No verified email or phone number.. Shouldn't be possible.
+	log.Errorf("User %s does not have a validated phone number or email address", username)
+	return userIdentifier, err
+}
+func ConvertIdentifierToUsername(identifier string, valMgr *validation.Manager) (string, error) {
+	email, err := valMgr.GetByEmailAddress(identifier)
+	if err == nil {
+		return email.Username, err
+	} else if valMgr.IsErrNotFound(err) {
+		phone, err := valMgr.GetByPhoneNumber(identifier)
+		if err == nil {
+			return phone.Username, err
+		} else {
+			return identifier, err
+		}
+	}
+	return identifier, err
 }
 
 type OrganizationView struct {
 	DNS              []string        `json:"dns"`
 	Globalid         string          `json:"globalid"`
-	Members          []MemberView    `json:"members"`
-	Owners           []MemberView    `json:"owners"`
+	Members          []string        `json:"members"`
+	Owners           []string        `json:"owners"`
 	PublicKeys       []string        `json:"publicKeys"`
 	SecondsValidity  int             `json:"secondsvalidity"`
 	OrgOwners        []string        `json:"orgowners"`  //OrgOwners are other organizations that are owner of this organization
 	OrgMembers       []string        `json:"orgmembers"` //OrgMembers are other organizations that are member of this organization
 	RequiredScopes   []RequiredScope `json:"requiredscopes"`
 	IncludeSubOrgsOf []string        `json:"includesuborgsof"`
-}
-
-type MemberView struct {
-	Username       string `json:"username"`
-	UserIdentifier string `json:"useridentifier"`
 }

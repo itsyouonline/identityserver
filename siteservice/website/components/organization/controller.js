@@ -420,7 +420,7 @@
         }
 
         function editMember(event, user) {
-            var username = user.user.username;
+            var username = user.user;
             var changeRoleDialog = {
                 controller: ['$mdDialog', '$translate', 'OrganizationService', 'UserDialogService', 'organization', 'user', 'userId', 'initialRole', EditOrganizationMemberController],
                 controllerAs: 'ctrl',
@@ -430,7 +430,7 @@
                 locals: {
                     organization: vm.organization,
                     user: username,
-                    userId: user.user.useridentifier,
+                    userId: user.user,
                     initialRole: user.role
                 }
             };
@@ -441,14 +441,14 @@
                     if (data.action === 'edit') {
                         vm.organization = data.data;
                         var u = vm.users.filter(function (user) {
-                            return user.user.username === username;
+                            return user.user === username;
                         })[0];
                         u.role = data.newRole;
                     } else if (data.action === 'remove') {
                         var people = vm.organization[data.data.role];
-                        people.splice(people.indexOf(data.data.username), 1);
+                        people.splice(people.indexOf(data.data), 1);
                         vm.users = vm.users.filter(function (user) {
-                            return user.user.username !== username;
+                            return user.user !== username;
                         });
                     }
                     setUsers();
@@ -619,7 +619,7 @@
         }
 
         function removeInvitation(invite) {
-            var searchString = invite.user.username || invite.phonenumber || invite.emailaddress;
+            var searchString = invite.user || invite.phonenumber || invite.emailaddress;
             OrganizationService.removeInvitation(globalid, searchString).then(removeFromView, function (response) {
                 if (response.status === 404) {
                     removeFromView();
