@@ -305,17 +305,16 @@
             return genericHttpCall($http.delete, url);
         }
 
-        function getSeeObjects() {
-            var url = apiURL + '/' + encodeURIComponent(username) + '/see';
+        function getSeeObjects(organization) {
+            var queryString = organization ? '?globalid=' + encodeURIComponent(organization) : '';
+            var url = apiURL + '/' + encodeURIComponent(username) + '/see' + queryString;
             return genericHttpCall($http.get, url, null, {cache: true});
         }
 
-        function getSeeObject(uniqueId, all) {
-            var queryString = '';
-            if (all) {
-                queryString = '?version=0';
-            }
-            var url = apiURL + '/' + encodeURIComponent(username) + '/see/' + encodeURIComponent(uniqueId) + queryString;
+        function getSeeObject(uniqueId, organization, all) {
+            var queryString = all ? '?version=0' : '';
+            var url = apiURL + '/' + encodeURIComponent(username) + '/see/' + encodeURIComponent(uniqueId) + '/'
+                + encodeURIComponent(organization) + queryString;
             return genericHttpCall($http.get, url, null, {cache: true});
         }
 

@@ -125,6 +125,7 @@
     "no_email_addresses": "This user does not have any registered email addresses",
     "no_notifcations": "You have no notifications.",
     "no_see_documents": "You don't have any documents.",
+    "no_see_documents_for_organization": "You don't have any documents for this organization.",
     "oauth_default_description": "Dear {{externalsite}} customer, We make use of the independant ItsYou.Online identity management system to highly protect the access to your {{externalsite}} products. Please login to your ItsYou.Online account to complete the {{externalsite}} onboarding process.",
     "ok": "OK",
     "organization": {

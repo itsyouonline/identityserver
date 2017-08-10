@@ -58,6 +58,15 @@
                 pageTitle: 'Organization stucture'
             }
         })
+       .state('organization.see', {
+           url: '/see',
+           templateUrl: 'components/organization/views/detailTabSee.html',
+           controller: 'SeeListController',
+           controllerAs: 'vm',
+           params: {
+               pageTitle: 'See'
+           }
+       })
         .state('organization.settings', {
             url: '/settings',
             templateUrl: 'components/organization/views/detailTabsSettings.html',
@@ -112,16 +121,25 @@
         })
         .state('see', {
             url: '/see',
-            templateUrl: 'components/see/views/see-list.html',
+            templateUrl: 'components/see/views/see-list-page.html',
             controller: 'SeeListController',
             controllerAs: 'vm',
             params: {
                 pageTitle: 'See'
             }
         })
+            .state('seeListOrganization', {
+                url: '/see/:organization',
+                templateUrl: 'components/see/views/see-list-page.html',
+                controller: 'SeeListController',
+                controllerAs: 'vm',
+                params: {
+                    pageTitle: 'See'
+                }
+            })
         .state('seeDetail', {
-            url: '/see/:uniqueid',
-            templateUrl: 'components/see/views/see-detail.html',
+            url: '/see/:uniqueid/:organization',
+            templateUrl: 'components/see/views/see-detail-page.html',
             controller: 'SeeDetailController',
             controllerAs: 'vm',
             params: {

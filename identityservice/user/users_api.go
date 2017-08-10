@@ -1631,9 +1631,16 @@ func (api UsersAPI) DeleteAuthorization(w http.ResponseWriter, r *http.Request) 
 
 func (api UsersAPI) GetSeeObjects(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
+	organizationGlobalId := r.FormValue("globalid")
 
 	seeMgr := seeDb.NewManager(r)
-	seeObjects, err := seeMgr.GetSeeObjects(username)
+	var seeObjects []seeDb.See
+	var err error
+	if organizationGlobalId == "" {
+		seeObjects, err = seeMgr.GetSeeObjects(username)
+	} else {
+		seeObjects, err = seeMgr.GetSeeObjectsByOrganization(username, organizationGlobalId)
+	}
 	if handleServerError(w, "Get see objects", err) {
 		return
 	}
@@ -1649,6 +1656,7 @@ func (api UsersAPI) GetSeeObjects(w http.ResponseWriter, r *http.Request) {
 func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	uniqueID := mux.Vars(r)["uniqueid"]
+	organizationGlobalID := mux.Vars(r)["globalid"]
 	versionStr := r.URL.Query().Get("version")
 	version := "latest"
 	versionInt := 0
@@ -1672,9 +1680,7 @@ func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if requestingClient == "itsyouonline" {
-		// This should never happen as the oauth 2  middleware should give a 403
-		writeErrorResponse(w, http.StatusBadRequest, "This api call is not available when logged in via the website")
-		return
+		requestingClient = organizationGlobalID
 	}
 
 	seeMgr := seeDb.NewManager(r)

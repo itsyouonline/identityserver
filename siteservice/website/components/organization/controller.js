@@ -25,12 +25,13 @@
         vm.loading = {
             invitations: false
         };
-        vm.selectedTab = 0;
-        if ($state.current.name === 'organization.structure') {
-            vm.selectedTab = 1;
-        } else if ($state.current.name === 'organization.settings') {
-            vm.selectedTab = 2;
-        }
+        var pages = {
+            'organization.people': 0,
+            'organization.structure': 1,
+            'organization.see': 2,
+            'organization.settings': 3
+        };
+        vm.selectedTab = pages[$state.current.name];
 
         vm.initSettings = initSettings;
         vm.showInvitationDialog = showInvitationDialog;

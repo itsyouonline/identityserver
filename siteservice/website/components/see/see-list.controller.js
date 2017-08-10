@@ -2,16 +2,14 @@
     'use strict';
     angular
         .module('itsyouonlineApp')
-        .controller('SeeListController', ['UserService', SeeListController]);
+        .controller('SeeListController', ['$stateParams', 'UserService', SeeListController]);
 
-    function SeeListController(UserService) {
+    function SeeListController($stateParams, UserService) {
         var vm = this;
+        var organization = $stateParams.organization;
         vm.documents = [];
-        vm.loaded = {
-            documents: false
-        };
+        vm.loaded = false;
         vm.userIdentifier = null;
-
 
         init();
 
@@ -27,10 +25,10 @@
         }
 
         function getDocuments() {
-            vm.loaded.documents = true;
-            UserService.getSeeObjects().then(function (documents) {
+            vm.loaded = false;
+            UserService.getSeeObjects(organization).then(function (documents) {
                 vm.documents = documents;
-                vm.loaded.documents = true;
+                vm.loaded = true;
             });
         }
     }

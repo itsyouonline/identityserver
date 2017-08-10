@@ -1,0 +1,21 @@
+<div flex-gt-sm="80" flex="100" layout="column">
+    <div class="breadcrumb-container"><p>
+        <p>
+            <span>
+                <a class="breadcrumb-link" ui-sref="profile" ng-bind="vm.userIdentifier"></a>
+                <span>&raquo; </span>
+            </span>
+            <span translate='see'></span>
+        </p>
+        <h1 translate='iyo_see'></h1>
+    </div>
+    <md-card>
+        <md-card-content>
+            <div class="loading-container" layout-align="center center" ng-if="!vm.loaded">
+                <md-progress-circular md-mode="indeterminate" md-diameter="50"></md-progress-circular>
+            </div>
+            <p ng-if="!vm.documents.length && vm.loaded" translate='no_see_documents'></p>
+            <see-detail see="see" detailed="false" ng-repeat="see in vm.documents"></see-detail>
+        </md-card-content>
+    </md-card>
+</div>

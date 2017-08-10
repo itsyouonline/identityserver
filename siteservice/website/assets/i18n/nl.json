@@ -125,6 +125,7 @@
     "no_email_addresses": "Deze gebruiker heeft geen geregistreerde e-mailadressen",
     "no_notifcations": "Je hebt geen meldingen.",
     "no_see_documents": "U heeft geen documenten.",
+    "no_see_documents_for_organization": "U heeft geen documenten voor deze organizatie.",
     "oauth_default_description": "Beste {{externalsite}} klant, Wij maken gebruik van het onafhankelijke ItsYou.Online identity management system om de toegang tot je {{externalsite}} producten ten zeerste te beschermen. Gelieve aan te melden bij je ItsYou.Online account om de {{externalsite}} onboarding te voltooien.",
     "ok": "OK",
     "organization": {

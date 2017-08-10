@@ -7,7 +7,9 @@
 
     function SeeDetailController($stateParams, UserService) {
         var vm = this,
-            uniqueid = $stateParams.uniqueid;
+            uniqueid = $stateParams.uniqueid,
+            organization = $stateParams.organization;
+
         vm.userIdentifier = null;
         vm.loading = true;
         vm.isShowingFullHistory = false;
@@ -29,13 +31,13 @@
 
         function getSee() {
             UserService
-                .getSeeObject(uniqueid, vm.isShowingFullHistory)
+                .getSeeObject(uniqueid, organization, vm.isShowingFullHistory)
                 .then(
                     function (data) {
-                        vm.seeObject = data;
-                        vm.seeObject.versions.sort(function (a, b) {
+                        data.versions.sort(function (a, b) {
                             return b.version - a.version;
                         });
+                        vm.seeObject = data;
                         vm.loading = false;
                     }
                 );

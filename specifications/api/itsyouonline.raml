@@ -1545,14 +1545,16 @@ securedBy: [ oauth_2_0 ]
     get:
       displayName: GetSeeObjects
       securedBy: [oauth_2_0: { scopes: [ "user:admin", "user:see" ] } ]
-      description: Get all see objects
+      description: Get a list of all see objects.
+      queryParameters:
+        globalid?:
+          type: string
+          description: Filter the list of see objects by an organization globalid.
       responses:
         200:
           body:
             application/json:
               type: SeeView[]
-        404:
-          description: Not found
     post:
       displayName: CreateSeeObject
       securedBy: [oauth_2_0: { scopes: [ "user:see" ] } ]
@@ -1569,7 +1571,8 @@ securedBy: [ oauth_2_0 ]
           description: No keystore with the specified label was found for the user
         404:
           description: Not found
-    /{uniqueid}:
+    /{uniqueid}/{globalid}:
+      securedBy: [oauth_2_0: { scopes: [ "user:see" ] } ]
       get:
         displayName: GetSeeObject
         securedBy: [oauth_2_0: { scopes: [ "user:admin", "user:see" ] } ]
@@ -1589,7 +1592,6 @@ securedBy: [ oauth_2_0 ]
             description: Not found
       put:
         displayName: UpdateSeeObject
-        securedBy: [oauth_2_0: { scopes: [ "user:see" ] } ]
         description: Updates a see object
         body:
           application/json:
@@ -1604,7 +1606,6 @@ securedBy: [ oauth_2_0 ]
       /sign/{version}:
         put:
           displayName: SignSeeObject
-          securedBy: [oauth_2_0: { scopes: [ "user:see" ] } ]
           description: Sign a see object
           body:
             application/json:

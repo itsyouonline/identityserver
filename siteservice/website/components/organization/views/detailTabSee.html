@@ -1,0 +1,5 @@
+<div class="loading-container" layout-align="center center" ng-if="!vm.loaded">
+    <md-progress-circular md-mode="indeterminate" md-diameter="50"></md-progress-circular>
+</div>
+<p ng-if="!vm.documents.length && vm.loaded" translate="no_see_documents_for_organization"></p>
+<see-detail see="see" detailed="false" ng-repeat="see in vm.documents"></see-detail>

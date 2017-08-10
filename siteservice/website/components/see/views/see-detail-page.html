@@ -1,0 +1,25 @@
+<div flex-gt-sm="80" flex="100" layout="column">
+    <div class="breadcrumb-container">
+        <p>
+            <span>
+                <a class="breadcrumb-link" ui-sref="profile" ng-bind="vm.userIdentifier"></a>
+                <span>&raquo; </span>
+            </span>
+            <span>
+                <a class="breadcrumb-link" ui-sref="see" translate='see'></a>
+                <span>&raquo; </span>
+            </span>
+            <span ng-bind="::vm.seeObject.uniqueid"></span>
+        </p>
+        <h1 translate='seedetail'>See detail</h1>
+    </div>
+    <md-card>
+        <md-card-content>
+            <div class="loading-container" layout-align="center center" ng-if="vm.loading">
+                <md-progress-circular md-mode="indeterminate" md-diameter="50"></md-progress-circular>
+            </div>
+            <see-detail see="vm.seeObject" detailed="true" show-full-history="isShowingFullHistory"
+                        toggle-full-history="vm.toggleFullHistory()"></see-detail>
+        </md-card-content>
+    </md-card>
+</div>
