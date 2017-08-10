@@ -10,12 +10,8 @@
             </md-card-title-text>
             <md-card-title-text ng-if="vm.externalSite">
                 <div layout="column">
-                    <p class="loginprompt" ng-if="!vm.description" translate='oauth_default_description' translate-values="{externalsite: vm.externalSite}">
-                        Dear <span ng-bind="vm.externalSite"></span> customer,
-                        We make use of the independant ItsYou.Online identity management system to highly
-                        protect the access to your <span ng-bind="vm.externalSite"></span> products. Please login to your ItsYou.Online
-                        account to complete the <span ng-bind="vm.externalSite"></span> onboarding process.
-                    </p>
+                    <p class="loginprompt" ng-if="!vm.description" translate='oauth_default_description'
+                       translate-values="{externalsite: vm.externalSite}"></p>
                     <p class="loginprompt" ng-if="vm.description" ng-bind="vm.description"></p>
                 </div>
             </md-card-title-text>
@@ -81,7 +77,7 @@
                             <md-input-container ng-if="!vm.phoneConfirmed">
                                 <label for="smscode" translate='smscode'>Please enter the code sent to you by sms</label>
                                 <input ng-model="vm.smscode" required name="smscode" ng-change="vm.resetValidation('smscode')"
-                                       type="text" ng-minlength="6" md-maxlength="6">
+                                       id="smscode" ng-minlength="6" md-maxlength="6">
                                 <div ng-messages="signupform.smscode.$error">
                                     <div ng-message="minlength" translate='sms_code_length'>The code has a length of 6 characters</div>
                                     <div ng-message="maxlength" translate='sms_code_length'>The code has a length of 6 characters</div>
