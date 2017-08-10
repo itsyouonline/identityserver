@@ -129,7 +129,7 @@
             }
         })
             .state('seeListOrganization', {
-                url: '/see/:organization',
+                url: '/see/:globalid',
                 templateUrl: 'components/see/views/see-list-page.html',
                 controller: 'SeeListController',
                 controllerAs: 'vm',
@@ -138,7 +138,7 @@
                 }
             })
         .state('seeDetail', {
-            url: '/see/:uniqueid/:organization',
+            url: '/see/:uniqueid/:globalid',
             templateUrl: 'components/see/views/see-detail-page.html',
             controller: 'SeeDetailController',
             controllerAs: 'vm',

@@ -1634,12 +1634,22 @@ func (api UsersAPI) GetSeeObjects(w http.ResponseWriter, r *http.Request) {
 	organizationGlobalId := r.FormValue("globalid")
 
 	seeMgr := seeDb.NewManager(r)
+	requestingClient, validClient := context.Get(r, "client_id").(string)
+	if !validClient {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if requestingClient == "itsyouonline" {
+		requestingClient = organizationGlobalId
+	}
+
 	var seeObjects []seeDb.See
 	var err error
-	if organizationGlobalId == "" {
+	if requestingClient == "" {
+		// Only used for itsyou.online web client
 		seeObjects, err = seeMgr.GetSeeObjects(username)
 	} else {
-		seeObjects, err = seeMgr.GetSeeObjectsByOrganization(username, organizationGlobalId)
+		seeObjects, err = seeMgr.GetSeeObjectsByOrganization(username, requestingClient)
 	}
 	if handleServerError(w, "Get see objects", err) {
 		return
