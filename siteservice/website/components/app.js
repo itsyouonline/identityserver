@@ -128,15 +128,15 @@
                 pageTitle: 'See'
             }
         })
-            .state('seeListOrganization', {
-                url: '/see/:globalid',
-                templateUrl: 'components/see/views/see-list-page.html',
-                controller: 'SeeListController',
-                controllerAs: 'vm',
-                params: {
-                    pageTitle: 'See'
-                }
-            })
+        .state('seeListOrganization', {
+            url: '/see/organization/:globalid',
+            templateUrl: 'components/see/views/see-list-page.html',
+            controller: 'SeeListController',
+            controllerAs: 'vm',
+            params: {
+                pageTitle: 'See'
+            }
+        })
         .state('seeDetail', {
             url: '/see/:uniqueid/:globalid',
             templateUrl: 'components/see/views/see-detail-page.html',

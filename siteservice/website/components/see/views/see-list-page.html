@@ -5,16 +5,20 @@
                 <a class="breadcrumb-link" ui-sref="profile" ng-bind="::vm.userIdentifier"></a>
                 <span>&raquo; </span>
             </span>
-            <span translate='see'></span>
+            <span>
+                <a class="breadcrumb-link" ui-sref="see" translate="see"></a>
+                <span ng-if="vm.organization">&raquo; </span>
+            </span>
+            <span ng-bind="vm.organization"></span>
         </p>
-        <h1 translate='iyo_see'></h1>
+        <h1 translate="iyo_see"></h1>
     </div>
     <md-card>
         <md-card-content>
             <div class="loading-container" layout-align="center center" ng-if="!vm.loaded">
                 <md-progress-circular md-mode="indeterminate" md-diameter="50"></md-progress-circular>
             </div>
-            <p ng-if="!vm.documents.length && vm.loaded" translate='no_see_documents'></p>
+            <p ng-if="!vm.documents.length && vm.loaded" translate="{{ vm.noDocsTranslation }}"></p>
             <see-detail see="see" detailed="false" ng-repeat="see in vm.documents"></see-detail>
         </md-card-content>
     </md-card>

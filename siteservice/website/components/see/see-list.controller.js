@@ -6,10 +6,11 @@
 
     function SeeListController($stateParams, UserService) {
         var vm = this;
-        var organization = $stateParams.globalid;
+        vm.organization = $stateParams.globalid;
         vm.documents = [];
         vm.loaded = false;
         vm.userIdentifier = undefined;
+        vm.noDocsTranslation = vm.organization ? 'no_see_documents_for_organization' : 'no_see_documents';
 
         init();
 
@@ -26,7 +27,7 @@
 
         function getDocuments() {
             vm.loaded = false;
-            UserService.getSeeObjects(organization).then(function (documents) {
+            UserService.getSeeObjects(vm.organization).then(function (documents) {
                 vm.documents = documents;
                 vm.loaded = true;
             });
