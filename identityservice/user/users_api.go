@@ -1631,10 +1631,11 @@ func (api UsersAPI) DeleteAuthorization(w http.ResponseWriter, r *http.Request) 
 
 func (api UsersAPI) GetSeeObjects(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
+	globalid := r.FormValue("globalid")
 
 	seeMgr := seeDb.NewManager(r)
 
-	requestingClient, ok := getRequestingClientFromRequest(r, w, true)
+	requestingClient, ok := getRequestingClientFromRequest(r, w, globalid, true)
 	if !ok {
 		return
 	}
@@ -1662,6 +1663,7 @@ func (api UsersAPI) GetSeeObjects(w http.ResponseWriter, r *http.Request) {
 func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	uniqueID := mux.Vars(r)["uniqueid"]
+	globalid := mux.Vars(r)["globalid"]
 	versionStr := r.URL.Query().Get("version")
 	version := "latest"
 	versionInt := 0
@@ -1679,7 +1681,7 @@ func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	requestingClient, ok := getRequestingClientFromRequest(r, w, true)
+	requestingClient, ok := getRequestingClientFromRequest(r, w, globalid, true)
 	if !ok {
 		return
 	}
@@ -1788,8 +1790,9 @@ func (api UsersAPI) CreateSeeObject(w http.ResponseWriter, r *http.Request) {
 func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	uniqueID := mux.Vars(r)["uniqueid"]
+	globalid := mux.Vars(r)["globalid"]
 
-	requestingClient, ok := getRequestingClientFromRequest(r, w, false)
+	requestingClient, ok := getRequestingClientFromRequest(r, w, globalid, false)
 	if !ok {
 		return
 	}
@@ -1843,6 +1846,7 @@ func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	uniqueID := mux.Vars(r)["uniqueid"]
 	versionStr := mux.Vars(r)["version"]
+	globalid := mux.Vars(r)["globalid"]
 	version, err := strconv.Atoi(versionStr)
 	if err != nil {
 		log.Error("ERROR while parsing version :\n", err)
@@ -1850,7 +1854,7 @@ func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	requestingClient, ok := getRequestingClientFromRequest(r, w, false)
+	requestingClient, ok := getRequestingClientFromRequest(r, w, globalid, false)
 	if !ok {
 		return
 	}
@@ -1925,8 +1929,7 @@ func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
 }
 
 // getRequestingClientFromRequest validates if a see api call is valid for an organization
-func getRequestingClientFromRequest(r *http.Request, w http.ResponseWriter, allowOnWebsite bool) (string, bool) {
-	organizationGlobalID := mux.Vars(r)["globalid"]
+func getRequestingClientFromRequest(r *http.Request, w http.ResponseWriter, organizationGlobalID string, allowOnWebsite bool) (string, bool) {
 	requestingClient, validClient := context.Get(r, "client_id").(string)
 	if !validClient {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
