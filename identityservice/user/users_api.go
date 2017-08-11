@@ -1631,16 +1631,12 @@ func (api UsersAPI) DeleteAuthorization(w http.ResponseWriter, r *http.Request) 
 
 func (api UsersAPI) GetSeeObjects(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
-	organizationGlobalId := r.FormValue("globalid")
 
 	seeMgr := seeDb.NewManager(r)
-	requestingClient, validClient := context.Get(r, "client_id").(string)
-	if !validClient {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+
+	requestingClient, ok := getRequestingClientFromRequest(r, w, true)
+	if !ok {
 		return
-	}
-	if requestingClient == "itsyouonline" {
-		requestingClient = organizationGlobalId
 	}
 
 	var seeObjects []seeDb.See
@@ -1666,7 +1662,6 @@ func (api UsersAPI) GetSeeObjects(w http.ResponseWriter, r *http.Request) {
 func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	uniqueID := mux.Vars(r)["uniqueid"]
-	organizationGlobalID := mux.Vars(r)["globalid"]
 	versionStr := r.URL.Query().Get("version")
 	version := "latest"
 	versionInt := 0
@@ -1684,15 +1679,10 @@ func (api UsersAPI) GetSeeObject(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	requestingClient, validClient := context.Get(r, "client_id").(string)
-	if !validClient {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	requestingClient, ok := getRequestingClientFromRequest(r, w, true)
+	if !ok {
 		return
 	}
-	if requestingClient == "itsyouonline" {
-		requestingClient = organizationGlobalID
-	}
-
 	seeMgr := seeDb.NewManager(r)
 	seeObject, err := seeMgr.GetSeeObject(username, requestingClient, uniqueID)
 	if db.IsNotFound(err) {
@@ -1799,17 +1789,10 @@ func (api UsersAPI) UpdateSeeObject(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	uniqueID := mux.Vars(r)["uniqueid"]
 
-	requestingClient, validClient := context.Get(r, "client_id").(string)
-	if !validClient {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	requestingClient, ok := getRequestingClientFromRequest(r, w, false)
+	if !ok {
 		return
 	}
-	if requestingClient == "itsyouonline" {
-		// This should never happen as the oauth 2  middleware should give a 403
-		writeErrorResponse(w, http.StatusBadRequest, "This api call is not available when logged in via the website")
-		return
-	}
-
 	seeView := seeDb.SeeView{}
 	if err := json.NewDecoder(r.Body).Decode(&seeView); err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
@@ -1867,17 +1850,10 @@ func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	requestingClient, validClient := context.Get(r, "client_id").(string)
-	if !validClient {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	requestingClient, ok := getRequestingClientFromRequest(r, w, false)
+	if !ok {
 		return
 	}
-	if requestingClient == "itsyouonline" {
-		// This should never happen as the oauth 2  middleware should give a 403
-		writeErrorResponse(w, http.StatusBadRequest, "This api call is not available when logged in via the website")
-		return
-	}
-
 
 	seeView := seeDb.SeeView{}
 	if err := json.NewDecoder(r.Body).Decode(&seeView); err != nil {
@@ -1946,6 +1922,29 @@ func (api UsersAPI) SignSeeObject(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(seeObject.ConvertToSeeView(version))
+}
+
+// getRequestingClientFromRequest validates if a see api call is valid for an organization
+func getRequestingClientFromRequest(r *http.Request, w http.ResponseWriter, allowOnWebsite bool) (string, bool) {
+	organizationGlobalID := mux.Vars(r)["globalid"]
+	requestingClient, validClient := context.Get(r, "client_id").(string)
+	if !validClient {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return requestingClient, false
+	}
+	if requestingClient == "itsyouonline" {
+		if allowOnWebsite {
+			requestingClient = organizationGlobalID
+		} else {
+			// This should never happen as the oauth 2  middleware should give a 403
+			writeErrorResponse(w, http.StatusBadRequest, "This api call is not available when logged in via the website")
+			return requestingClient, false
+		}
+	} else if requestingClient != organizationGlobalID {
+		writeErrorResponse(w, http.StatusForbidden, "unauthorized_organization")
+		return requestingClient, false
+	}
+	return requestingClient, true
 }
 
 func (api UsersAPI) AddAPIKey(w http.ResponseWriter, r *http.Request) {

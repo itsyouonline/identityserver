@@ -8,7 +8,7 @@
     function SeeDetailController($stateParams, UserService) {
         var vm = this,
             uniqueid = $stateParams.uniqueid,
-            organization = $stateParams.organization;
+            organization = $stateParams.globalid;
 
         vm.userIdentifier = null;
         vm.loading = true;
