@@ -234,7 +234,7 @@
 
                 function checkconfirmation() {
                     UserService
-                        .getVerifiedPhones(vm.username)
+                        .getVerifiedPhones(true)
                         .then(function success(confirmedPhones) {
                             var confirmed = confirmedPhones.filter(function (p) {
                                     return p.label === ctrl.label;

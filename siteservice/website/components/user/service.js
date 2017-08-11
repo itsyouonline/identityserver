@@ -189,6 +189,10 @@
             return genericHttpCall(GET, url, null, {cache: !refresh});
         }
 
+        /**
+         * Returns most user-friendly identifier for the user.
+         * Only to be used for displaying in html, don't use it in api calls.
+         */
         function getUserIdentifier() {
             var deferred = $q.defer();
             this.get().then(function (user) {
@@ -196,18 +200,21 @@
                     deferred.resolve(user.firstname + ' ' + user.lastname);
                     return;
                 }
-                var email = user.emailaddresses.filter(function (email) {
-                    return email.verified;
-                })[0];
-                if (email) {
-                    return deferred.resolve(email.emailaddress);
-                }
-                var phone = user.phonenumbers.filter(function (phone) {
-                    return phone.verified;
-                })[0];
-                if (phone) {
-                    return deferred.resolve(phone.phonenumber);
-                }
+                getVerifiedEmailAddresses().then(function (emailAddresses) {
+                    if (emailAddresses.length) {
+                        deferred.resolve(emailAddresses[0].emailaddress);
+                    } else {
+                        getVerifiedPhones().then(function (phones) {
+                            if (phones.length) {
+                                deferred.resolve(phones[0].phonenumber);
+                            } else {
+                                // SOL here, fallback to username.
+                                deferred.resolve(user.username);
+                            }
+                        });
+                    }
+                });
+
             });
             return deferred.promise;
 
@@ -346,9 +353,13 @@
             return genericHttpCall($http.put, url, data);
         }
 
-        function getVerifiedPhones(username) {
+        function getVerifiedPhones(disableCache) {
             var url = apiURL + '/' + encodeURIComponent(username) + '/phonenumbers?validated=true';
-            return genericHttpCall($http.get, url);
+            var options = {};
+            if (!disableCache) {
+                options.cache = true;
+            }
+            return genericHttpCall($http.get, url, options);
         }
 
         function sendPhoneVerificationCode(username, label) {
@@ -366,9 +377,13 @@
             return genericHttpCall($http.put, url, data);
         }
 
-        function getVerifiedEmailAddresses(username) {
+        function getVerifiedEmailAddresses(disableCache) {
             var url = apiURL + '/' + encodeURIComponent(username) + '/emailaddresses?validated=true';
-            return genericHttpCall($http.get, url);
+            var options = {};
+            if (!disableCache) {
+                options.cache = true;
+            }
+            return genericHttpCall($http.get, url, options);
         }
 
         function sendEmailAddressVerification(username, label){

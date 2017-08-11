@@ -42,7 +42,7 @@
         vm.loaded = {};
         vm.pendingCount = 0;
 
-        vm.userIdentifier = '';
+        vm.userIdentifier = undefined;
 
         UserDialogService.init(vm);
 
@@ -232,11 +232,8 @@
         }
 
         function loadVerifiedPhones() {
-            if (vm.loaded.verifiedPhones) {
-                return;
-            }
             UserService
-                .getVerifiedPhones(vm.username)
+                .getVerifiedPhones()
                 .then(function (confirmedPhones) {
                     confirmedPhones.map(function (p) {
                         findByLabel('phonenumbers', p.label).verified = true;
@@ -251,7 +248,7 @@
                     return;
                 }
                 UserService
-                    .getVerifiedEmailAddresses(vm.username)
+                    .getVerifiedEmailAddresses()
                     .then(function (confirmedEmails) {
                         confirmedEmails.map(function (p) {
                             findByLabel('emailaddresses', p.label).verified = true;

@@ -175,7 +175,7 @@
                 getVerifiedEmails();
             }
             if (Object.keys($scope.authorizations.validatedemailaddresses).length) {
-                getValidatedEmails()
+                getValidatedEmails();
             }
             if (Object.keys($scope.authorizations.validatedphonenumbers).length) {
                 getValidatedPhones();
@@ -183,19 +183,18 @@
 
         }
 
-        function getVerifiedEmails() {
-            UserService.getVerifiedEmailAddresses(vm.username).then(function (confirmedEmails) {
-                vm.verifiedEmails = confirmedEmails.map(function (mail) {
-                    return mail.emailaddress;
-                });
-            });
+        function getValidatedEmails() {
+            UserService.getVerifiedEmailAddresses().then(setConfirmedEmails);
         }
 
-        function getValidatedEmails() {
-            UserService.getVerifiedEmailAddresses(vm.username).then(function (confirmedEmails) {
-                vm.validatedEmails = confirmedEmails.map(function (mail) {
-                    return mail;
-                });
+        function setConfirmedEmails(confirmedEmails) {
+            // list of email objects (label, emailaddress)
+            vm.validatedEmails = confirmedEmails.map(function (mail) {
+                return mail;
+            });
+            // list of email addresses
+            vm.verifiedEmails = confirmedEmails.map(function (mail) {
+                return mail.emailaddress;
             });
         }
 
@@ -207,30 +206,24 @@
             });
         }
 
-        function hasAllRequiredEmails() {
-            for (var i = 0; i < $scope.authorizations.ownerof.emailaddresses.length; i++) {
-                var email = $scope.authorizations.ownerof.emailaddresses[i];
-                if (vm.verifiedEmails && !vm.verifiedEmails.includes(email)) {
-                    return email;
-                }
-            }
-            return true;
+        function getMissingRequiredEmails() {
+            return $scope.authorizations.ownerof.emailaddresses.filter(function (email) {
+                return vm.verifiedEmails && !vm.verifiedEmails.includes(email);
+            });
         }
 
         function checkOwner() {
             return $q(function (resolve, reject) {
-                if ($scope.authorizations.ownerof.emailaddresses.length === 0 || hasAllRequiredEmails() === true) {
+                if ($scope.authorizations.ownerof.emailaddresses.length === 0 || getMissingRequiredEmails().length === 0) {
                     resolve();
                 } else {
-                    UserService.getVerifiedEmailAddresses(vm.username).then(function (confirmedEmails) {
-                        vm.verifiedEmails = confirmedEmails.map(function (mail) {
-                            return mail.emailaddress;
-                        });
-                        var requiredEmail = hasAllRequiredEmails();
-                        if (requiredEmail === true) {
+                    UserService.getVerifiedEmailAddresses(true).then(function (confirmedEmails) {
+                        setConfirmedEmails(confirmedEmails);
+                        var missingRequiredEmails = getMissingRequiredEmails();
+                        if (missingRequiredEmails.length === 0) {
                             resolve();
                         } else {
-                            reject({key: 'please_verify_email_x', values: {email: requiredEmail}});
+                            reject({key: 'please_verify_email_x', values: {email: missingRequiredEmails[0]}});
                         }
                     });
                 }

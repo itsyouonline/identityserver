@@ -9,7 +9,7 @@
         var organization = $stateParams.globalid;
         vm.documents = [];
         vm.loaded = false;
-        vm.userIdentifier = null;
+        vm.userIdentifier = undefined;
 
         init();
 
