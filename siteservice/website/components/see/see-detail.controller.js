@@ -19,13 +19,13 @@
 
         function init() {
             getSee();
+            UserService.getUserIdentifier().then(function (userIdentifier) {
+                vm.userIdentifier = userIdentifier;
+            })
         }
 
         function toggleFullHistory() {
             vm.isShowingFullHistory = !vm.isShowingFullHistory;
-            UserService.getUserIdentifier().then(function (userIdentifier) {
-                vm.userIdentifier = userIdentifier;
-            })
             getSee();
         }
 
