@@ -9,6 +9,9 @@
         .config(['$httpProvider', httpConfig])
         .config(['$routeProvider', routeConfig])
         .config(['$translateProvider', translateConfig])
+        .config(['$mdAriaProvider', function ($mdAriaProvider) {
+            $mdAriaProvider.disableWarnings();
+        }])
         .factory('authenticationInterceptor', ['$q', '$window', authenticationInterceptor]);
 
 

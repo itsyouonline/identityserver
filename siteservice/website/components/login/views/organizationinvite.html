@@ -1,24 +1,22 @@
-<form layout="row" name="vm.form" ng-submit="vm.submit()">
-    <div flex></div>
+<form layout="row" name="vm.form" ng-submit="vm.submit()" layout-align="center center">
     <md-card class="form-card" flex="100" flex-gt-xs="80" flex-gt-sm="50" flex-gt-md="40" flex-gt-lg="30">
         <md-card-title>
             <md-card-title-text>
-                <span class="md-headline">Accept organization invitation</span>
+                <span class="md-headline" translate="accept_organization_invitiation"></span>
             </md-card-title-text>
         </md-card-title>
         <md-card-content>
-            <p ng-if="vm.invite">
-                Please login or register in order to accept the invitation from {{ ::vm.invite.organization }}
+            <p ng-if="vm.invite" translate="please_login_to_accept_invitation"
+               translate-value-organization="::vm.invite.organization">
             </p>
-            <div layout="row" layout-align="space-around center">
+            <div layout="column" layout-gt-md="row" layout-align="space-around center">
                 <md-button class="md-raised md-primary" ng-href="{{ ::vm.loginUrl }}">
-                    I already have an account
+                    <span translate="already_have_account"></span>
                 </md-button>
                 <md-button class="md-raised md-primary" ng-href="{{ ::vm.registerUrl }}">
-                    I don't have an account
+                    <span translate="dont_have_account"></span>
                 </md-button>
             </div>
         </md-card-content>
     </md-card>
-    <div flex></div>
 </form>

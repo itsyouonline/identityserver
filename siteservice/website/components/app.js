@@ -9,6 +9,9 @@
         .config(['$httpProvider', httpConfig])
         .config(['$stateProvider', '$urlRouterProvider', stateConfig])
         .config(['$translateProvider', translateConfig])
+        .config(['$mdAriaProvider', function ($mdAriaProvider) {
+            $mdAriaProvider.disableWarnings();
+        }])
         .config([init])
         .factory('authenticationInterceptor', ['$q', '$window', authenticationInterceptor])
         .directive('pagetitle', ['$rootScope', '$timeout', 'footerService', pagetitle])
