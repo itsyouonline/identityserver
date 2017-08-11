@@ -83,7 +83,7 @@
             "loginform": {
                 "login": "Inloggen",
                 "loginhelp": "Je kan inloggen met je gebruikersnaam, bevestigde email of telefoonnummer.",
-                "loginplaceholder": "Gebruikersnaam, email adres of telefoonnummer",
+                "loginplaceholder": "Gebruikersnaam, email of telefoonnummer",
                 "password": "Wachtwoord",
                 "invalidcredentials": "Ongeldige credentials",
                 "forgotpassword": "Wachtwoord vergeten?",

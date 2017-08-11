@@ -693,3 +693,9 @@ p.verified {
 .countryoption > .md-text  {
     width: 100%;
 }
+
+.row-reverse {
+    flex-direction: row-reverse !important;
+    -ms-flex-direction: row-reverse !important;
+    -webkit-flex-direction: row-reverse !important;
+}

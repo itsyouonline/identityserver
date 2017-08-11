@@ -83,7 +83,7 @@
             "loginform": {
                 "login": "Login",
                 "loginhelp": "You can login using your username, verified email address or verified phone number.",
-                "loginplaceholder": "Username, email address or phonenumber",
+                "loginplaceholder": "Username, email or phone",
                 "password": "Password",
                 "invalidcredentials": "Invalid credentials",
                 "forgotpassword": "Forgot your password?",

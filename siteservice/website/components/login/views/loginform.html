@@ -1,5 +1,4 @@
-<form layout="row" name="loginform" ng-submit="vm.submit()">
-    <div flex></div>
+<form layout="row" layout-align="center center" name="loginform" ng-submit="vm.submit()">
     <md-card id="form-area" class="form-card" flex="100" flex-gt-xs="80" flex-gt-sm="50" flex-gt-md="40" flex-gt-lg="30">
         <md-card-avatar ng-if="vm.externalSite">
             <canvas id="login-logo" height="240px" width="500px" ng-show="vm.logo"></canvas>
@@ -23,8 +22,8 @@
         <md-card-content>
             <div layout="column">
                 <md-input-container>
-                    <label for="username" translate='login.views.loginform.loginplaceholder'>Username, email address or phonenumber</label>
-                    <input ng-model="vm.login" ng-minlength="2" required name="username" type="text" id="username">
+                    <label for="username" translate="login.views.loginform.loginplaceholder"></label>
+                    <input ng-model="vm.login" ng-minlength="2" required name="username" id="username">
                 </md-input-container>
                 <md-input-container>
                     <label for="password" translate='login.views.loginform.password'>Password</label>
@@ -36,13 +35,16 @@
                 </md-input-container>
             </div>
         </md-card-content>
-        <md-card-actions layout="row" layout-align="space-between center">
-            <div layout="column" layout-align="center start">
+        <md-card-actions layout="column" layout-gt-md="row" layout-align="space-between end"
+                         layout-align-gt-md="space-between start" ng-class="{'row-reverse': vm.reverseButtons}">
+            <div layout="row" layout-align="end end" layout-align-gt-md="end end">
+                <md-button type="submit" class="md-raised md-primary" translate='login.views.loginform.loginbtn'>Log in
+            </div>
+            </md-button>
+            <div layout="column" layout-align="center end" layout-align-gt-md="start start">
                 <md-button href="#/forgotpassword" translate='login.views.loginform.forgotpassword'>Forgot your password?</md-button>
                 <md-button href="#/validateemail" style='margin-left: 0' translate='validate_email'>Validate email</md-button>
             </div>
-            <md-button type="submit" class="md-raised md-primary" translate='login.views.loginform.loginbtn'>Log in</md-button>
         </md-card-actions>
     </md-card>
-    <div flex></div>
 </form>

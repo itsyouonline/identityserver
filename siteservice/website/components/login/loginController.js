@@ -1,9 +1,10 @@
 (function () {
     'use strict';
     angular.module('loginApp')
-        .controller('loginController', ['$http', '$window', '$scope', '$rootScope', '$interval', 'LoginService', loginController]);
+        .controller('loginController', ['$http', '$window', '$scope', '$rootScope', '$interval', '$mdMedia',
+            'LoginService', loginController]);
 
-    function loginController($http, $window, $scope, $rootScope, $interval, LoginService) {
+    function loginController($http, $window, $scope, $rootScope, $interval, $mdMedia, LoginService) {
         var vm = this;
         var urlParams = URI($window.location.href).search(true);
         vm.submit = submit;
@@ -17,7 +18,7 @@
         vm.twoFAMethod = 'sms';
         vm.login = "";
         vm.password = "";
-        vm.description = ""
+        vm.description = "";
 
         var listener;
         activate();
@@ -39,6 +40,11 @@
             $scope.$on('$destroy', function() {
                   // Make sure that the interval is destroyed too
                   stopListening();
+            });
+            $scope.$watch(function () {
+                return $mdMedia('gt-md');
+            }, function (isGtMd) {
+                vm.reverseButtons = isGtMd;
             });
         }
 
