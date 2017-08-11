@@ -262,29 +262,6 @@ types:
       phonenumber: ""
       isorganization: false
 
-  MemberView:
-    properties:
-      username: string
-      useridentifier: string
-
-  JoinOrganizationInvitationView:
-    properties:
-        organization: string
-        user: MemberView
-        role:
-          type: string
-          enum: [owner, member, orgowner, orgmember]
-        created?: datetime
-        status:
-          type: string
-          enum: [pending, accepted, rejected]
-        method:
-          type: string
-          enum: [website, email, phone]
-        emailaddress: string
-        phonenumber: string
-        isorganization: boolean
-
   ContractSigningRequest:
     properties:
         contractId: string
@@ -361,50 +338,9 @@ types:
       includesuborgsof:
         - organization2
 
-  OrganizationView:
-    properties:
-      globalid:
-        type: string
-        minLength: 3
-        maxLength: 150
-        pattern: ^[a-z\d\-_\s]{3,150}$
-      publicKeys:
-        type: string[]
-        maxItems: 20
-      dns:
-        type: string[]
-        maxItems: 100
-        description: List of organization DNS.
-      owners:
-        type: MemberView[]
-        maxItems: 20
-        description: List of users `usernames`.
-      members:
-        type: MemberView[]
-        maxItems: 2000
-        description: List of users who are member in this organization.
-      orgowners:
-        type: string[]
-        description: List of other organizations who act as an owner in this organization.
-      orgmembers:
-        type: string[]
-        description: List of other organizations who act as a member in this organization.
-      includes:
-        type: string[]
-        maxItems: 100
-        description: globalId of sub organizations
-      requiredscopes:
-        type: RequiredScope[]
-        maxItems: 20
-        description: List of scopes that are required to join this organization
-      includesuborgsof:
-        type: string[]
-        description: List of orgowners and orgmembers who's children should be included in the organizations membershi or ownership hierarchy
-
-
   OrganizationUser:
     properties:
-      user: MemberView
+      username: string
       role:
         type: string
         description: role of the user in this organization, either organization:member or organization:owner
@@ -1637,7 +1573,7 @@ securedBy: [ oauth_2_0 ]
         200:
           body:
             application/json:
-              type: OrganizationView
+              type: Organization
     post:
       securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
       displayName: CreateNewSubOrganization
@@ -1953,7 +1889,7 @@ securedBy: [ oauth_2_0 ]
             body:
               application/json:
                 description: The updated organization
-                type: OrganizationView
+                type: Organization
           404:
             description: Member not found
           422:
@@ -1978,7 +1914,7 @@ securedBy: [ oauth_2_0 ]
             description: Member assigned successfully
             body:
               application/json:
-                type: MemberView
+                type: JoinOrganizationInvitation
           404:
             description: Not found
 
@@ -2009,7 +1945,7 @@ securedBy: [ oauth_2_0 ]
             description: Invite created successfully
             body:
               application/json:
-                type: MemberView
+                type: JoinOrganizationInvitation
           404:
             description: The user or the organization does not exist.
           409:
@@ -2078,7 +2014,7 @@ securedBy: [ oauth_2_0 ]
           200:
             body:
               application/json:
-                type: JoinOrganizationInvitationView[]
+                type: JoinOrganizationInvitation[]
 
       /{username}:
         delete:
