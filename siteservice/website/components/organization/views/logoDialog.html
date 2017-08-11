@@ -19,8 +19,10 @@
                       <div ng-message="filesize" translate='organization.views.logodialog.filetoolarge'>The file size of the (resized) file is too large.</div>
               </md-input-container>
               <h3 class="file-drop-info text_align_center" translate='organization.views.logodialog.filedrop'>Or drop a file in the area below</h3>
-              <canvas id="logo-upload-preview" height="240px" width="500px">
-              </canvas>
+              <div id="logo-upload-preview" class="organization-logo-container" layout="row"
+                   layout-align="center center" ng-class="{'dirty-background': logoChanged}">
+                  <img ng-src="{{ logo }}"/>
+              </div>
           </div>
       </md-dialog-content>
     </md-dialog-content>
@@ -32,8 +34,8 @@
         <md-button ng-click="cancel()" translate='cancel'>
             Cancel
         </md-button>
-        <md-button class="md-primary" type="submit" ng-click="update(dataurl)"
-                   ng-disabled="!dataurl" translate='update'>
+        <md-button class="md-primary" type="submit" ng-click="update(logo)" ng-disabled="!logoChanged"
+                   translate='update'>
             Update
         </md-button>
     </md-dialog-actions>

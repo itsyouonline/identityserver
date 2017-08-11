@@ -17,7 +17,7 @@
         vm.goToNextTabIfValid = goToNextTabIfValid;
         vm.externalSite = queryParams.client_id;
         $rootScope.loginUrl = '/login' + $window.location.search;
-        vm.logo = "";
+        vm.logo = undefined;
         vm.description = "";
         vm.selectedTab = 0;
         vm.oldSelectedTab = 0;
@@ -62,14 +62,9 @@
                 vm.needDoubleValidation = true;
             }
             if (vm.externalSite) {
-                registrationService.getLogo(vm.externalSite).then(
-                    function(data) {
-                        vm.logo = data.logo;
-                        resizeLogo();
-                    }
-                );
-                window.addEventListener('resize', resizeLogo, false);
-                window.addEventListener('orientationchange', resizeLogo, false);
+                registrationService.getLogo(vm.externalSite).then(function (data) {
+                    vm.logo = data.logo;
+                });
                 loadDescription();
             }
         }
@@ -85,37 +80,6 @@
                     vm.description = data.text;
                 }
             );
-        }
-
-        function renderLogo() {
-            if (vm.logo !== "") {
-                var img = new Image();
-                img.onload = function() {
-                    var c = document.getElementById("register-logo");
-                    if (!c) {
-                        return;
-                    }
-                    var ctx = c.getContext("2d");
-                    ctx.clearRect(0, 0, c.width, c.height);
-                    ctx.drawImage(img, 0, 0, c.width, c.height);
-                };
-                img.src = vm.logo;
-            }
-        }
-
-        function resizeLogo(e) {
-            var formArea = document.getElementById("form-area");
-            var logoArea = document.getElementById("register-logo");
-            var widthToHeight = 25 / 12;
-            var newWidth = formArea.clientWidth - 20;
-            if (newWidth < 500) {
-                logoArea.width = newWidth;
-                logoArea.height = (newWidth) / widthToHeight;
-            } else if (newWidth >= 500 && logoArea.width < 500) {
-                logoArea.width = 500;
-                logoArea.height = 240;
-            }
-            renderLogo();
         }
 
         function register() {

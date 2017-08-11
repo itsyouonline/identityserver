@@ -116,21 +116,6 @@
             }
         }
 
-        function renderLogo() {
-            if (vm.logo !== '') {
-                var img = new Image();
-                img.src = vm.logo;
-
-                var c = document.getElementById('logoview');
-                if (!c) {
-                    return;
-                }
-                var ctx = c.getContext('2d');
-                ctx.clearRect(0, 0, c.width, c.height);
-                ctx.drawImage(img, 0, 0);
-            }
-        }
-
         function getBranchWidth(branch) {
             var splitted = branch.globalid.split('.');
             var length = splitted[splitted.length - 1].length * 6;
@@ -176,7 +161,6 @@
 
         function initSettings() {
             fetchAPIKeyLabels();
-            renderLogo();
         }
 
         function listOrganizatonTree(org) {
@@ -349,7 +333,8 @@
         function showLogoDialog(ev) {
             var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
             $mdDialog.show({
-                controller: ['$scope', '$mdDialog', 'organization', 'OrganizationService', logoDialogController],
+                controller: ['$scope', '$document', '$mdDialog', 'organization', 'OrganizationService', logoDialogController],
+                controllerAs: 'vm',
                 templateUrl: 'components/organization/views/logoDialog.html',
                 targetEvent: ev,
                 fullscreen: useFullScreen,
@@ -358,19 +343,11 @@
                     organization: vm.organization.globalid,
                     $window: $window
                 }
-            }).then(
-                function() {
-                    OrganizationService.getLogo(vm.organization.globalid).then(
-                        function(data) {
-                            vm.logo = data.logo;
-                        }
-                    ).then(
-                        function() {
-                            renderLogo();
-                        }
-                    );
-                }
-            );
+            }).then(function () {
+                OrganizationService.getLogo(vm.organization.globalid).then(function (data) {
+                    vm.logo = data.logo;
+                });
+            });
         }
 
         function showDescriptionDialog(ev) {
@@ -967,43 +944,32 @@
         }
     }
 
-    function logoDialogController($scope, $mdDialog, organization, OrganizationService) {
+    function logoDialogController($scope, $document, $mdDialog, organization, OrganizationService) {
+        var doc = $document[0];
         $scope.organization = organization;
         $scope.setFile = setFile;
         $scope.cancel = cancel;
         $scope.validationerrors = {};
         $scope.update = update;
         $scope.remove = remove;
-
+        $scope.logoChanged = false;
         OrganizationService.getLogo(organization).then(
             function(data) {
                 $scope.logo = data.logo;
+                $scope.logoChanged = !$scope.logo;
                 makeFileDrop();
-                var c;
-                if ($scope.logo) {
-                    var img = new Image();
-                    img.src = $scope.logo;
-
-                    c = document.getElementById('logo-upload-preview');
-                    var ctx = c.getContext('2d');
-                    ctx.clearRect(0, 0, c.width, c.height);
-                    ctx.drawImage(img, 0, 0);
-                } else {
-                    c = document.getElementById('logo-upload-preview');
-                    c.className += ' dirty-background';
-                }
             }
         );
 
         function makeFileDrop() {
-            var target = document.getElementById('logo-upload-preview');
+            var target = doc.getElementById('logo-upload-preview');
             target.addEventListener('dragover', function (e) {
                 e.preventDefault();
             }, true);
             target.addEventListener('drop', function (src) {
 	              src.preventDefault();
                 //only allow image files, ignore others
-                if (!src.dataTransfer.files[0].type.match(/image.*/)) {
+                if (!src.dataTransfer.files[0] || !src.dataTransfer.files[0].type.match(/image.*/)) {
                     return;
                 }
                 var reader = new FileReader();
@@ -1015,48 +981,34 @@
         }
 
         $scope.uploadFile = function(event){
-                var files = event.target.files;
-                var url = URL.createObjectURL(files[0]);
-                setFile(url);
-            };
-
+            var files = event.target.files;
+            var url = URL.createObjectURL(files[0]);
+            setFile(url);
+        };
 
         function setFile(url) {
-            var c = document.getElementById('logo-upload-preview');
-            var ctx = c.getContext('2d');
-            ctx.clearRect(0, 0, c.width, c.height);
             var img = new Image();
+            var WIDTH = 500;
+            var HEIGHT = 240;
             img.src = url;
+            $scope.logoChanged = true;
 
             img.onload = function() {
-                var wscale = 1;
-                if (img.width > c.width) {
-                    wscale = c.width / img.width;
-                }
-                var hscale = 1;
-                if (img.height > c.height) {
-                    hscale = c.height / img.height;
-                }
-                var canvasCopy = document.createElement('canvas');
-                var copyContext = canvasCopy.getContext('2d');
+                var hRatio = 1;
+                var wRatio = 1;
+                // take the smallest ratio
+                if (img.width > WIDTH)
+                    wRatio = WIDTH / img.width;
+                if (img.height > HEIGHT)
+                    hRatio = HEIGHT / img.height;
+                var ratio = wRatio > hRatio ? hRatio : wRatio;
+                var canvas = doc.createElement('canvas');
+                var copyContext = canvas.getContext('2d');
 
-                canvasCopy.width = img.width;
-                canvasCopy.height = img.height;
-                copyContext.drawImage(img, 0, 0);
-
-                var ratio = (wscale <= hscale ? wscale : hscale);
-
-                var widthOffset = (c.width - img.width * ratio) / 2;
-                var heightOffset = (c.height - img.height * ratio) / 2;
-                ctx.drawImage(canvasCopy, widthOffset, heightOffset, canvasCopy.width * ratio, canvasCopy.height * ratio);
-
-                //check if the dirty-background css class is applied to the canvas
-                if (c.className.match(/(?:^|\s)dirty-background(?!\S)/) ) {
-                    //remove the dirty-background css class from the canvas
-                    c.className = c.className.replace( /(?:^|\s)dirty-background(?!\S)/g , '' );
-                }
-
-                $scope.dataurl = c.toDataURL();
+                canvas.width = img.width * ratio;
+                canvas.height = img.height * ratio;
+                copyContext.drawImage(img, 0, 0, canvas.width, canvas.height);
+                $scope.logo = canvas.toDataURL();
                 // forces the update button after a file drop, might fix safari issues?
                 $scope.$digest();
             };

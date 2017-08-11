@@ -1,7 +1,9 @@
 <form layout="row" layout-align="center center" name="loginform" ng-submit="vm.submit()">
-    <md-card id="form-area" class="form-card" flex="100" flex-gt-xs="80" flex-gt-sm="50" flex-gt-md="40" flex-gt-lg="30">
-        <md-card-avatar ng-if="vm.externalSite">
-            <canvas id="login-logo" height="240px" width="500px" ng-show="vm.logo"></canvas>
+    <md-card class="form-card" flex="100" flex-gt-xs="80" flex-gt-sm="50" flex-gt-md="40" flex-gt-lg="30">
+        <md-card-avatar ng-if="vm.externalSite" layout="row" layout-align="center center">
+            <div class="organization-logo-container" layout="row" layout-align="center center">
+                <img ng-show="vm.logo" ng-src="{{ ::vm.logo }}"/>
+            </div>
         </md-card-avatar>
         <md-card-title>
             <md-card-title-text ng-if="!vm.externalSite">

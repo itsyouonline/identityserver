@@ -14,7 +14,7 @@
         vm.loginInfoValid = loginInfoValid;
         vm.externalSite = urlParams.client_id;
         $rootScope.registrationUrl = '/register' + $window.location.search;
-        vm.logo = "";
+        vm.logo = undefined;
         vm.twoFAMethod = 'sms';
         vm.login = "";
         vm.password = "";
@@ -26,14 +26,9 @@
         function activate() {
             requestRegister();
             if (vm.externalSite) {
-                LoginService.getLogo(vm.externalSite).then(
-                    function(data) {
-                        vm.logo = data.logo;
-                        resizeLogo();
-                    }
-                );
-                $window.addEventListener('resize', resizeLogo, false);
-                $window.addEventListener('orientationchange', resizeLogo, false);
+                LoginService.getLogo(vm.externalSite).then(function (data) {
+                    vm.logo = data.logo;
+                });
                 loadDescription();
             }
             autoFillListener();
@@ -59,24 +54,6 @@
                     vm.description = data.text;
                 }
             );
-        }
-
-        function renderLogo() {
-            if (vm.logo !== "") {
-                var img = new Image();
-                img.onload = function() {
-                    var c = document.getElementById("login-logo");
-                    if (!c) {
-                        console.log("aborting logo render - canvas not loaded");
-                        return;
-                    }
-                    var ctx = c.getContext("2d");
-                    ctx.clearRect(0, 0, c.width, c.height);
-                    ctx.drawImage(img, 0, 0, c.width, c.height);
-                };
-                img.src = vm.logo;
-
-            }
         }
 
         function autoFillListener() {
@@ -167,21 +144,6 @@
                     return basicInfoValid() && $scope.loginform.totpcode.$valid;
                     break;
             }
-        }
-
-        function resizeLogo(e) {
-            var formArea = document.getElementById("form-area");
-            var logoArea = document.getElementById("login-logo");
-            var widthToHeight = 25 / 12;
-            var newWidth = formArea.clientWidth - 20;
-            if (newWidth < 500) {
-                logoArea.width = newWidth;
-                logoArea.height = (newWidth) / widthToHeight;
-            } else if (newWidth >= 500 && logoArea.width < 500) {
-                logoArea.width = 500;
-                logoArea.height = 240;
-            }
-            renderLogo();
         }
 
         // Check if the 'prefer' queryparam is set to register. If so, and there has been no previous login on this device

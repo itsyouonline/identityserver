@@ -65,8 +65,11 @@
             </md-button>
         </div>
     </md-toolbar>
-    <canvas id="logoview" class="logoviewer" height="240px" width="500px" ng-show="vm.logo"></canvas>
-    <br ng-if="!vm.logo"/>
+    <div layout="row" layout-align="center center">
+        <div layout="row" layout-align="center center" class="organization-logo-container">
+            <img ng-src="{{ vm.logo }}" ng-if="vm.logo">
+        </div>
+    </div>
     <md-toolbar>
         <div class="md-toolbar-tools" layout-align="space-between center">
             <p>
