@@ -1546,10 +1546,6 @@ securedBy: [ oauth_2_0 ]
       displayName: GetSeeObjects
       securedBy: [oauth_2_0: { scopes: [ "user:admin", "user:see" ] } ]
       description: Get a list of all see objects.
-      queryParameters:
-        globalid?:
-          type: string
-          description: Filter the list of see objects by an organization globalid.
       responses:
         200:
           body:
