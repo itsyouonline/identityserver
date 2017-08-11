@@ -23,7 +23,9 @@
         vm.logo = '';
         vm.includemap = {};
         vm.loading = {
-            invitations: false
+            invitations: true,
+            users: true,
+            userIdentifiers: true
         };
         var pages = {
             'organization.people': 0,
@@ -32,6 +34,7 @@
             'organization.settings': 3
         };
         vm.selectedTab = pages[$state.current.name];
+        vm.userIdentifiers = undefined;
 
         vm.initSettings = initSettings;
         vm.showInvitationDialog = showInvitationDialog;
@@ -99,6 +102,10 @@
                     vm.logo = data.logo;
                 }
             );
+            UserService.GetAllUserIdentifiers().then(function (identifiers) {
+                vm.userIdentifiers = identifiers;
+                vm.loading.userIdentifiers = false;
+            });
         }
 
         function fillIncludeMap() {
@@ -417,7 +424,7 @@
         }
 
         function canEditRole(member) {
-            return vm.hasEditPermission && member !== vm.username;
+            return vm.hasEditPermission && !vm.userIdentifiers.includes(member.username);
         }
 
         function editMember(event, user) {
@@ -443,6 +450,7 @@
                         var u = vm.users.filter(function (user) {
                             return user.username === username;
                         })[0];
+
                         u.role = data.newRole;
                     } else if (data.action === 'remove') {
                         var people = vm.organization[data.data.role];
@@ -523,7 +531,9 @@
         }
 
         function getUsers() {
+            vm.loading.users = true;
             OrganizationService.getUsers(globalid).then(function (response) {
+                vm.loading.users = false;
                 vm.users = response.users;
                 vm.hasEditPermission = response.haseditpermissions;
                 setUsers();

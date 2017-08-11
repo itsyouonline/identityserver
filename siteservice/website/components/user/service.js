@@ -155,7 +155,8 @@
             updateAvatarFile: updateAvatarFile,
             deleteAvatar: deleteAvatar,
             getUsername: getUsername,
-            setUsername: setUsername
+            setUsername: setUsername,
+            GetAllUserIdentifiers: GetAllUserIdentifiers
         };
 
         function genericHttpCall(httpFunction, url, data, config) {
@@ -219,6 +220,30 @@
 
         function setUsername(name) {
             username = name;
+        }
+
+        /**
+         * Returns all verified information from the user.
+         * This includes username, email addresses and phone numbers.
+         * @returns Promise{string[]}
+         */
+        function GetAllUserIdentifiers() {
+            var deferred = $q.defer();
+            var verifiedData = [username];
+            getVerifiedEmailAddresses(username).then(function (verifiedEmails) {
+                var emails = verifiedEmails.map(function (email) {
+                    return email.emailaddress;
+                });
+                verifiedData = verifiedData.concat(emails);
+                getVerifiedPhones(username).then(function (verifiedPhones) {
+                    var phones = verifiedPhones.map(function (phone) {
+                        return phone.phonenumber;
+                    });
+                    verifiedData = verifiedData.concat(phones);
+                    deferred.resolve(verifiedData);
+                });
+            });
+            return deferred.promise;
         }
 
         function registerNewEmailAddress(username, emailaddress) {

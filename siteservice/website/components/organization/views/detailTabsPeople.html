@@ -1,6 +1,7 @@
-<div flex="100" flex-gt-xs="60" flex-gt-sm="40">
+<div flex="100" flex-gt-xs="60" flex-gt-sm="40" ng-if="!vm.loading.users && !vm.loading.userIdentifiers">
     <md-list class="md-dense">
-        <md-subheader class="md-no-sticky"><span translate='organization.views.detail.owners'>Owners</span></md-subheader>
+        <md-subheader class="md-no-sticky"><span translate='organization.views.detail.owners'>Owners</span>
+        </md-subheader>
         <md-list-item class="md-1-line" ng-repeat="owner in vm.owners track by owner.username"
                       aria-label="Owner" translate-attr="{ 'aria-label': 'owner' }">
             <div class="md-list-item-text">
@@ -11,34 +12,42 @@
                      ng-if="::vm.hasEditPermission && owner.missingscopes.length"
                      ng-click="vm.showMissingScopesDialog($event, owner)"></md-icon>
             <md-icon md-font-icon="fa-pencil" class="fa md-secondary md-primary"
-                     aria-label="Edit owner" translate-attr="{ 'aria-label': 'organization.views.detail.editowner' }"
+                     aria-label="Edit owner"
+                     translate-attr="{ 'aria-label': 'organization.views.detail.editowner' }"
                      ng-if="::vm.canEditRole(owner)"
                      ng-click="vm.editMember($event, owner)">
             </md-icon>
         </md-list-item>
     </md-list>
     <md-list class="md-dense" ng-if="vm.organization.orgowners.length > 0">
-        <md-subheader class="md-no-sticky"><span translate='organization.views.detail.organizationowners'>Organization owners</span></md-subheader>
+        <md-subheader class="md-no-sticky"><span translate='organization.views.detail.organizationowners'>Organization owners</span>
+        </md-subheader>
         <md-list-item class="md-1-line"
                       ng-repeat="orgowner in vm.organization.orgowners track by $index"
-                      aria-label="Organization owner" translate-attr="{ 'aria-label': 'organization.views.detail.organizationowner' }">
+                      aria-label="Organization owner"
+                      translate-attr="{ 'aria-label': 'organization.views.detail.organizationowner' }">
             <div class="md-list-item-text">
                 <p ng-bind="::orgowner"></p>
             </div>
-            <div ng-if="::vm.canEditRole(owner)" class="md-secondary md-primary">
-                <md-switch ng-model="vm.includemap[orgowner]" ng-change="vm.includeChanged(orgowner)"></md-switch>
-                <md-tooltip>
-                    <span translate='organization_include_orgowner_suborgs'>Include suborganizations of this organization in the owner list</span>
-                </md-tooltip>
-            </div>
-            <md-icon md-font-icon="fa-pencil" class="fa md-secondary md-primary"
-                     aria-label="Edit organization owner" translate-attr="{ 'aria-label': 'organization.views.detail.editorganizationowner' }"
-                     ng-if="::vm.canEditRole(owner)" ng-click="vm.editOrgMember($event, orgowner)">
-            <md-icon>
+            <span ng-if="::vm.canEditRole(owner)">
+                    <div class="md-secondary md-primary">
+                        <md-switch ng-model="vm.includemap[orgowner]"
+                                   ng-change="vm.includeChanged(orgowner)"></md-switch>
+                        <md-tooltip>
+                            <span translate='organization_include_orgowner_suborgs'>Include suborganizations of this organization in the owner list</span>
+                        </md-tooltip>
+                    </div>
+                    <md-icon md-font-icon="fa-pencil" class="fa md-secondary md-primary"
+                             aria-label="Edit organization owner"
+                             translate-attr="{ 'aria-label': 'organization.views.detail.editorganizationowner' }"
+                             ng-click="vm.editOrgMember($event, orgowner)">
+                    <md-icon>
+                </span>
         </md-list-item>
     </md-list>
     <md-list class="md-dense" ng-if="vm.organization.members.length > 0">
-        <md-subheader class="md-no-sticky"><span translate='organization.views.detail.members'>Members</span></md-subheader>
+        <md-subheader class="md-no-sticky"><span translate='organization.views.detail.members'>Members</span>
+        </md-subheader>
         <md-list-item class="md-1-line"
                       ng-repeat="member in vm.members track by member.username"
                       aria-label="Member" translate-attr="{ 'aria-label': 'member' }">
@@ -49,7 +58,8 @@
                      aria-label="Missing scopes"
                      ng-if="::vm.hasEditPermission && member.missingscopes.length"
                      ng-click="vm.showMissingScopesDialog($event, member)"></md-icon>
-            <md-icon md-font-icon="fa-pencil" aria-label="Edit member" translate-attr="{ 'aria-label': 'organization.views.detail.editmember' }"
+            <md-icon md-font-icon="fa-pencil" aria-label="Edit member"
+                     translate-attr="{ 'aria-label': 'organization.views.detail.editmember' }"
                      class="fa md-secondary md-primary"
                      ng-if="::vm.canEditRole(member.username)"
                      ng-click="vm.editMember($event, member)">
@@ -57,10 +67,12 @@
         </md-list-item>
     </md-list>
     <md-list class="md-dense" ng-if="vm.organization.orgmembers.length > 0">
-        <md-subheader class="md-no-sticky"><span translate='organization.views.detail.organizationmembers'>Organization members</span></md-subheader>
+        <md-subheader class="md-no-sticky"><span translate='organization.views.detail.organizationmembers'>Organization members</span>
+        </md-subheader>
         <md-list-item class="md-1-line"
                       ng-repeat="orgmember in vm.organization.orgmembers track by $index"
-                      aria-label="Organization member" translate-attr="{ 'aria-label': 'organization.views.detail.organizationmember' }">
+                      aria-label="Organization member"
+                      translate-attr="{ 'aria-label': 'organization.views.detail.organizationmember' }">
             <div class="md-list-item-text">
                 <p ng-bind="::orgmember"></p>
             </div>
@@ -71,13 +83,15 @@
                 </md-tooltip>
             </div>
             <md-icon md-font-icon="fa-pencil" class="fa md-secondary md-primary"
-                     aria-label="Edit organization member"  translate-attr="{ 'aria-label': 'organization.views.detail.editorganizationmember' }"
+                     aria-label="Edit organization member"
+                     translate-attr="{ 'aria-label': 'organization.views.detail.editorganizationmember' }"
                      ng-if="::vm.canEditRole(owner)" ng-click="vm.editOrgMember($event, orgmember)">
-            <md-icon>
+                <md-icon>
         </md-list-item>
     </md-list>
     <md-list ng-if="vm.hasEditPermission && vm.invitations.length > 0">
-        <md-subheader><span translate='organization.views.detail.pendinginvitations'>Pending invitations</span></md-subheader>
+        <md-subheader><span translate='organization.views.detail.pendinginvitations'>Pending invitations</span>
+        </md-subheader>
         <div layout-align="center center" ng-if="vm.loading.invitations">
             <md-progress-circular md-mode="indeterminate"
                                   md-diameter="50"></md-progress-circular>
@@ -86,35 +100,41 @@
                       aria-label="Invite" ng-if="!vm.loading.invitations">
             <div class="md-list-item-text">
                 <h3 class="text_align_center"
-                    ng-bind="::invite.username || invite.phonenumber || invite.emailaddress"></h3>
+                    ng-bind="::invite.user || invite.phonenumber || invite.emailaddress"></h3>
                 <h4 ng-if="::invite.created" translate="invited_on_date"
-                    translate-value-timestamp="{{invite.created | date: 'd MMM y H:mm:ss'}}">
-                   Invited on <span ng-bind="::invite.created | date: 'd MMM y H:mm:ss'"></span></h4>
+                    translate-value-timestamp="{{ ::invite.created | date: 'd MMM y H:mm:ss'}}"></h4>
                 <p>
                     <span ng-if="invite.role === 'member'" translate='member'>Member</span>
                     <span ng-if="invite.role === 'owner'" translate='owner'>Owner</span>
                 </p>
             </div>
-            <md-button class="md-secondary md-warn"
-                       ng-click="vm.removeInvitation(invite)"
-                       translate="remove_invitation">Remove invitation
-            </md-button>
+            <md-button class="md-secondary md-warn" ng-click="vm.removeInvitation(invite)"
+                       translate="remove_invitation"></md-button>
         </md-list-item>
     </md-list>
     <div layout="column" layout-align="center start">
         <md-button class="md-primary" ng-click="vm.showInvitationDialog($event)"
                    ng-if="::vm.hasEditPermission">
             <i class="fa fa-user-plus"></i> <span translate='organization.views.detail.invite'>Invite someone</span>
-            <md-tooltip ng-cloak><span translate='organization.views.detail.invitehelp' translate-values="{organization: vm.getOrganizationDisplayname(vm.organization.globalid)}">
-                Invite someone to join <span ng-bind="::vm.getOrganizationDisplayname(vm.organization.globalid)"></span></span>
+            <md-tooltip>
+                <span translate='organization.views.detail.invitehelp'
+                      translate-value-organization="{{ ::vm.getOrganizationDisplayname(vm.organization.globalid) }}">
             </md-tooltip>
         </md-button>
         <md-button class="md-primary" ng-click="vm.showAddOrganizationDialog($event)"
                    ng-if="::vm.hasEditPermission">
-            <i class="fa fa-users"></i> <span translate='organization.views.detail.addorganization'>Add organization</span>
-            <md-tooltip ng-cloak><span translate='organization.views.detail.addorganizationhelp' translate-values="{organization: vm.getOrganizationDisplayname(vm.organization.globalid)}">
-                Add another organization as a member or owner of <span ng-bind="::vm.getOrganizationDisplayname(vm.organization.globalid)"></span></span>
+            <i class="fa fa-users"></i> <span
+            translate='organization.views.detail.addorganization'>Add organization</span>
+            <md-tooltip>
+                <span translate='organization.views.detail.addorganizationhelp'
+                      translate-value-organization="{{ ::vm.getOrganizationDisplayname(vm.organization.globalid) }}">
+                </span>
             </md-tooltip>
         </md-button>
     </div>
+</div>
+
+<div class="loading-container" layout="row" layout-align="center center"
+     ng-if="vm.loading.userIdentifiers || vm.loading.users">
+    <md-progress-circular md-mode="indeterminate" md-diameter="50"></md-progress-circular>
 </div>
