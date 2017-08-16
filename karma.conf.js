@@ -52,7 +52,6 @@ module.exports = function(config) {
           'components/user/directives/treeDirective.js',
           'components/user/UserDialogService.js',
           'components/user/authorizeController.js',
-          'components/user/seeDetailController.js',
           'components/user/controller.js',
           'components/user/service.js',
           'components/organization/controller.js',
