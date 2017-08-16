@@ -1,7 +1,8 @@
 language: go
 
 addons:
-  firefox: latest
+  # Currently there is a bug in firefox 55.0 causing disconnects in travis and test failures
+  firefox: "54.0"
   chrome: stable
 
 install:
