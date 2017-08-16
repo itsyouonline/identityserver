@@ -2,6 +2,14 @@ describe('Company controller test ', function() {
 
   beforeEach(module('itsyouonlineApp'));
 
+  beforeEach(function () {
+        module(function($provide) {
+            $provide.value('$window', {
+                location: {href: ''}
+            });
+        });
+    });
+
   var CompanyController, location;
 
   beforeEach(inject(function ($location, CompanyService, $controller) {

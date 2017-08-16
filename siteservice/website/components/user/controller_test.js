@@ -4,6 +4,14 @@ describe('User Home Controller test', function() {
 
     beforeEach(module('itsyouonlineApp'));
 
+    beforeEach(function () {
+        module(function($provide) {
+            $provide.value('$window', {
+                location: {href: ''}
+            });
+        });
+    });
+
     var userService;
 
     beforeEach(inject(function ($injector, $rootScope, _UserService_, $controller) {
