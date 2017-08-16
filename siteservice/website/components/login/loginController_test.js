@@ -2,14 +2,6 @@ describe('Login Controller test', function() {
 
     beforeEach(module('loginApp'));
 
-    beforeEach(function () {
-        module(function($provide) {
-            $provide.value('$window', {
-                location: {href: ''}
-            });
-        });
-    });
-
     var scope;
 
     beforeEach(inject(function ($http, $window, $rootScope, $interval, LoginService, $controller) {

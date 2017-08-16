@@ -2,14 +2,6 @@ describe('Registration Controller test', function() {
 
     beforeEach(module('itsyouonline.registration'));
 
-    beforeEach(function () {
-        module(function($provide) {
-            $provide.value('$window', {
-                location: {href: ''}
-            });
-        });
-    });
-
     var scope;
 
     beforeEach(inject(function ( $window, $cookies, $mdUtil, $rootScope, configService, registrationService, $controller) {
