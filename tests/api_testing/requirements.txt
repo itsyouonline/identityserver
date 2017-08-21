@@ -1,0 +1,10 @@
+nose==1.3.7
+nose-progressive
+nose-testconfig
+nose_parameterized==0.3.3
+requests==2.11.1
+pyopenssl
+urllib3
+urllib3[secure]
+pyotp==2.2.4
+bs4==0.0.1
