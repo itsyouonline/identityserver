@@ -15,10 +15,10 @@ import (
 // Validation against the supplied publickey is performed
 func GetValidJWT(r *http.Request, publicKey *ecdsa.PublicKey) (token *jwt.Token, err error) {
 	authorizationHeader := r.Header.Get("Authorization")
-	if !strings.HasPrefix(authorizationHeader, "bearer ") {
+	if !strings.HasPrefix(authorizationHeader, "bearer ") && !strings.HasPrefix(authorizationHeader, "Bearer ") {
 		return
 	}
-	jwtstring := strings.TrimSpace(strings.TrimPrefix(authorizationHeader, "bearer"))
+	jwtstring := strings.TrimSpace(strings.TrimPrefix(strings.TrimPrefix(authorizationHeader, "Bearer"), "bearer"))
 	token, err = jwt.Parse(jwtstring, func(token *jwt.Token) (interface{}, error) {
 		m, ok := token.Method.(*jwt.SigningMethodECDSA)
 		if !ok {
