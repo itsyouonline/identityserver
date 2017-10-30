@@ -19,7 +19,7 @@
     "organizationinvite_urlcaption": "Knop werkt niet? Kopieer de volgende link en plak deze in uw browser:",
     "smsconfirmation": "Gelieve de code {{ .Code }} in te vullen om je telefoonnummer op itsyou.online te bevestigen",
     "smsconfirmationandlogin": "Gelieve de code {{ .Code }} in te vullen om je telefoonnummer op itsyou.online te bevestigen en verder te gaan met aanmelden",
-    "authorizeorganizationsms": "Om verder te gaan met aanmelden bij itsyou.online om de organizatie {{ .Organization }} the autoriseren, kan je de code {{ .Code }} invullen in het formulier",
+    "authorizeorganizationsms": "Gelieve de de code {{ .Code }} invullen in het formulier Om verder te gaan met aanmelden bij itsyou.online om de organizatie {{ .Organization }} the autoriseren.",
     "signinsms": "Gelieve de code {{ .Code }} in te vullen om verder te gaan met aanmelden bij itsyou.online",
     "invalidlink": "Ongeldige of vervallen link",
     "smsloggingin": "Je zal binnen enkele seconden ingelogd zijn",
