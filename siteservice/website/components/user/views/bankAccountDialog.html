@@ -14,17 +14,11 @@
             <div class="md-dialog-content" layout="column">
                 <md-input-container>
                     <label translate='label'>Label</label>
-                    <input ng-model="data.label" ng-minlength="2" required type="text" autofocus name="label"
-                           md-maxlength="50" ng-pattern="/^[a-zA-Z\d\-_\s]{2,50}$/">
-                    <div ng-messages="dataform.label.$error">
-                        <div ng-message="minlength" translate='labelminlength'>The label should be at least 2 characters long</div>
-                        <div ng-message="md-maxlength" translate='labelmaxlength'></div>
-                        <div ng-message="pattern" translate="invalid_label"></div>
-
-                    </div>
-                    <div ng-messages="validationerrors">
-                        <div ng-message="duplicate" translate='labelduplicate'>This label has already been used</div>
-                    </div>
+                    <md-select ng-model="data.label" required name="labelinput">
+                        <md-option ng-repeat="label in preFilledLabels" ng-value="label">
+                            {{label | translate}}</md-option>
+                        <md-option ng-value="::originalLabel" ng-if="::isCustomlabel(originalLabel)">{{originalLabel}}</md-option>
+                    </md-select>
                 </md-input-container>
                 <md-input-container>
                     <label translate='user.views.bankaccountdialog.bic'>BIC</label>

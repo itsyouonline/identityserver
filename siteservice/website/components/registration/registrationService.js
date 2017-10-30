@@ -12,7 +12,8 @@
             register: register,
             getLogo: getLogo,
             getDescription: getDescription,
-            resendValidation: resendValidation
+            resendValidation: resendValidation,
+            submitSMSCode: submitSMSCode
         };
 
         function validateUsername(username) {
@@ -86,6 +87,14 @@
               langkey: localStorage.getItem('langKey')
           };
           return $http.post(url, data);
+        }
+
+        function submitSMSCode(code) {
+            var url = '/register/smsconfirmation';
+            var data = {
+                smscode: code
+            };
+            return $http.post(url, data);
         }
     }
 })();

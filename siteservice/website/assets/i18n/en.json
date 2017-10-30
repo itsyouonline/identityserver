@@ -72,7 +72,7 @@
         "views": {
             "forgotpassword": {
                 "forgotpassword": "Forgot password",
-                "recoverymailsend": "A recovery email has been send.",
+                "recoverymailsend": "A recovery email has been sent.",
                 "user": "Username, email or phonenumber",
                 "userminlength": "At least 2 characters are required",
                 "userinvalid": "A user with this username, email address or phonenumber could not be found",
@@ -109,7 +109,7 @@
             }
         },
         "2facontroller": {
-            "sms": "Click the link in the sms sent to your phone or enter the code from the sms here to continue.",
+            "sms": "Enter the code from the sms here to continue.",
             "totp": "Fill in the 6 digit code from the authenticator application on your phone."
         }
     },
@@ -332,7 +332,7 @@
                 "smshelp": "Click the link in the sms sent to your phone or enter the code from the sms here if you are unable to.",
                 "smscode": "Code sent by sms",
                 "invalidcode": "Invalid code",
-                "resend": "Resend...",
+                "resend": "Resend code",
                 "submit": "Submit"
             }
         }
@@ -577,5 +577,40 @@
     "invalid_last_name": "Invalid last name. Only letters, -, _, ' and spaces are allowed. Names have a length of 2 to 30 characters.",
     "name_minlength": "Name must contain at least 2 characters",
     "name_maxlength": "Name can contain at most 30 characters",
-    "authorize_non_validated_email": "You must validate the email address {{email}} to give this authorization"
+    "authorize_non_validated_email": "You must validate the email address {{email}} to give this authorization",
+    "authorize_non_validated_phone": "You must validate the phone number {{phone}} to give this authorization",
+    "Home": "Home",
+    "Work": "Work",
+    "Other": "Other",
+    "Personal": "Personal",
+    "Spam": "Spam",
+    "Mobile": "Mobile",
+    "General": "General",
+    "Fax": "Fax",
+    "Pager": "Pager",
+    "Business": "Business",
+    "Shared": "Shared",
+    "Primary": "Primary",
+    "Secondary": "Secondary",
+    "required_field": "This field is required",
+    "step_1_of_3": "Step 1 of 3",
+    "basic_info": "Basic info",
+    "next": "Next",
+    "step_2_of_3": "Step 2 of 3",
+    "phone_validation": "Phone validation",
+    "resend_button_sms": "If you did not receive an sms, please use the resend button below",
+    "step_3_of_3": "Step 3 of 3",
+    "email_validation": "Email validation",
+    "registration_validate_email_instruction": "Please validate your email address by clicking the link in the email we sent you.",
+    "resend_button_email": "If you did not receive an email, please use the resend button below.",
+    "previous": "Previous",
+    "login_btn": "Login",
+    "great_success": "success",
+    "phone_already_used": "This phone number is already in use",
+    "email_already_used": "This email address is already in use",
+    "account_exists_email": "According to our database this email address is already linked to an ItsYou.Online account.",
+    "account_exists_phone": "According to our database this phone number is already linked to an ItsYou.Online account.",
+    "go_to_login": "Please <u>click here</u> to login.",
+    "go_to_forgot_password": "If you forgot your password please <u>click here</u>.",
+    "resend_email": "Resend email"
 }

@@ -7,6 +7,7 @@
               templateUrl: 'components/user/directives/authorizationDetails.html',
               link: function (scope, element, attr) {
                   scope.save = save;
+                  scope.isRequired = isRequired;
 
                   scope.fullscreenAuthorization = attr.full !== undefined && attr.full !== 'false';
 
@@ -28,6 +29,10 @@
                           }
                       });
                       scope.update(event);
+                  }
+
+                  function isRequired(prop) {
+                    return scope.isNew;
                   }
               }
           };

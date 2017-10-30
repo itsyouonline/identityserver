@@ -670,6 +670,68 @@ li > ul.organizationstree {
     min-height: 48px;
 }
 
+.register-tabs md-tab-item {
+  display: none;
+}
+
+.register-tabs md-tabs-wrapper {
+  max-height: 0px;
+  max-width: 0px;
+  position: absolute;
+  max-width: 0px;
+  right: 100vh;
+  top: 100vh;
+}
+
+.all-caps {
+    text-transform: uppercase;
+}
+
+.bold {
+    font-weight: bold; 
+}
+
+.no-margin {
+    margin: 0;
+}
+
+.text-align-center {
+    text-align: center;
+}
+
+.registration-explanation {
+    margin-top: 25px;
+    margin-bottom: 50px;
+}
+
+
+@media screen and (min-width: 960px){
+    .big-web-font {
+        font-size: 16px;
+    }
+}
+
+#email-validation-explanation {
+    margin-top: 35px;
+    margin-bottom: 40px;
+}
+
+.no-margin-bottom {
+    margin-bottom: 0px;
+}
+
+.code-input {
+    margin-top: 50px;
+}
+
+input[type=number].registration-code-input::-webkit-inner-spin-button, 
+input[type=number].registration-code-input::-webkit-outer-spin-button { 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0; 
+}
+
 .loading-container {
     min-height: 300px;
 }
@@ -694,4 +756,8 @@ p.verified {
 
 .authorize-error {
     color: red;
+}
+
+.pointer {
+    cursor: pointer;
 }

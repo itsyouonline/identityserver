@@ -20,14 +20,37 @@
                 </div>
             </md-card-title-text>
         </md-card-title>
-        <md-card-content>
-            <md-tabs md-align-tabs="bottom" md-dynamic-height md-selected="vm.selectedTab">
+        <md-card-content class="register-tabs">
+            <md-tabs md-align-tabs="top" md-dynamic-height md-selected="vm.selectedTab" class="registration-tabs">
                 <md-tab md-on-select="vm.onTabSelected(0)">
                     <md-tab-label>
                         <h3 class="text_align_center" translate='registration.views.registrationform.baseinfo'>Basic info</h3>
                     </md-tab-label>
                     <md-tab-body>
                         <div layout="column">
+                            <div layout-align="space-around center">
+                                <div layout="row" layout-align="space-around center">
+                                    <div flex></div>
+                                    <h4 class="all-caps text-align-center" translate="step_1_of_3">Step 1 of 3</h4>
+                                    <div flex></div>
+                                </div>
+                                <h2 class="all-caps text-align-center bold no-margin" translate="basic_info">Basic info</h2>
+                            </div>
+                            <div class="validation-error text-align-center" ng-if="vm.emailduplicate || vm.phoneduplicate"
+                                layout="column" layout-allign="center center">
+                                <span translate='account_exists_email' ng-if="vm.emailduplicate">
+                                    According to our database this email address is already linked to an ItsYou.Online account.
+                                </span>
+                                <span translate='account_exists_phone' ng-if="vm.phoneduplicate">
+                                    According to our database this phone number is already linked to an ItsYou.Online account.
+                                </span>
+                                <a ng-click="vm.goToLogin()" translate="go_to_login" class='pointer'>
+                                    Please click here to login.
+                                </a>
+                                <a ng-click="vm.goToForgotPassword()" translate='go_to_forgot_password' class='pointer'>
+                                    If you forgot your password please click here.
+                                </a>
+                            </div>
                             <div layout="row" layout-align="space-between center">
                                 <md-input-container flex="45">
                                     <label for="firstname" translate='user.views.namedialog.firstname'>First name</label>
@@ -62,13 +85,15 @@
                             <md-input-container>
                                 <label for="email" translate='registration.views.registrationform.email'>Email</label>
                                 <input ng-model="vm.email" required name="email" type="email" id="email" md-maxlength="80"
-                                       ng-pattern="/[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/">
+                                       ng-pattern="/[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?$/"
+                                       ng-change="vm.resetValidation('email')">
                                 <div ng-messages="signupform.email.$error" md-auto-hide="false" ng-if="signupform.email.$touched">
                                     <div ng-message="email" translate="invalid_email_address">Invalid email address</div>
                                     <div ng-message="md-maxlength" translate='emailmaxlength'>The email address cannot be longer than 80
                                         characters
                                     </div>
                                     <div ng-message="pattern" translate='invalid_email_address'>Invalid email address</div>
+                                    <div ng-message='email_already_used' translate='email_already_used'>This email is already in use</div>
                                 </div>
                             </md-input-container>
                             <md-input-container>
@@ -83,12 +108,18 @@
                             <md-input-container>
                                 <label for="passwordvalidation" translate='registration.views.registrationform.confirmpassword'>Password confirmation</label>
                                 <input ng-model="vm.passwordvalidation" required name="passwordvalidation"
-                                       password-validation="vm.password" id="passwordvalidation" type="password"
-                                       ng-change="vm.goToNextTabIfValid()">
+                                       password-validation="vm.password" id="passwordvalidation" type="password">
                                 <div ng-messages="signupform.passwordvalidation.$error">
                                     <div ng-message="passwordIdentical" translate='registration.views.registrationform.passwordmatch'>The passwords do not match</div>
                                 </div>
                             </md-input-container>
+                        </div>
+                        <div layout="column" layout-gt-sm="row" flex="100">
+                            <div flex></div>
+                            <md-button class="md-primary md-raised" ng-disabled="!vm.basicInfoValid()"
+                                ng-click="vm.goToNextTabIfValid()">
+                                <span translate="next">Next</span>&nbsp;<i class="fa fa-chevron-right"></i>
+                            </md-button>
                         </div>
                     </md-tab-body>
                 </md-tab>
@@ -98,30 +129,115 @@
                     </md-tab-label>
                     <md-tab-body>
                         <div layout="column">
-                            <md-input-container ng-if="!vm.phoneConfirmed">
-                                <label for="smscode" translate='smscode'>Please enter the code sent to you by sms</label>
-                                <input ng-model="vm.smscode" required name="smscode" ng-change="vm.resetValidation('smscode')"
-                                       id="smscode" ng-minlength="6" md-maxlength="6">
-                                <div ng-messages="signupform.smscode.$error">
-                                    <div ng-message="minlength" translate='sms_code_length'>The code has a length of 6 characters</div>
-                                    <div ng-message="maxlength" translate='sms_code_length'>The code has a length of 6 characters</div>
-                                    <div ng-message="invalid_sms_code" translate='invalid_sms_code'>Invalid sms code</div>
+                            <div layout-align="space-around center">
+                                <div layout="row" layout-align="space-around center">
+                                    <div flex></div>
+                                    <h4 class="all-caps text-align-center" translate="step_2_of_3">Step 2 of 3</h4>
+                                    <div flex></div>
                                 </div>
-                            </md-input-container>
-                            <md-input-container ng-if="vm.phoneConfirmed">
-                                <span translate="sms_confirmed_by_link">Your phone number has been confirmed</span>
-                            </md-input-container>
-                            <md-input-container>
-                                <span ng-if="!vm.emailConfirmed" translate="validate_email_instruction">Please use the button or link in the email sent to you to validate your email address</span>
-                                <span ng-if="vm.emailConfirmed"translate="email_confirmed_by_link">Your email address has been confirmed via email link</span>
-                            </md-input-container>
-                            <span ng-if="!vm.needDoubleValidation && !vm.emailConfirmed" translate="emailoptional">Validating your email address can also be done later</span>
-                            <div layout="row" layout-align="space-between center">
-                                <md-button class="md-raised" ng-click="vm.resendValidation()" translate='registration.views.registrationsmsform.resend'>Resend...</md-button>
-                                <md-button type="submit" class="md-raised md-primary" translate='login.views.loginform.login'>
-                                    Log in
+                                <h2 class="all-caps text-align-center bold no-margin" translate="phone_validation">Phone Validation</h2>
+                            </div>
+                            <div layout="row" class="code-input" flex>
+                                <md-input-container ng-if="!vm.phoneConfirmed" flex>
+                                    <label for="smscode" translate='smscode'>Please enter the code sent to you by sms</label>
+                                    <input ng-model="vm.smscode" required name="smscode" ng-change="vm.codeUpdated()"
+                                            id="smscode" ng-minlength="6" md-maxlength="6" type="tel" class="registration-code-input">
+                                    <div ng-messages="signupform.smscode.$error">
+                                        <div ng-message="minlength" translate='sms_code_length'>The code has a length of 6 characters</div>
+                                        <div ng-message="md-maxlength" translate='sms_code_length'>The code has a length of 6 characters</div>
+                                        <div ng-message="invalid_sms_code" translate='invalid_sms_code'>Invalid sms code</div>
+                                    </div>
+                                </md-input-container>
+                                <div layout="column" layout-align="center center" ng-if="vm.phoneConfirmed" style="margin-bottom: 50px;"flex>
+                                    <div layout="row" layout-align="center center">
+                                        <div flex></div>
+                                        <i class="fa fa-thumbs-o-up fa-5x"></i>
+                                        <div flex></div>
+                                    </div>
+                                    <h2 class="text-align-center all-caps" translate="great_success">SUCCESS</h2>
+                                </div>
+                            </div>
+                            <div layout-algin="end center" ng-if="!vm.phoneConfirmed">
+                                <div flex></div>
+                                <h5 class="text-align-center all-caps registration-explanation big-web-font" style="margin-bottom: 40px;"
+                                    translate="resend_button_sms">
+                                    If you did not receive an sms, please use the resend button below
+                                </h5>
+                            </div>
+                        </div>
+                        <div layout="row" flex="100" layout-align-gt-sm="space-between center" ng-if="!vm.mobileView">
+                            <md-button class="md-secondary md-raised"
+                                ng-click="vm.goToPreviousTab()">
+                                <i class="fa fa-chevron-left"></i>&nbsp;<span translate="previous">Previous</span>
+                            </md-button>
+                            <md-button class="md-raised" ng-click="vm.resendValidation()" translate='registration.views.registrationsmsform.resend'>Resend...</md-button>                            
+                            <md-button class="md-primary md-raised" ng-disabled="!vm.basicInfoValid() || !vm.phoneConfirmed"
+                                ng-click="vm.goToNextTabIfValid()">
+                                <span translate="next">Next</span>&nbsp;<i class="fa fa-chevron-right"></i>
+                            </md-button>
+                        </div>
+                        <div layout="column" flex="100" layout-align-gt-sm="space-between center" ng-if="vm.mobileView">
+                                <md-button class="md-raised" ng-click="vm.resendValidation()" translate='registration.views.registrationsmsform.resend'>Resend...</md-button>                            
+                                <md-button class="md-secondary md-raised"
+                                    ng-click="vm.goToPreviousTab()">
+                                    <i class="fa fa-chevron-left"></i>&nbsp;<span translate="previous">Previous</span>
+                                </md-button>
+                                <md-button class="md-primary md-raised" ng-disabled="!vm.basicInfoValid() || !vm.phoneConfirmed"
+                                    ng-click="vm.goToNextTabIfValid()">
+                                    <span translate="next">Next</span>&nbsp;<i class="fa fa-chevron-right"></i>
                                 </md-button>
                             </div>
+                    </md-tab-body>
+                </md-tab>
+                <md-tab ng-disabled="!vm.basicInfoValid() || !vm.phoneConfirmed" md-on-select="vm.onTabSelected(2)">
+                    <md-tab-body>
+                        <div layout="column" layout-align="space-between center">
+                            <div layout-align="space-around center">
+                                <div layout="row" layout-align="space-around center">
+                                    <div flex></div>
+                                    <h4 class="all-caps text-align-center" translate="step_3_of_3">Step 3 of 3</h4>
+                                    <div flex></div>
+                                </div>
+                                <h2 class="all-caps text-align-center bold no-margin" translate="email_validation">Email Validation</h2>
+                            </div>
+                            <div layout="column" layout-align="center center" ng-if="vm.emailConfirmed" style="margin-top: 50px; margin-bottom: 50px;"flex>
+                                <div layout="row" layout-align="center center">
+                                    <div flex></div>
+                                    <i class="fa fa-thumbs-o-up fa-5x"></i>
+                                    <div flex></div>
+                                </div>
+                                <h2 class="text-align-center all-caps" translate="great_success">SUCCESS</h2>
+                            </div>
+                            <div layout-algin="end center" ng-if="!vm.emailConfirmed" class="registration-explanation" id="email-validation-explanation">
+                                <h5 class="text-align-center big-web-font" translate="registration_validate_email_instruction">
+                                    Please validate your email address by clicking the link in the email we sent you.
+                                </h5>
+                                <h5 class="text-align-center all-caps no-margin-bottom big-web-font" translate="resend_button_email">
+                                    If you did not receive an email, please use the resend button below.
+                                </h5>
+                            </div>
+                        </div>
+                        <div layout="column" layout-gt-sm="row" flex="100" layout-align-gt-sm="space-between center" ng-if="!vm.mobileView">
+                            <md-button class="md-secondary md-raised"
+                                ng-click="vm.goToPreviousTab()">
+                                <i class="fa fa-chevron-left"></i>&nbsp;<span translate="previous">Previous</span>
+                            </md-button>
+                            <md-button class="md-raised" ng-click="vm.resendValidation()" translate='resend_email'>Resend email</md-button>
+                            <md-button class="md-primary md-raised" ng-disabled="!vm.basicInfoValid() || !vm.phoneConfirmed || !vm.emailConfirmed"
+                                type="submit">
+                                <span translate="login_btn">Login</span>&nbsp;<i class="fa fa-chevron-right"></i>
+                            </md-button>
+                        </div>
+                        <div layout="column" layout-gt-sm="row" flex="100" layout-align-gt-sm="space-between center" ng-if="vm.mobileView">
+                            <md-button class="md-raised" ng-click="vm.resendValidation()" translate='resend_email'>Resend email<md-button>
+                            <md-button class="md-secondary md-raised"
+                                ng-click="vm.goToPreviousTab()">
+                                <i class="fa fa-chevron-left"></i>&nbsp;<span translate="previous">Previous</span>
+                            </md-button>
+                            <md-button class="md-primary md-raised" ng-disabled="!vm.basicInfoValid() || !vm.phoneConfirmed || !vm.emailConfirmed"
+                                type="submit">
+                                <span translate="login_btn">Login</span>&nbsp;<i class="fa fa-chevron-right"></i>
+                            </md-button>
                         </div>
                     </md-tab-body>
                 </md-tab>

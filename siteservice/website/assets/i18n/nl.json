@@ -109,7 +109,7 @@
             }
         },
         "2facontroller": {
-            "sms": "Klik op de link in de sms die naar je telefoon gestuurd is, of vul de code uit de sms hier in om verder te gaan.",
+            "sms": "Vul de code uit de sms hier in om verder te gaan.",
             "totp": "Vul de 6 cijferige code van de Authenticatie-toepassing op je telefoon in."
         }
     },
@@ -333,7 +333,7 @@
                 "smshelp": "Klik op de link in de sms die naar je telefoon gestuurd is of vul de code uit de sms hier in.",
                 "smscode": "Code gestuurd via sms",
                 "invalidcode": "Ongeldige code",
-                "resend": "Herstuur...",
+                "resend": "Herstuur code",
                 "submit": "Dien in"
             }
         }
@@ -578,5 +578,40 @@
     "invalid_last_name": "Ongeldige achternaam. Alleen letters, -, _, ', en spaties zijn toegestaan. Namen hebben een lengte van 2 tot 30 karakters.",
     "name_minlength": "Een naam moet minstens 2 karakters bevatten",
     "name_maxlength": "Een naam kan maximaal 30 karakters bevatten",
-    "authorize_non_validated_email": "U moet het e-mailadres {{email}} valideren om deze autorisatie te geven"
+    "authorize_non_validated_email": "U moet het e-mailadres {{email}} valideren om deze autorisatie te geven",
+    "authorize_non_validated_phone": "U moet het telefoonnummer {{phone}} valideren om deze autorisatie te geven",
+    "Home": "Thuis",
+    "Work": "Werk",
+    "Other": "Ander",
+    "Personal": "Persoonlijk",
+    "Spam": "Spam",
+    "Mobile": "Mobiel",
+    "General": "Algemeen",
+    "Fax": "Fax",
+    "Pager": "Pieper",
+    "Business": "Zakelijk",
+    "Shared": "Gedeeld",
+    "Primary": "Primair",
+    "Secondary": "Secundair",
+    "required_field": "Dit veld is verplicht",
+    "step_1_of_3": "Stap 1 van 3",
+    "basic_info": "Basic info",
+    "next": "Volgende",
+    "step_2_of_3": "Stap 2 van 3",
+    "phone_validation": "Telefoon validatie",
+    "resend_button_sms": "Als u geen sms hebt ontvangen, gebruik dan de onderstaande herstuurknop",
+    "step_3_of_3": "Stap 3 van 3",
+    "email_validation": "Email validatie",
+    "registration_validate_email_instruction": "Bevestig uw e-mailadres door op de link te klikken in de e-mail die wij u hebben verzonden.",
+    "resend_button_email": "Als u geen e-mail hebt ontvangen, gebruik dan de onderstaande herstuurknop.",
+    "previous": "Vorige",
+    "login_btn": "Login",
+    "great_success": "succes",
+    "phone_already_used": "Dit telefoonnummer is al in gebruik",
+    "email_already_used": "Dit e-mailadres is al in gebruik",
+    "account_exists_email": "Volgens onze database is dit emailadres al gekoppeld aan een ItsYou.Online account.",
+    "account_exists_phone": "Volgens onze database is dit telefoonnummer al gekoppeld aan een ItsYou.Online account.",
+    "go_to_login": "<u>Klik hier</u> om in te loggen.",
+    "go_to_forgot_password": "Als je je wachtwoord bent vergeten, <u>klik dan hier</u>.",
+    "resend_email": "Herstuur e-mail"
 }

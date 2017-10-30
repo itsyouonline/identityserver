@@ -17,6 +17,7 @@
 
         .confirmation-page .container {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             width: 100%;
@@ -26,6 +27,12 @@
         .confirmation-page .container h2 {
             color: #000000;
             margin: 0 20px;
+        }
+
+        .confirmation-page .container h3 {
+            color: #000000;
+            margin: 20px;
+            font-size: 25px;
         }
     </style>
 </head>
@@ -38,6 +45,7 @@
 <div class="confirmation-page">
     <div class="container">
         <h2 class="md-display-1 white text_align_center">{{ text }}</h2>
+        <h3 class="md-display-1 text_align_center">{{ extratext }}</h3>
     </div>
 </div>
 </body>

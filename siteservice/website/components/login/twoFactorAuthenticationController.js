@@ -22,6 +22,7 @@
         vm.step = steps[0];
         var interval;
         var queryString = $window.location.search;
+        vm.loading = false;
         init();
 
         function init() {
@@ -104,6 +105,7 @@
         }
 
         function login() {
+            vm.loading = true;
             var method;
             if (vm.selectedTwoFaMethod === 'totp') {
                 method = LoginService.submitTotpCode;
@@ -113,6 +115,7 @@
             method(vm.code, queryString)
                 .then(
                     function (data) {
+                        vm.loading = false;
                         localStorage.setItem('itsyouonline.last2falabel', vm.selectedTwoFaMethod);
                         if (interval) {
                             $interval.cancel(interval);
@@ -125,9 +128,10 @@
                                 $scope.twoFaForm.code.$setValidity("invalid_code", false);
                                 break;
                         }
+                        vm.loading = false;
                     });
         }
-
+          
         function checkSmsConfirmation() {
             LoginService.checkSmsConfirmation()
                 .then(function (data) {

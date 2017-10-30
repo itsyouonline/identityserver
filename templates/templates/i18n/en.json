@@ -26,5 +26,6 @@
     "error": "An unexpected error occurred, please try again later",
     "smsconfirmed": "Your phonenumber is confirmed",
     "smsconfirmedandlogin": "Your phonenumber is confirmed, and you will be logged in within a few seconds",
-    "emailconfirmed": "Your Email Address is confirmed"
+    "emailconfirmed": "Your email address has been confirmed",
+    "emailconfirmedextra": "You can now return to your active ItsYou.online window"
 }

@@ -66,8 +66,8 @@
         </p>
         <md-input-container>
             <label><span translate="avatar">Avatar</span></label>
-            <md-select ng-model="auth.reallabel">
-                <md-option value=""><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
+            <md-select required name="avatar_{{$index}}" ng-model="auth.reallabel">
+                <md-option value="" ng-if="!true"><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
                 <md-option ng-repeat="avatar in vm.user.avatars" value="{{::avatar.label}}"
                            ng-bind="::avatar.label">
                 </md-option>
@@ -75,6 +75,9 @@
                     <i class="fa fa-plus"></i> <span translate='user.directives.authorizationdetails.createnew'>Create new</span>
                 </md-option>
             </md-select>
+            <div ng-messages="authorizeform['avatar_' + $index].$error">
+                <div ng-message="required" translate="required_field">This is required.</div>
+            </div>
         </md-input-container>
     </md-list-item>
     <md-list-item ng-if="::authorizations.name">
@@ -87,7 +90,7 @@
         <p class="list-item-text-right">
             <span ng-bind="::vm.user.firstname"></span> <span ng-bind="::vm.user.lastname"></span>
         </p>
-        <md-checkbox class="md-secondary" ng-model="authorizations.name"></md-checkbox>
+        <md-checkbox ng-disabled="isRequired('name')" required class="md-secondary" ng-model="authorizations.name" name="fullname"></md-checkbox>
     </md-list-item>
     <md-list-item ng-repeat="(label, i) in requested.organizations">
         <p><i class="fa fa-users">
@@ -96,7 +99,7 @@
             <span translate='user.directives.authorizationdetails.memberof' translate-values='{label: label}'>Member of <span ng-bind="::label"></span></span>
             <span ng-if="vm.pendingOrganizationInvites[label]"><span translate='user.directives.authorizationdetails.acceptinvite'>(this will accept the invitation for this organization)</span></span>
         </p>
-        <md-checkbox class="md-secondary" ng-model="requested.organizations[label]"></md-checkbox>
+        <md-checkbox ng-disabled="isRequired('name')" class="md-secondary" ng-model="requested.organizations[label]" name="memberof_{{label}}"></md-checkbox>
     </md-list-item>
     <md-list-item ng-repeat="auth in authorizations.emailaddresses track by auth.requestedlabel" layout="column"
                   layout-gt-sm="row"
@@ -114,14 +117,17 @@
         </p>
         <md-input-container>
             <label><span translate='user.directives.authorizationdetails.email'>Email</span></label>
-            <md-select ng-model="auth.reallabel">
-                <md-option value=""><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
+            <md-select required name="email_{{$index}}" ng-model="auth.reallabel">
+                <md-option value="" ng-if="!true"><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
                 <md-option ng-repeat="email in vm.user.emailaddresses" value="{{::email.label}}"
                            ng-bind="::email.emailaddress"></md-option>
                 <md-option ng-click="vm.showEmailDialog($event, auth)" ng-if="::isNew">
                     <i class="fa fa-plus"></i> <span translate='user.directives.authorizationdetails.createnew'>Create new</span>
                 </md-option>
             </md-select>
+            <div ng-messages="authorizeform['email_' + $index].$error">
+                <div ng-message="required" translate="required_field">This is required.</div>
+            </div>
         </md-input-container>
     </md-list-item>
     <md-list-item ng-repeat="auth in authorizations.validatedemailaddresses track by auth.requestedlabel" layout="column"
@@ -139,9 +145,9 @@
                 </span>
         </p>
         <div layout="row" ng-if="vm.isAuthorizeController">
-          <md-input-container>
+            <md-input-container>
                 <label><span translate='validated_email_address'>Validated email address</span></label>
-                <md-select ng-model="auth.reallabel">
+                <md-select required name="validatedemail_{{$index}}" ng-model="auth.reallabel">
                     <md-option ng-repeat="email in vm.user.emailaddresses"
                                value="{{::email.label}}"
                                ng-bind="::email.emailaddress"></md-option>
@@ -149,6 +155,9 @@
                          <i class="fa fa-plus"></i> <span translate='user.directives.authorizationdetails.createnew'>Create new</span>
                      </md-option>
                 </md-select>
+                <div ng-messages="authorizeform['validatedemail_' + $index].$error">
+                    <div ng-message="required" translate="required_field">This is required.</div>
+                </div>
             </md-input-container>
             <md-button ng-click="vm.verifyEmailByLabel($event, auth.reallabel)"
                        class="md-primary md-secondary"
@@ -158,7 +167,7 @@
         </div>
         <md-input-container ng-if="!vm.isAuthorizeController">
             <label><span translate='validated_email_address'>Validated email address</span></label>
-            <md-select ng-model="auth.reallabel">
+            <md-select required ng-model="auth.reallabel">
                 <md-option ng-repeat="email in vm.user.emailaddresses | filter:{verified:true}"
                            value="{{::email.label}}"
                            ng-bind="::email.emailaddress"></md-option>
@@ -180,14 +189,52 @@
                     Validated phone number
                 </span>
         </p>
-        <md-input-container>
+        <div layout="row" ng-if="vm.isAuthorizeController">
+            <md-input-container>
+                <label><span translate='validated_phone_number'>Validated phone number</span></label>
+                <md-select required name="validatedphone_{{$index}}" ng-model="auth.reallabel">
+                    <md-option ng-repeat="phone in vm.user.phonenumbers"
+                               value="{{::phone.label}}"
+                               ng-bind="::phone.label + ' ' + phone.phonenumber"></md-option>
+                     <md-option ng-click="vm.showPhoneNumberDialog($event, auth)" ng-if="::isNew">
+                         <i class="fa fa-plus"></i> <span translate='user.directives.authorizationdetails.createnew'>Create new</span>
+                     </md-option>
+                </md-select>
+                <div ng-messages="authorizeform['validatedphone' + $index].$error">
+                    <div ng-message="required" translate="required_field">This is required.</div>
+                </div>
+            </md-input-container>
+            <md-button ng-click="vm.verifyPhoneByLabel($event, auth.reallabel)"
+                       class="md-primary md-secondary"
+                       ng-if="vm.loaded.verifiedPhones && !vm.isPhoneVerified(auth.reallabel)">
+                <span translate="verify">Verify</span>
+            </md-button>
+        </div>
+        <md-input-container ng-if="!vm.isAuthorizeController">
             <label><span translate='validated_phone_number'>Validated Phone number</span></label>
-            <md-select ng-model="auth.reallabel">
+            <md-select required name="validatedphone_{{$index}}" ng-model="auth.reallabel">
                 <md-option ng-repeat="phone in vm.user.phonenumbers | filter:{verified:true}"
                            value="{{::phone.label}}"
                            ng-bind="::phone.label + ' ' + phone.phonenumber"></md-option>
             </md-select>
+            <div ng-messages="authorizeform['validatedphone' + $index].$error">
+                <div ng-message="required" translate="required_field">This is required.</div>
+            </div>
         </md-input-container>
+        <!-- <md-input-container>
+            <label><span translate='validated_phone_number'>Validated Phone number</span></label>
+            <md-select required name="validatedphone_{{$index}}" ng-model="auth.reallabel">
+                <md-option ng-repeat="phone in vm.user.phonenumbers | filter:{verified:true}"
+                           value="{{::phone.label}}"
+                           ng-bind="::phone.label + ' ' + phone.phonenumber"></md-option>
+                <md-option ng-click="vm.showPhonenumberDialog($event, auth)" ng-if="::isNew">
+                    <i class="fa fa-plus"></i> <span translate='user.directives.authorizationdetails.createnew'>Create new</span>
+                </md-option>
+            </md-select>
+            <div ng-messages="authorizeform['validatedphone' + $index].$error">
+                <div ng-message="required" translate="required_field">This is required.</div>
+            </div>
+        </md-input-container> -->
     </md-list-item>
 
     <md-list-item ng-repeat="auth in authorizations.phonenumbers track by auth.requestedlabel" layout="column"
@@ -205,8 +252,8 @@
         </p>
         <md-input-container>
             <label><span translate="phone_number">Phone number</span></label>
-            <md-select ng-model="auth.reallabel">
-                <md-option value=""><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
+            <md-select required name="phone_{{$index}}" ng-model="auth.reallabel">
+                <md-option value="" ng-if="!true"><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
                 <md-option ng-repeat="phone in vm.user.phonenumbers" value="{{::phone.label}}"
                            ng-bind="::phone.label + ' ' + phone.phonenumber">
                 </md-option>
@@ -214,6 +261,9 @@
                     <i class="fa fa-plus"></i> <span translate='user.directives.authorizationdetails.createnew'>Create new</span>
                 </md-option>
             </md-select>
+            <div ng-messages="authorizeform['phone_' + $index].$error">
+                <div ng-message="required" translate="required_field">This is required.</div>
+            </div>
         </md-input-container>
     </md-list-item>
     <md-list-item ng-repeat="auth in authorizations.addresses track by auth.requestedlabel" layout="column"
@@ -229,8 +279,8 @@
         </p>
         <md-input-container>
             <label><span translate="address">Address</span></label>
-            <md-select ng-model="auth.reallabel">
-                <md-option value=""><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
+            <md-select required name="address_{{$index}}" ng-model="auth.reallabel">
+                <md-option value="" ng-if="!true"><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
                 <md-option ng-repeat="address in vm.user.addresses" value="{{::address.label}}"
                            ng-bind="::address.label + ' - ' + address.street + (address.nr? ' ' + address.nr : '') + (address.city? ' ' + address.city : '')">
                 </md-option>
@@ -238,6 +288,9 @@
                     <i class="fa fa-plus"></i> <span translate='user.directives.authorizationdetails.createnew'>Create new</span>
                 </md-option>
             </md-select>
+            <div ng-messages="authorizeform['address_' + $index].$error">
+                <div ng-message="required" translate="required_field">This is required.</div>
+            </div>
         </md-input-container>
     </md-list-item>
     <md-list-item ng-repeat="auth in authorizations.bankaccounts track by auth.requestedlabel" layout="column"
@@ -255,8 +308,8 @@
         </p>
         <md-input-container>
             <label><span translate="bank_account">Bank account</span></label>
-            <md-select ng-model="auth.reallabel">
-                <md-option value=""><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
+            <md-select required name="bankaccount_{{$index}}" ng-model="auth.reallabel">
+                <md-option value="" ng-if="!true"><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
                 <md-option ng-repeat="bank in vm.user.bankaccounts" value="{{ ::bank.label }}"
                            ng-bind="::bank.label + ' - ' + bank.bic + ', ' + bank.iban + ', ' + bank.country">
                 </md-option>
@@ -264,6 +317,9 @@
                     <i class="fa fa-plus"></i> <span translate='user.directives.authorizationdetails.createnew'>Create new</span>
                 </md-option>
             </md-select>
+            <div ng-messages="authorizeform['bankaccount_' + $index].$error">
+                <div ng-message="required" translate="required_field">This is required.</div>
+            </div>
         </md-input-container>
     </md-list-item>
     <md-list-item ng-repeat="auth in authorizations.digitalwallet track by auth.requestedlabel" layout="column"
@@ -284,8 +340,8 @@
         </p>
         <md-input-container>
             <label><span translate="digital_wallet_address">Digital wallet address</span></label>
-            <md-select ng-model="auth.reallabel">
-                <md-option value=""><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
+            <md-select required name="digitalwallet_{{$index}}" ng-model="auth.reallabel">
+                <md-option value="" ng-if="!true"><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
                 <md-option ng-repeat="address in vm.user.digitalwallet" value="{{::address.label}}"
                            ng-bind="::address.label + ' - ' + address.address + ' - ' + address.currencysymbol">
                 </md-option>
@@ -293,6 +349,9 @@
                     <i class="fa fa-plus"></i> <span translate='user.directives.authorizationdetails.createnew'>Create new</span>
                 </md-option>
             </md-select>
+            <div ng-messages="authorizeform['digitalwallet_' + $index].$error">
+                <div ng-message="required" translate="required_field">This is required.</div>
+            </div>
         </md-input-container>
     </md-list-item>
     <md-list-item ng-if="::authorizations.github">
@@ -305,7 +364,7 @@
             <img class="md-avatar" ng-src="{{ ::vm.user.github.avatar_url }}"/>
             <span>{{ ::vm.user.github.login }}</span>
         </div>
-        <md-checkbox class="md-secondary" ng-model="authorizations.github"></md-checkbox>
+        <md-checkbox ng-disabled="isRequired('name')" required class="md-secondary" ng-model="authorizations.github" name="github"></md-checkbox>
     </md-list-item>
     <md-list-item ng-if="::authorizations.facebook">
         <p><i class="fa fa-facebook-official">
@@ -317,7 +376,7 @@
             <img class="md-avatar" ng-src="{{ ::vm.user.facebook.picture }}"/>
             <span>{{ ::vm.user.facebook.name }}</span>
         </div>
-        <md-checkbox class="md-secondary" ng-model="authorizations.facebook"></md-checkbox>
+        <md-checkbox ng-disabled="isRequired('name')" required class="md-secondary" ng-model="authorizations.facebook" name="facebook"></md-checkbox>
     </md-list-item>
     <md-list-item ng-repeat="auth in authorizations.publicKeys track by auth.requestedlabel" layout="column"
                   layout-gt-sm="row" layout-align="center start" layout-align-gt-sm="start center">
@@ -333,8 +392,8 @@
         </p>
         <md-input-container>
             <label><span translate="public_key">Public key</span></label>
-            <md-select ng-model="auth.reallabel">
-                <md-option value=""><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
+            <md-select required name="publickey_{{$index}}" ng-model="auth.reallabel">
+                <md-option value="" ng-if="!true"><span translate='user.directives.authorizationdetails.none'>None</span></md-option>
                 <md-option ng-repeat="pubkey in vm.user.publicKeys" value="{{::pubkey.label}}"
                            ng-bind="::pubkey.label">
                 </md-option>
@@ -342,6 +401,9 @@
                     <i class="fa fa-plus"></i> <span translate='user.directives.authorizationdetails.createnew'>Create new</span>
                 </md-option>
             </md-select>
+            <div ng-messages="authorizeform['publickey' + $index].$error">
+                <div ng-message="required" translate="required_field">This is required.</div>
+            </div>
         </md-input-container>
     </md-list-item>
     <md-list-item ng-repeat="email in authorizations.ownerof.emailaddresses" layout="column"
@@ -361,7 +423,7 @@
         </i>
             <span translate='organizationkeystore'>Your keystore for this organization</span>
         </p>
-        <md-checkbox class="md-secondary" ng-model="authorizations.keystore"></md-checkbox>
+        <md-checkbox ng-disabled="isRequired('name')" required class="md-secondary" ng-model="authorizations.keystore" name="keystore"></md-checkbox>
     </md-list-item>
     <md-list-item ng-if="::authorizations.see">
         <p><i class="fa fa-file">
@@ -369,6 +431,6 @@
         </i>
             <span translate='organizationsee'>Your see documents for this organization</span>
         </p>
-        <md-checkbox class="md-secondary" ng-model="authorizations.see"></md-checkbox>
+        <md-checkbox ng-disabled="isRequired('name')" required class="md-secondary" ng-model="authorizations.see" name="see"></md-checkbox>
     </md-list-item>
 </md-list>

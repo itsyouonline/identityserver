@@ -64,9 +64,10 @@ func (service *Service) EmailValidation(w http.ResponseWriter, request *http.Req
 	langKey := values.Get("l")
 
 	translationValues := tools.TranslationValues{
-		"invalidlink":    nil,
-		"error":          nil,
-		"emailconfirmed": nil,
+		"invalidlink":         nil,
+		"error":               nil,
+		"emailconfirmed":      nil,
+		"emailconfirmedextra": nil,
 	}
 
 	translations, err := tools.ParseTranslations(langKey, translationValues)
@@ -77,14 +78,14 @@ func (service *Service) EmailValidation(w http.ResponseWriter, request *http.Req
 
 	err = service.emailaddressValidationService.ConfirmValidation(request, key, smscode)
 	if err == validation.ErrInvalidCode || err == validation.ErrInvalidOrExpiredKey {
-		service.renderEmailConfirmationPage(w, request, translations["invalidlink"])
+		service.renderEmailConfirmationPage(w, request, translations["invalidlink"], "")
 		return
 	}
 	if err != nil {
 		log.Error(err)
-		service.renderEmailConfirmationPage(w, request, translations["error"])
+		service.renderEmailConfirmationPage(w, request, translations["error"], "")
 		return
 	}
 
-	service.renderEmailConfirmationPage(w, request, translations["emailconfirmed"])
+	service.renderEmailConfirmationPage(w, request, translations["emailconfirmed"], translations["emailconfirmedextra"])
 }

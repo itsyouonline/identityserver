@@ -8,7 +8,7 @@
             </md-card-title-text>
         </md-card-title>
         <md-card-content>
-            <div layout="column">
+            <div layout="column" ng-show="!vm.loading">
                 <md-input-container ng-show="vm.step === 'choice'">
                     <label translate='login.views.twofactorauthentication.method'>Authentication method</label>
                     <md-select ng-model="vm.selectedTwoFaMethod">
@@ -27,6 +27,9 @@
                     </div>
                 </md-input-container>
             </div>
+            <div class="loading-container" layout="row" layout-align="center center" ng-show="vm.loading">
+                    <md-progress-circular md-mode="indeterminate" md-diameter="50"></md-progress-circular>
+            </div>
         </md-card-content>
         <md-card-actions layout="row"
                          layout-align="{{vm.shouldShowSendButton() ? 'space-between center' : 'end center'}}">
@@ -36,7 +39,7 @@
             <md-button ng-if="vm.shouldShowSendButton()" class="md-raised" ng-click="vm.sendSmsCode()" translate='login.views.twofactorauthentication.resend'>
                 Resend code
             </md-button>
-            <md-button type="submit" class="md-raised md-primary" ng-disabled="!twoFaForm.$valid"
+            <md-button type="submit" class="md-raised md-primary" ng-disabled="!twoFaForm.$valid || vm.loading"
                        ng-show="vm.step === 'code'" translate='login.views.twofactorauthentication.loginbtn'>
                 Login
             </md-button>

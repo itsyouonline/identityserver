@@ -24,7 +24,7 @@
             </md-card-title-text>
         </md-card-title>
         <md-card-content>
-            <div layout="column">
+            <div layout="column" ng-show="!vm.loading">
                 <md-input-container>
                     <label for="username" translate="login.views.loginform.loginplaceholder"></label>
                     <input ng-model="vm.login" ng-minlength="2" required name="username" id="username">
@@ -38,13 +38,17 @@
                     </div>
                 </md-input-container>
             </div>
-        </md-card-content>
-        <md-card-actions layout="column" layout-gt-md="row" layout-align="space-between end"
-                         layout-align-gt-md="space-between start" ng-class="{'row-reverse': vm.reverseButtons}">
-            <div layout="row" layout-align="end end" layout-align-gt-md="end end">
-                <md-button type="submit" class="md-raised md-primary" translate='login.views.loginform.loginbtn'>Log in
+            <div class="loading-container" layout="row" layout-align="center center" ng-show="vm.loading">
+                    <md-progress-circular md-mode="indeterminate" md-diameter="50"></md-progress-circular>
             </div>
-            </md-button>
+        </md-card-content>
+        <md-card-actions layout="column" layout-gt-sm="row" layout-align="space-between end"
+                         layout-align-gt-sm="space-between start" ng-class="{'row-reverse': vm.reverseButtons}">
+            <div layout="row" layout-align="end end" layout-align-gt-md="end end">
+                <md-button type="submit" class="md-raised md-primary" ng-disabled="vm.loading"
+                    translate='login.views.loginform.loginbtn'>Log in
+                </md-button>
+            </div>
             <div layout="column" layout-align="center end" layout-align-gt-md="start start">
                 <md-button href="#/forgotpassword" translate='login.views.loginform.forgotpassword'>Forgot your password?</md-button>
                 <md-button href="#/validateemail" style='margin-left: 0' translate='validate_email'>Validate email</md-button>

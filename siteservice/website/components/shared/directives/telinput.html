@@ -6,7 +6,7 @@
                 <div layout="row" layout-align="space-between center">
                     <span ng-bind="country.name"></span>
                     <span ng-bind="country.dial_code"></span>
-                </div
+                </div>
             </md-option>
         </md-select>
     </md-input-container>
@@ -18,6 +18,7 @@
                 Invalid phone number. Phone number may only contain digits.
             </div>
             <div ng-message="invalid_phonenumber" translate='invalidphonenumber'>Invalid phone number</div>
+            <div ng-message="phone_already_used" translate='phone_already_used'>This phone number is already in use</div> 
         </div>
     </md-input-container>
 </div>

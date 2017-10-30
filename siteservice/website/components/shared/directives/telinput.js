@@ -60,6 +60,8 @@
 
                     function updateSMS() {
                       scope.validationerrors.pattern = false;
+                      scope.validationerrors['phone_already_used'] = false;
+                      scope.validationerrors['invalid_phonenumber'] = false;
                       var phone = scope.sms;
                       if (phone.startsWith("0")) {
                           phone = phone.substring(1);

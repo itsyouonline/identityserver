@@ -675,19 +675,21 @@ func (api OrganizationsAPI) RemovePendingInvitation(w http.ResponseWriter, r *ht
 	searchString := mux.Vars(r)["searchstring"]
 	invitationMgr := invitations.NewInvitationManager(r)
 
-	user, err := SearchUser(r, searchString)
+	usr, err := SearchUser(r, searchString)
 	if err != nil {
 		if db.IsNotFound(err) {
-			log.Debug("Could not find user for whom to remove the invitation")
-			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			log.Debug("Could not find existing user for whom to remove the invitation")
+			usr = &user.User{}
+			// http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+			// return
+		} else {
+			log.Error("Error while searching user: ", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
-		log.Error("Error while searching user: ", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
 	}
 
-	err = invitationMgr.Remove(globalID, user.Username, searchString)
+	err = invitationMgr.Remove(globalID, usr.Username, searchString)
 	if err == mgo.ErrNotFound {
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return

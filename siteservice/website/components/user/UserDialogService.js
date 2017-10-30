@@ -12,7 +12,7 @@
     function UserDialogService($window, $q, $interval, $mdMedia, $mdDialog, $translate, UserService, configService) {
         var vm;
         var genericDetailControllerParams = ['$scope', '$mdDialog', 'user', 'data',
-            'createFunction', 'updateFunction', 'deleteFunction', GenericDetailDialogController];
+            'createFunction', 'updateFunction', 'deleteFunction', 'preFilledLabels', GenericDetailDialogController];
         return {
             init: init,
             emailDetail: emailDetail,
@@ -48,6 +48,7 @@
         function emailDetail(ev, email) {
 
             return $q(function (resolve, reject) {
+                var preFilledLabels = ["Work", "Personal", "Spam", "Other"];
                 email = email || {};
                 var originalEmail = JSON.parse(JSON.stringify(email));
                 $mdDialog.show({
@@ -60,7 +61,8 @@
                         data: email,
                         createFunction: UserService.registerNewEmailAddress,
                         updateFunction: UserService.updateEmailAddress,
-                        deleteFunction: UserService.deleteEmailAddress
+                        deleteFunction: UserService.deleteEmailAddress,
+                        preFilledLabels: preFilledLabels
                     }
                 })
                     .then(
@@ -81,6 +83,7 @@
         }
 
         function phonenumberDetail(ev, phone) {
+            var preFilledLabels = ["Home", "Work", "Mobile", "General", "Fax", "Pager", "Other"];
             return $q(function (res, rej) {
                 phone = phone || {};
                 var originalPhone = JSON.parse(JSON.stringify(phone));
@@ -141,7 +144,8 @@
                         data: phone,
                         createFunction: UserService.registerNewPhonenumber,
                         updateFunction: UserService.updatePhonenumber,
-                        deleteFunction: deletePhoneNumber
+                        deleteFunction: deletePhoneNumber,
+                        preFilledLabels: preFilledLabels
                     }
                 })
                     .then(updatePhoneNumber, rollbackPhoneNumber);
@@ -183,6 +187,7 @@
         }
 
         function verifyPhone(event, phone) {
+            var promise = $q.defer();
             var interval;
             $mdDialog.show({
                 controller: ['$scope', '$mdDialog', '$interval', 'user', 'phone', verifyPhoneDialogController],
@@ -242,7 +247,10 @@
                             if (confirmed) {
                                 findByLabel('phonenumbers', ctrl.label).verified = true;
                                 close();
+                                promise.resolve();
                             }
+                        }, function (response) {
+                            promise.reject(response);
                         });
                 }
 
@@ -252,10 +260,12 @@
                         .then(function () {
                             findByLabel('phonenumbers', ctrl.label).verified = true;
                             close();
+                            promise.resolve()
                         }, function (response) {
                             if (response.status === 422) {
                                 $scope.form.smscode.$setValidity('invalid_code', false);
                             }
+                            promise.reject(response);
                         });
                 }
 
@@ -263,6 +273,7 @@
                     $scope.form.smscode.$setValidity('invalid_code', true);
                 }
             }
+            return promise.promise;
         }
 
         function verifyEmailAddress(event, email) {
@@ -300,6 +311,7 @@
 
         function addressDetail(ev, address) {
             return $q(function (resolve, reject) {
+                var preFilledLabels = ["Home", "Work", "Other"];
                 address = address || {};
                 var originalAddress = JSON.parse(JSON.stringify(address));
                 $mdDialog.show({
@@ -312,7 +324,8 @@
                         data: address,
                         createFunction: UserService.registerNewAddress,
                         updateFunction: UserService.updateAddress,
-                        deleteFunction: UserService.deleteAddress
+                        deleteFunction: UserService.deleteAddress,
+                        preFilledLabels: preFilledLabels
                     }
                 })
                     .then(
@@ -336,6 +349,7 @@
         }
 
         function bankAccount(ev, bank) {
+            var preFilledLabels = ["Personal", "Business", "Shared", "Other"];
             var originalBankAccount = JSON.parse(JSON.stringify(bank || {}));
             return $q(function (resolve, reject) {
                 $mdDialog.show({
@@ -348,7 +362,8 @@
                         data: bank,
                         createFunction: UserService.registerNewBankAccount,
                         updateFunction: UserService.updateBankAccount,
-                        deleteFunction: UserService.deleteBankAccount
+                        deleteFunction: UserService.deleteBankAccount,
+                        preFilledLabels: preFilledLabels
                     }
                 })
                     .then(
@@ -431,7 +446,8 @@
                     data: vm.user.facebook,
                     createFunction: doNothing,
                     updateFunction: doNothing,
-                    deleteFunction: UserService.deleteFacebookAccount
+                    deleteFunction: UserService.deleteFacebookAccount,
+                    preFilledLabels: []
                 }
             })
                 .then(
@@ -451,7 +467,8 @@
                     data: vm.user.github,
                     createFunction: doNothing,
                     updateFunction: doNothing,
-                    deleteFunction: UserService.deleteGithubAccount
+                    deleteFunction: UserService.deleteGithubAccount,
+                    preFilledLabels: []
                 }
             })
                 .then(
@@ -511,6 +528,7 @@
                 walletAddress.expire = new Date();
             }
             return $q(function (resolve, reject) {
+                var preFilledLabels = ["Primary", "Secondary", "Other"]
                 $mdDialog.show({
                     controller: genericDetailControllerParams,
                     templateUrl: 'components/user/views/digitalWalletAddressDialog.html',
@@ -521,7 +539,8 @@
                         data: walletAddress,
                         createFunction: UserService.createDigitalWalletAddress,
                         updateFunction: UserService.updateDigitalWalletAddress,
-                        deleteFunction: UserService.deleteDigitalWalletAddress
+                        deleteFunction: UserService.deleteDigitalWalletAddress,
+                        preFilledLabels: preFilledLabels,
                     }
                 }).then(
                     function (data) {
@@ -739,7 +758,7 @@
             };
         }
 
-        function GenericDetailDialogController($scope, $mdDialog, user, data, createFunction, updateFunction, deleteFunction) {
+        function GenericDetailDialogController($scope, $mdDialog, user, data, createFunction, updateFunction, deleteFunction, preFilledLabels) {
             data = data || {};
             $scope.data = data;
 
@@ -751,6 +770,9 @@
             $scope.create = create;
             $scope.update = update;
             $scope.remove = remove;
+
+            $scope.isCustomlabel = isCustomlabel;
+            $scope.preFilledLabels = preFilledLabels || [];
 
             function cancel() {
                 $mdDialog.cancel();
@@ -802,6 +824,19 @@
                     .then(function () {
                         $mdDialog.hide({fx: 'delete'});
                     });
+            }
+
+            function isCustomlabel(label) {
+                if (!label) {
+                    return false;
+                }
+                var custom = true;
+                angular.forEach($scope.preFilledLabels, function(pfl) {
+                    if (label === pfl) {
+                        custom = false;
+                    }
+                })
+                return custom;
             }
 
         }

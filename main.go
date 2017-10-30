@@ -33,7 +33,7 @@ func main() {
 	// Set log output to stdout so we can pipe it
 	log.SetOutput(os.Stdout)
 
-	var debugLogging, ignoreDevcert bool
+	var debugLogging, ignoreDevcert, testEnv bool
 	var bindAddress, dbConnectionString string
 	var tlsCert, tlsKey string
 	var twilioAccountSID, twilioAuthToken, twilioMessagingServiceSID string
@@ -128,6 +128,11 @@ func main() {
 			Usage:       "The sender Id for SmsAero, filled in in the from field",
 			Destination: &smsAeroSenderId,
 		},
+		cli.BoolFlag{
+			Name:        "testEnv",
+			Usage:       "Designate if this is a production environment",
+			Destination: &testEnv,
+		},
 	}
 
 	app.Before = func(c *cli.Context) error {
@@ -201,7 +206,7 @@ func main() {
 		}
 
 		is := identityservice.NewService(smsService, emailService, mailService)
-		sc := siteservice.NewService(cookieSecret, smsService, emailService, is, version)
+		sc := siteservice.NewService(cookieSecret, smsService, emailService, is, version, testEnv)
 
 		config := globalconfig.NewManager()
 
@@ -240,6 +245,10 @@ func main() {
 
 		server := https.PrepareHTTP(bindAddress, r)
 		https.PrepareHTTPS(server, tlsCert, tlsKey, ignoreDevcert)
+
+		if testEnv {
+			log.Warn("Running in test environment - forget account endpoints enabled")
+		}
 
 		// Go make magic over HTTPS
 		log.Info("Listening (https) on ", bindAddress)

@@ -32,12 +32,13 @@ type Service struct {
 	EmailService                  communication.EmailService
 	emailaddressValidationService *validation.IYOEmailAddressValidationService
 	version                       string
+	testEnv                       bool
 	identityService               *identityservice.Service
 }
 
 //NewService creates and initializes a Service
 func NewService(cookieSecret string, smsService communication.SMSService, emailService communication.EmailService,
-	identityservice *identityservice.Service, version string) (service *Service) {
+	identityservice *identityservice.Service, version string, testEnv bool) (service *Service) {
 	service = &Service{smsService: smsService}
 
 	p := &validation.IYOPhonenumberValidationService{SMSService: smsService}
@@ -48,6 +49,8 @@ func NewService(cookieSecret string, smsService communication.SMSService, emailS
 	service.identityService = identityservice
 
 	service.version = version
+
+	service.testEnv = testEnv
 
 	service.initializeSessions(cookieSecret)
 	return
@@ -75,6 +78,9 @@ func (service *Service) AddRoutes(router *mux.Router) {
 	router.Methods("POST").Path("/register/smsconfirmation").HandlerFunc(service.ProcessPhonenumberConfirmationForm)
 	router.Methods("POST").Path("/register/validation").HandlerFunc(service.ValidateInfo)
 	router.Methods("POST").Path("/register/resendvalidation").HandlerFunc(service.ResendValidationInfo)
+	//Enable us to "forget" users in case we are not in production
+	router.Methods("GET").Path("/register/delete").HandlerFunc(service.ServeForgetAccountPage)
+	router.Methods("POST").Path("/register/delete").HandlerFunc(service.ForgetAccountHandler)
 	//Login forms
 	router.Methods("GET").Path("/login").HandlerFunc(service.ShowLoginForm)
 	router.Methods("POST").Path("/login").HandlerFunc(service.ProcessLoginForm)
@@ -251,7 +257,7 @@ func (service *Service) renderSMSConfirmationPage(w http.ResponseWriter, request
 }
 
 //renderEmailConfirmationPage renders a small mobile friendly confirmation page after a user follows a link in an email
-func (service *Service) renderEmailConfirmationPage(w http.ResponseWriter, request *http.Request, text string) {
+func (service *Service) renderEmailConfirmationPage(w http.ResponseWriter, request *http.Request, text string, extratext string) {
 	htmlData, err := html.Asset(emailconfirmationPage)
 	if err != nil {
 		log.Error(err)
@@ -259,6 +265,7 @@ func (service *Service) renderEmailConfirmationPage(w http.ResponseWriter, reque
 		return
 	}
 	htmlData = bytes.Replace(htmlData, []byte(`{{ text }}`), []byte(text), 1)
+	htmlData = bytes.Replace(htmlData, []byte(`{{ extratext }}`), []byte(extratext), 1)
 	sessions.Save(request, w)
 	w.Write(htmlData)
 }

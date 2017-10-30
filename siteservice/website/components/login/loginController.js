@@ -19,6 +19,7 @@
         vm.login = "";
         vm.password = "";
         vm.description = "";
+        vm.loading = false;
 
         var listener;
         activate();
@@ -37,9 +38,9 @@
                   stopListening();
             });
             $scope.$watch(function () {
-                return $mdMedia('gt-md');
-            }, function (isGtMd) {
-                vm.reverseButtons = isGtMd;
+                return $mdMedia('gt-sm');
+            }, function (isGtSm) {
+                vm.reverseButtons = isGtSm;
             });
         }
 
@@ -77,6 +78,7 @@
         }
 
         function submit() {
+            vm.loading = true;            
             var data = {
                 login: vm.login.toLowerCase(),
                 password: vm.password
@@ -84,15 +86,17 @@
             var url = '/login' + $window.location.search;
             $http.post(url, data).then(
                 function (data) {
-                  if (data.data.redirecturl) {
-                      // Skip 2FA when logging in from an external site if the 2FA validity period hasn't passed
-                      $window.location.href = data.data.redirecturl;
-                  } else {
-                      // Redirect 2 factor authentication page
-                      $window.location.hash = '#/2fa';
-                  }
+                    vm.loading = false;                  
+                    if (data.data.redirecturl) {
+                        // Skip 2FA when logging in from an external site if the 2FA validity period hasn't passed
+                        $window.location.href = data.data.redirecturl;
+                    } else {
+                        // Redirect 2 factor authentication page
+                        $window.location.hash = '#/2fa';
+                    }
                 },
                 function (response) {
+                    vm.loading = false;
                     if (response.status === 422) {
                         $scope.loginform.password.$setValidity("invalidcredentials", false);
                     }

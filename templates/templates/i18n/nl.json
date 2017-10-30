@@ -26,5 +26,6 @@
     "error": "Er is een onverwachte fout opgetreden, gelieve het later nog eens opnieuw te proberen",
     "smsconfirmed": "Je telefoonnummer is bevestigd",
     "smsconfirmedandlogin": "Je telefoonnummer is bevestigd, en je zal binnen enkele seconden ingelogd zijn",
-    "emailconfirmed": "Je email adres is bevestigd"
+    "emailconfirmed": "Je email adres is bevestigd",
+    "emailconfirmedextra": "Je kan nu terugkeren naar je actieve ItsYou.online venster"
 }

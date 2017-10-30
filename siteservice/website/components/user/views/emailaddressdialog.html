@@ -14,18 +14,11 @@
             <div class="md-dialog-content" layout="column">
                 <md-input-container>
                     <label translate='label'>Label</label>
-                    <input ng-model="data.label" minlength="2" required type="text" md-autofocus="true"
-                           name="labelinput" md-maxlength="50" ng-pattern="/^[a-zA-Z\d\-_\s]{2,50}$/">
-                    <div ng-messages="dataform.labelinput.$error">
-                        <div ng-message="minlength" translate='labelminlength'>At least 2 characters required</div>
-                        <div ng-message="md-maxlength" translate='labelmaxlength'>The label cannot be longer than 50
-                            characters
-                        </div>
-                        <div ng-message="pattern" translate="invalid_label"></div>
-                    </div>
-                    <div ng-messages="validationerrors" md-auto-hide="false">
-                        <div ng-message="duplicate, duplicate_label" translate='labelduplicate'>This label is already used</div>
-                    </div>
+                    <md-select ng-model="data.label" required name="labelinput">
+                        <md-option ng-repeat="label in preFilledLabels" ng-value="label">
+                            {{label | translate}}</md-option>
+                        <md-option ng-value="::originalLabel" ng-if="::isCustomlabel(originalLabel)">{{originalLabel}}</md-option>
+                    </md-select>
                 </md-input-container>
                 <span flex="5"></span>
                 <md-input-container flex="80">

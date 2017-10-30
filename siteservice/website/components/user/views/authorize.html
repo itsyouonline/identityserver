@@ -19,6 +19,13 @@
                             You must validate the email address {{ vm.emailNotValidated.email }} to give this authorization
                         </span>
                     </div>
+                    <div ng-if="vm.phoneNotValidated && vm.phoneNotValidated.phone">
+                        <span translate="authorize_non_validated_phone"
+                              translate-values="{ phone:vm.phoneNotValidated.phone }"
+                              class="authorize-error">
+                            You must validate the phone number {{ vm.phoneNotValidated.phone }} to give this authorization
+                        </span>
+                    </div>
                     <md-button type="submit" class="md-raised md-primary" translate='user.views.authorize.authorize'>Authorize</md-button>
                 </div>
             </div>

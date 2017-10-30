@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -18,6 +17,7 @@ import (
 	"github.com/itsyouonline/identityserver/db"
 	"github.com/itsyouonline/identityserver/db/organization"
 	"github.com/itsyouonline/identityserver/db/user"
+	validationdb "github.com/itsyouonline/identityserver/db/validation"
 	"github.com/itsyouonline/identityserver/siteservice/website/packaged/html"
 	"github.com/itsyouonline/identityserver/validation"
 )
@@ -145,41 +145,43 @@ func (service *Service) ShowRegistrationForm(w http.ResponseWriter, request *htt
 }
 
 //ProcessPhonenumberConfirmationForm processes the Phone number confirmation form
-func (service *Service) ProcessPhonenumberConfirmationForm(w http.ResponseWriter, request *http.Request) {
+func (service *Service) ProcessPhonenumberConfirmationForm(w http.ResponseWriter, r *http.Request) {
 	values := struct {
 		Smscode string `json:"smscode"`
 	}{}
 
 	response := struct {
-		RedirectUrL string `json:"redirecturl"`
-		Error       string `json:"error"`
+		Error     string `json:"error"`
+		Confirmed bool   `json:"confirmed"`
 	}{}
 
-	if err := json.NewDecoder(request.Body).Decode(&values); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&values); err != nil {
 		log.Debug("Error decoding the ProcessPhonenumberConfirmation request:", err)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-	registrationSession, err := service.GetSession(request, SessionForRegistration, "registrationdetails")
+	registrationSession, err := service.GetSession(r, SessionForRegistration, "registrationdetails")
 	if err != nil {
 		log.Debug(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 	if registrationSession.IsNew {
-		sessions.Save(request, w)
-		response.RedirectUrL = fmt.Sprintf("https://%s/register/#/smsconfirmation", request.Host)
-		json.NewEncoder(w).Encode(&response)
+		sessions.Save(r, w)
+		log.Debug("Registration session expired")
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		return
 	}
 
 	username, _ := registrationSession.Values["username"].(string)
 	validationkey, _ := registrationSession.Values["phonenumbervalidationkey"].(string)
 
-	if isConfirmed, _ := service.phonenumberValidationService.IsConfirmed(request, validationkey); isConfirmed {
-		userMgr := user.NewManager(request)
+	if isConfirmed, _ := service.phonenumberValidationService.IsConfirmed(r, validationkey); isConfirmed {
+		userMgr := user.NewManager(r)
 		userMgr.RemoveExpireDate(username)
-		service.loginUser(w, request, username)
+		response.Confirmed = true
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(response)
 		return
 	}
 
@@ -190,7 +192,7 @@ func (service *Service) ProcessPhonenumberConfirmationForm(w http.ResponseWriter
 		return
 	}
 
-	err = service.phonenumberValidationService.ConfirmValidation(request, validationkey, smscode)
+	err = service.phonenumberValidationService.ConfirmValidation(r, validationkey, smscode)
 	if err == validation.ErrInvalidCode {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		response.Error = "invalid_sms_code"
@@ -198,7 +200,7 @@ func (service *Service) ProcessPhonenumberConfirmationForm(w http.ResponseWriter
 		return
 	}
 	if err == validation.ErrInvalidOrExpiredKey {
-		sessions.Save(request, w)
+		sessions.Save(r, w)
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(&response)
 		return
@@ -206,9 +208,11 @@ func (service *Service) ProcessPhonenumberConfirmationForm(w http.ResponseWriter
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-	userMgr := user.NewManager(request)
+	userMgr := user.NewManager(r)
 	userMgr.RemoveExpireDate(username)
-	service.loginUser(w, request, username)
+	response.Confirmed = true
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
 }
 
 //ResendPhonenumberConfirmation resend the phonenumberconfirmation to a possbily new phonenumber
@@ -348,39 +352,11 @@ func (service *Service) ProcessRegistrationForm(w http.ResponseWriter, r *http.R
 	}
 	// at this point the phone number is confirmed
 	userMgr.RemoveExpireDate(username)
-	// see if we can also verify the email, and if we can't, see if we can continue the registration
-
-	// require a validated email to register if:
-	//  - a validated email scope is required to log in to an external org
-	//  - the user is registering against IYO (not in an oauth flow)
-	//  - the `requirevalidatedemail` queryparameter is set.
-
-	requireValidatedEmail := false
-	queryParams, err := url.ParseQuery(values.RedirectParams)
-	if err != nil {
-		log.Debug("Failed to parse query params: ", err)
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
-	if strings.Contains(queryParams.Get("scope"), "user:validated:email") {
-		log.Debug("Require validated email because of user:validated:email scope")
-		requireValidatedEmail = true
-	}
-	if queryParams.Get("client_id") == "" {
-		log.Debug("Require validated email because there is no client id")
-		requireValidatedEmail = true
-	}
-	if queryParams.Get("requirevalidatedemail") != "" {
-		log.Debug("Require validated email because the requirevalidatedemail query parameter is set")
-		requireValidatedEmail = true
-	}
-	if !requireValidatedEmail {
-		log.Debug("Validated email not required to register")
-	}
+	// Check if the email has already been verified through the link
 
 	emailvalidationkey, _ := registrationSession.Values["emailvalidationkey"].(string)
 	emailConfirmed, _ := service.emailaddressValidationService.IsConfirmed(r, emailvalidationkey)
-	if !emailConfirmed && requireValidatedEmail {
+	if !emailConfirmed {
 		log.Debug("Email not confirmed yet")
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
@@ -447,7 +423,7 @@ func (service *Service) ValidateUsername(w http.ResponseWriter, request *http.Re
 	return
 }
 
-// Starts validation for a temporary username
+// ValidateInfo starts validation for a temporary username
 func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 	data := struct {
 		Firstname string `json:"firstname"`
@@ -480,10 +456,16 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 	counter := 0
 	var username string
 	for _, r := range data.Firstname {
+		if unicode.IsSpace(r) {
+			continue
+		}
 		username += string(unicode.ToLower(r))
 	}
 	username += "_"
 	for _, r := range data.Lastname {
+		if unicode.IsSpace(r) {
+			continue
+		}
 		username += string(unicode.ToLower(r))
 	}
 	username += "_"
@@ -505,7 +487,7 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 	orgMgr := organization.NewManager(r)
 	exists := true
 	for exists {
-		counter += 1
+		counter++
 		var err error
 		exists, err = userMgr.Exists(username + strconv.Itoa(counter))
 		if err != nil {
@@ -530,10 +512,25 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if the email is already known
+	valMgr := validationdb.NewManager(r)
+	if _, err = valMgr.GetByEmailAddress(data.Email); !db.IsNotFound(err) {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		writeErrorResponse(w, "email_already_used")
+		return
+	}
+
 	valid = user.ValidatePhoneNumber(data.Phone)
 	if !valid {
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		writeErrorResponse(w, "invalid_phonenumber")
+		return
+	}
+
+	// Check if the phone number is already known
+	if _, err = valMgr.GetByPhoneNumber(data.Phone); !db.IsNotFound(err) {
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		writeErrorResponse(w, "phone_already_used")
 		return
 	}
 
@@ -617,11 +614,21 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 		registrationSession.Values["password"] = data.Password
 	}
 
+	oldPhoneKey, _ := registrationSession.Values["phonenumbervalidationkey"].(string)
+	phoneConfirmed, err := service.phonenumberValidationService.IsConfirmed(r, oldPhoneKey)
+	if err != nil && err != validation.ErrInvalidOrExpiredKey {
+		log.Error("Failed to check if phone number is already confirmed: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
 	// phone number validation
+	// always set the registrationsession value of the phonenumber key. If the phone validation is not triggered,
+	// the old value and new value are the same anyway
+	registrationSession.Values["phonenumber"] = data.Phone
 	if phoneChanged {
 		// invalidate old phone number validation
-		oldkey, _ := registrationSession.Values["phonenumbervalidationkey"].(string)
-		_ = service.emailaddressValidationService.ExpireValidation(r, oldkey)
+		_ = service.phonenumberValidationService.ExpireValidation(r, oldPhoneKey)
 
 		phonenumber := user.Phonenumber{Phonenumber: data.Phone}
 		validationkey, err := service.phonenumberValidationService.RequestValidation(r, username, phonenumber, fmt.Sprintf("https://%s/phonevalidation", r.Host), data.LangKey)
@@ -631,11 +638,17 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		registrationSession.Values["phonenumbervalidationkey"] = validationkey
-		registrationSession.Values["phonenumber"] = phonenumber.Phonenumber
 	}
 
-	// email validation
-	if emailChanged {
+	// Email validation
+	// So the logic here: only send an email if the email address is changed,
+	// also only send it if the phone number is confirmed already (defer sending email until this is done)
+	// and make sure the phone number didn't change so we don't end up sending 2 validations if
+	// the user manages to somehow confirm a wrong phonenumber (magic?)
+	// always set the registrationsession value of the email key. If the email validation is not triggered,
+	// the old value and new value are the same anyway
+	registrationSession.Values["email"] = data.Email
+	if emailChanged && phoneConfirmed && !phoneChanged {
 		// invalidated old email validation
 		oldkey, _ := registrationSession.Values["emailvalidationkey"].(string)
 		_ = service.emailaddressValidationService.ExpireValidation(r, oldkey)
@@ -647,7 +660,6 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		registrationSession.Values["emailvalidationkey"] = mailvalidationkey
-		registrationSession.Values["email"] = data.Email
 	}
 
 	sessions.Save(r, w)
@@ -712,24 +724,34 @@ func (service *Service) ResendValidationInfo(w http.ResponseWriter, r *http.Requ
 			return
 		}
 		registrationSession.Values["phonenumbervalidationkey"] = validationkey
+
 	}
 
 	// There is no point in resending the validation request if the email is already
 	// verified
 	emailvalidationkey, _ := registrationSession.Values["emailvalidationkey"].(string)
 	emailConfirmed, err := service.emailaddressValidationService.IsConfirmed(r, emailvalidationkey)
-	if err != nil {
+	if err != nil && err != validation.ErrInvalidOrExpiredKey {
 		log.Error("Failed to check if email address is already confirmed: ", err)
 	}
 	if emailConfirmed {
 		log.Debug("Email is already confirmed, ignoring new email validation request")
 	}
 	// Only retrigger the validation if the email is not confirmed yet
-	if !emailConfirmed && err == nil {
+	// Check if the phone is confirmed, if it is not we can't be on the email page yet
+	// So there is no need to resend this validation yet
+	if !emailConfirmed && (err == nil || err == validation.ErrInvalidOrExpiredKey) && phoneConfirmed {
 		// Invalidate the previous email validation request, ignore a possible error
 		_ = service.emailaddressValidationService.ExpireValidation(r, emailvalidationkey)
 
 		email, _ := registrationSession.Values["email"].(string)
+
+		if email != data.Email {
+			sessions.Save(r, w)
+			log.Info("Attempt to trigger registration flow email (resend) validation with a different email address than the one stored in the session")
+			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+			return
+		}
 
 		emailvalidationkey, err = service.emailaddressValidationService.RequestValidation(r, username, email, fmt.Sprintf("https://%s/emailvalidation", r.Host), data.LangKey)
 		if err != nil {
