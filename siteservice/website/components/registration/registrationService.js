@@ -7,7 +7,6 @@
 
     function RegistrationService($http) {
         return {
-            validateUsername: validateUsername,
             requestValidation: requestValidation,
             register: register,
             getLogo: getLogo,
@@ -15,15 +14,6 @@
             resendValidation: resendValidation,
             submitSMSCode: submitSMSCode
         };
-
-        function validateUsername(username) {
-            var options = {
-                params: {
-                    username: username
-                }
-            };
-            return $http.get('/validateusername', options);
-        }
 
         function requestValidation(firstname, lastname, email, phone, password) {
             var url = '/register/validation';

@@ -66,7 +66,6 @@ func (service *Service) InitModels() {
 func (service *Service) AddRoutes(router *mux.Router) {
 	router.Methods("GET").Path("/").HandlerFunc(service.HomePage)
 	//Registration form
-	router.Methods("GET").Path("/validateusername").HandlerFunc(service.ValidateUsername)
 	router.Methods("GET").Path("/register").HandlerFunc(service.ShowRegistrationForm)
 	router.Methods("POST").Path("/register").HandlerFunc(service.ProcessRegistrationForm)
 	router.Methods("GET").Path("/phonevalidation").HandlerFunc(service.PhonenumberValidation)

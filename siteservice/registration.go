@@ -382,47 +382,6 @@ func (service *Service) ProcessRegistrationForm(w http.ResponseWriter, r *http.R
 	service.loginUser(w, r, username)
 }
 
-//ValidateUsername checks if a username is already taken or not
-func (service *Service) ValidateUsername(w http.ResponseWriter, request *http.Request) {
-	username := request.URL.Query().Get("username")
-	response := struct {
-		Valid bool   `json:"valid"`
-		Error string `json:"error"`
-	}{
-		Valid: true,
-		Error: "",
-	}
-	valid := user.ValidateUsername(username)
-	if !valid {
-		log.Debug("Invalid username format:", username)
-		response.Error = "invalid_username_format"
-		response.Valid = false
-		json.NewEncoder(w).Encode(&response)
-		return
-	}
-	userMgr := user.NewManager(request)
-	orgMgr := organization.NewManager(request)
-	userExists, err := userMgr.Exists(username)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-	if userExists {
-		log.Debug("username ", username, " already taken")
-		response.Error = "user_exists"
-		response.Valid = false
-	} else {
-		orgExists := orgMgr.Exists(username)
-		if orgExists {
-			log.Debugf("Organization with name %s already exists", username)
-			response.Error = "organization_exists"
-			response.Valid = false
-		}
-	}
-	json.NewEncoder(w).Encode(&response)
-	return
-}
-
 // ValidateInfo starts validation for a temporary username
 func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 	data := struct {
