@@ -354,14 +354,13 @@ func (api OrganizationsAPI) inviteUser(w http.ResponseWriter, r *http.Request, r
 		IsOrganization: false,
 	}
 
-	autoAccepted, err := api.autoAcceptThreefoldInviteIfPossible(orgReq, orgMgr)
+	autoAccepted, err := api.autoAcceptSubOrgInvite(orgReq, orgMgr)
 	if err != nil {
-		log.Error("Failure while trying to auto accept organization invite: ", err)
-		log.Warnf("OrgId: %s, role: %s")
 		if db.IsNotFound(err) {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
+		log.Error("Failure while trying to auto accept organization invite: ", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -391,24 +390,42 @@ func (api OrganizationsAPI) inviteUser(w http.ResponseWriter, r *http.Request, r
 	json.NewEncoder(w).Encode(reqView)
 }
 
-// FIXME: NUKE ASAP
-func (api OrganizationsAPI) autoAcceptThreefoldInviteIfPossible(invite *invitations.JoinOrganizationInvitation, mgr *organization.Manager) (bool, error) {
+// autoAcceptSubOrgInvite tries to auto accept an invitation if a user is already a member or owner in a parent organization
+func (api OrganizationsAPI) autoAcceptSubOrgInvite(invite *invitations.JoinOrganizationInvitation, mgr *organization.Manager) (bool, error) {
 	globalid := invite.Organization
 
-	// we can't just check that the prefix is "threefold" as this would include unrelated
-	// organizations such as threefoldwithsomethingbehindit
-	if !(globalid == "threefold" || strings.HasPrefix(globalid, "threefold.")) {
+	// If this is an invite for a root organization we obviously aren't a member of a parent yet
+	if !strings.Contains(globalid, ".") {
 		return false, nil
 	}
 
-	// Check for username so we only auto invite already registered users
+	// Check for username so we only auto accept already registered users
+	// Not sure if this is needed but it doesn't hurt to check
 	username := invite.User
 	if username == "" {
 		log.Debug("can't auto accept the invite because the username is not known")
 		return false, nil
 	}
+
+	// Check if we happen to be a member or owner of a parent org
+	orgs, err := mgr.AllByUser(username)
+	if err != nil {
+		return false, err
+	}
+	inParent := false
+	for _, org := range orgs {
+		// adding the  "." is required here.
+		if strings.HasPrefix(globalid, org.Globalid+".") {
+			inParent = true
+			break
+		}
+	}
+
+	if !inParent {
+		return false, nil
+	}
+
 	// add the user
-	log.Debug("Try auto adding user to organization ", invite.Organization)
 	org, err := mgr.GetByName(invite.Organization)
 	if err != nil {
 		return false, err
@@ -424,9 +441,9 @@ func (api OrganizationsAPI) autoAcceptThreefoldInviteIfPossible(invite *invitati
 			return false, err
 		}
 	}
-	log.Debug("Auto added user ", username, " to the ", globalid, " organization")
 	// set the invite to status accpeted
 	invite.Status = invitations.RequestAccepted
+	log.Debug("Invitation auto accepted because the user is already an owner or member of a parent organization")
 	return true, nil
 }
 
