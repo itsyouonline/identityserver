@@ -326,6 +326,8 @@
                 function(response) {
                     if (response.data.confirmed) {
                         vm.phoneConfirmed = response.data.confirmed;
+                        // trigger email validation
+                        resendValidation();
                     } else {
                         $timeout(checkPhoneConfirmation, 1000);
                     }
