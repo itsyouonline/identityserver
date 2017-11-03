@@ -24,9 +24,10 @@ func (service *Service) PhonenumberValidation(w http.ResponseWriter, request *ht
 	langKey := values.Get("l")
 
 	translationValues := tools.TranslationValues{
-		"invalidlink":  nil,
-		"error":        nil,
-		"smsconfirmed": nil,
+		"invalidlink":      nil,
+		"error":            nil,
+		"smsconfirmed":     nil,
+		"return_to_window": nil,
 	}
 
 	translations, err := tools.ParseTranslations(langKey, translationValues)
@@ -37,16 +38,16 @@ func (service *Service) PhonenumberValidation(w http.ResponseWriter, request *ht
 
 	err = service.phonenumberValidationService.ConfirmValidation(request, key, smscode)
 	if err == validation.ErrInvalidCode || err == validation.ErrInvalidOrExpiredKey {
-		service.renderSMSConfirmationPage(w, request, translations["invalidlink"])
+		service.renderSMSConfirmationPage(w, request, translations["invalidlink"], "")
 		return
 	}
 	if err != nil {
 		log.Error(err)
-		service.renderSMSConfirmationPage(w, request, translations["error"])
+		service.renderSMSConfirmationPage(w, request, translations["error"], "")
 		return
 	}
 
-	service.renderSMSConfirmationPage(w, request, translations["smsconfirmed"])
+	service.renderSMSConfirmationPage(w, request, translations["smsconfirmed"], translations["return_to_window"])
 }
 
 func (service *Service) EmailValidation(w http.ResponseWriter, request *http.Request) {
@@ -64,10 +65,10 @@ func (service *Service) EmailValidation(w http.ResponseWriter, request *http.Req
 	langKey := values.Get("l")
 
 	translationValues := tools.TranslationValues{
-		"invalidlink":         nil,
-		"error":               nil,
-		"emailconfirmed":      nil,
-		"emailconfirmedextra": nil,
+		"invalidlink":      nil,
+		"error":            nil,
+		"emailconfirmed":   nil,
+		"return_to_window": nil,
 	}
 
 	translations, err := tools.ParseTranslations(langKey, translationValues)
@@ -87,5 +88,5 @@ func (service *Service) EmailValidation(w http.ResponseWriter, request *http.Req
 		return
 	}
 
-	service.renderEmailConfirmationPage(w, request, translations["emailconfirmed"], translations["emailconfirmedextra"])
+	service.renderEmailConfirmationPage(w, request, translations["emailconfirmed"], translations["return_to_window"])
 }

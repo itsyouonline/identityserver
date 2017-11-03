@@ -243,7 +243,7 @@ func (service *Service) ErrorPage(w http.ResponseWriter, request *http.Request) 
 }
 
 //renderSMSConfirmationPage renders a small mobile friendly confirmation page after a user follows a link in an sms
-func (service *Service) renderSMSConfirmationPage(w http.ResponseWriter, request *http.Request, text string) {
+func (service *Service) renderSMSConfirmationPage(w http.ResponseWriter, request *http.Request, text string, extratext string) {
 	htmlData, err := html.Asset(smsconfirmationPage)
 	if err != nil {
 		log.Error(err)
@@ -251,6 +251,7 @@ func (service *Service) renderSMSConfirmationPage(w http.ResponseWriter, request
 		return
 	}
 	htmlData = bytes.Replace(htmlData, []byte(`{{ text }}`), []byte(text), 1)
+	htmlData = bytes.Replace(htmlData, []byte(`{{ extratext }}`), []byte(extratext), 1)
 	sessions.Save(request, w)
 	w.Write(htmlData)
 }

@@ -17,15 +17,15 @@
     "organizationinvite_reason": "Je hebt deze mail ontvangen omdat iemand je heeft uitgenodigt om lid te worden van een organizatie op ItsYou.online. Als je denkt dat dit een vergissing was, gelieve deze mail dan te negeren.",
     "organizationinvite_subject": "Je bent uitgenodigt voor de organizatie {{ .Organization }}",
     "organizationinvite_urlcaption": "Knop werkt niet? Kopieer de volgende link en plak deze in uw browser:",
-    "smsconfirmation": "Gelieve de code {{ .Code }} in te vullen om je telefoonnummer op itsyou.online te bevestigen",
-    "smsconfirmationandlogin": "Gelieve de code {{ .Code }} in te vullen om je telefoonnummer op itsyou.online te bevestigen en verder te gaan met aanmelden",
-    "authorizeorganizationsms": "Gelieve de de code {{ .Code }} invullen in het formulier Om verder te gaan met aanmelden bij itsyou.online om de organizatie {{ .Organization }} the autoriseren.",
-    "signinsms": "Gelieve de code {{ .Code }} in te vullen om verder te gaan met aanmelden bij itsyou.online",
+    "smsconfirmation": "Gelieve de code {{ .Code }} in te vullen om je telefoonnummer op itsyou.online te bevestigen, of gebruik de link: {{ .Link }}",
+    "smsconfirmationandlogin": "Gelieve de code {{ .Code }} in te vullen om je telefoonnummer op itsyou.online te bevestigen en verder te gaan met aanmelden, of gebruik de link: {{ .Link }}",
+    "authorizeorganizationsms": "Gelieve de de code {{ .Code }} invullen in het formulier Om verder te gaan met aanmelden bij itsyou.online om de organizatie {{ .Organization }} the autoriseren,  of gebruik de link: {{ .Link }}",
+    "signinsms": "Gelieve de code {{ .Code }} in te vullen om verder te gaan met aanmelden bij itsyou.online, of gebruik de link: {{ .Link }}",
     "invalidlink": "Ongeldige of vervallen link",
     "smsloggingin": "Je zal binnen enkele seconden ingelogd zijn",
     "error": "Er is een onverwachte fout opgetreden, gelieve het later nog eens opnieuw te proberen",
     "smsconfirmed": "Je telefoonnummer is bevestigd",
     "smsconfirmedandlogin": "Je telefoonnummer is bevestigd, en je zal binnen enkele seconden ingelogd zijn",
     "emailconfirmed": "Je email adres is bevestigd",
-    "emailconfirmedextra": "Je kan nu terugkeren naar je actieve ItsYou.online venster"
+    "return_to_window": "Je kan nu terugkeren naar je actieve ItsYou.online venster"
 }

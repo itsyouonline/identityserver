@@ -367,16 +367,27 @@ func (service *Service) GetSmsCode(w http.ResponseWriter, request *http.Request)
 	mgoCollection := db.GetCollection(db.GetDBSession(request), mongoLoginCollectionName)
 	mgoCollection.Insert(sessionInfo)
 
+	link := fmt.Sprintf("https://%s/sc?c=%s&k=%s&l=%s", request.Host, sessionInfo.SMSCode, url.QueryEscape(sessionInfo.SessionKey), values.LangKey)
 	translationValues := make(tools.TranslationValues)
 	if authenticatingOrganization != "" {
 		split := strings.Split(authenticatingOrganization, ".")
 		translationValues["authorizeorganizationsms"] = struct {
 			Organization string
 			Code         string
+			Link         string
 		}{
-			Organization: split[len(split)-1], Code: sessionInfo.SMSCode}
+			Organization: split[len(split)-1],
+			Code:         sessionInfo.SMSCode,
+			Link:         link,
+		}
 	} else {
-		translationValues["signinsms"] = struct{ Code string }{Code: sessionInfo.SMSCode}
+		translationValues["signinsms"] = struct {
+			Code string
+			Link string
+		}{
+			Code: sessionInfo.SMSCode,
+			Link: link,
+		}
 	}
 
 	translations, err := tools.ParseTranslations(values.LangKey, translationValues)
@@ -474,6 +485,7 @@ func (service *Service) PhonenumberValidationAndLogin(w http.ResponseWriter, req
 		"invalidlink":          nil,
 		"error":                nil,
 		"smsconfirmedandlogin": nil,
+		"return_to_window":     nil,
 	}
 
 	translations, err := tools.ParseTranslations(langKey, translationValues)
@@ -484,12 +496,12 @@ func (service *Service) PhonenumberValidationAndLogin(w http.ResponseWriter, req
 
 	err = service.phonenumberValidationService.ConfirmValidation(request, key, smscode)
 	if err == validation.ErrInvalidCode || err == validation.ErrInvalidOrExpiredKey {
-		service.renderSMSConfirmationPage(w, request, translations["invalidlink"])
+		service.renderSMSConfirmationPage(w, request, translations["invalidlink"], "")
 		return
 	}
 	if err != nil {
 		log.Error(err)
-		service.renderSMSConfirmationPage(w, request, translations["error"])
+		service.renderSMSConfirmationPage(w, request, translations["error"], "")
 		return
 	}
 
@@ -500,14 +512,14 @@ func (service *Service) PhonenumberValidationAndLogin(w http.ResponseWriter, req
 	}
 
 	if sessionInfo == nil {
-		service.renderSMSConfirmationPage(w, request, translations["invalidlink"])
+		service.renderSMSConfirmationPage(w, request, translations["invalidlink"], "")
 		return
 	}
 
 	validsmscode := (smscode == sessionInfo.SMSCode)
 
 	if !validsmscode { //TODO: limit to 3 failed attempts
-		service.renderSMSConfirmationPage(w, request, translations["invalidlink"])
+		service.renderSMSConfirmationPage(w, request, translations["invalidlink"], "")
 		return
 	}
 	mgoCollection := db.GetCollection(db.GetDBSession(request), mongoLoginCollectionName)
@@ -519,7 +531,7 @@ func (service *Service) PhonenumberValidationAndLogin(w http.ResponseWriter, req
 		return
 	}
 
-	service.renderSMSConfirmationPage(w, request, translations["smsconfirmedandlogin"])
+	service.renderSMSConfirmationPage(w, request, translations["smsconfirmedandlogin"], translations["return_to_window"])
 }
 
 //MobileSMSConfirmation is the page that is linked to in the SMS and is thus accessed on the mobile phone
@@ -538,8 +550,9 @@ func (service *Service) MobileSMSConfirmation(w http.ResponseWriter, request *ht
 	langKey := values.Get("l")
 
 	translationValues := tools.TranslationValues{
-		"invalidlink":  nil,
-		"smsloggingin": nil,
+		"invalidlink":      nil,
+		"smsloggingin":     nil,
+		"return_to_window": nil,
 	}
 
 	translations, err := tools.ParseTranslations(langKey, translationValues)
@@ -556,14 +569,14 @@ func (service *Service) MobileSMSConfirmation(w http.ResponseWriter, request *ht
 	}
 
 	if sessionInfo == nil {
-		service.renderSMSConfirmationPage(w, request, translations["invalidlink"])
+		service.renderSMSConfirmationPage(w, request, translations["invalidlink"], "")
 		return
 	}
 
 	validsmscode = (smscode == sessionInfo.SMSCode)
 
 	if !validsmscode { //TODO: limit to 3 failed attempts
-		service.renderSMSConfirmationPage(w, request, translations["invalidlink"])
+		service.renderSMSConfirmationPage(w, request, translations["invalidlink"], "")
 		return
 	}
 	mgoCollection := db.GetCollection(db.GetDBSession(request), mongoLoginCollectionName)
@@ -574,7 +587,7 @@ func (service *Service) MobileSMSConfirmation(w http.ResponseWriter, request *ht
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-	service.renderSMSConfirmationPage(w, request, translations["smsloggingin"])
+	service.renderSMSConfirmationPage(w, request, translations["smsloggingin"], translations["return_to_window"])
 }
 
 //Check2FASMSConfirmation is called by the sms code form to check if the sms is already confirmed on the mobile phone
@@ -1061,7 +1074,13 @@ func (service *Service) LoginResendPhonenumberConfirmation(w http.ResponseWriter
 	mgoCollection.Insert(sessionInfo)
 
 	TranslationValues := tools.TranslationValues{
-		"smsconfirmationandlogin": struct{ Code string }{Code: info.SMSCode},
+		"smsconfirmationandlogin": struct {
+			Code string
+			Link string
+		}{
+			Code: info.SMSCode,
+			Link: fmt.Sprintf("https://%s/pvl?c=%s&k=%s&l=%s", request.Host, info.SMSCode, url.QueryEscape(info.Key), values.LangKey),
+		},
 	}
 
 	translations, err := tools.ParseTranslations(values.LangKey, TranslationValues)

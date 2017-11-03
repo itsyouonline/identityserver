@@ -17,15 +17,15 @@
     "organizationinvite_reason": "You’re receiving this email because someone invited you to an organization at ItsYou.Online. If you think this was a mistake please ignore this email.",
     "organizationinvite_subject": "You have been invited to the {{ .Organization }} organization",
     "organizationinvite_urlcaption": "Button not working? Paste the following link into your browser:",
-    "smsconfirmation": "Enter the code {{ .Code }} in the form to verify your phonenumber on itsyou.online",
-    "smsconfirmationandlogin": "Enter the code {{ .Code }} in the form to verify your phonenumber on itsyou.online and continue to login",
-    "authorizeorganizationsms": "Enter the code {{ .Code }} in the form to continue signing in at itsyou.online to authorize the organization {{ .Organization }}.",
-    "signinsms": "Enter the code {{ .Code }} in the form to continue signing in at itsyou.online",
+    "smsconfirmation": "Enter the code {{ .Code }} in the form to verify your phonenumber on itsyou.online, or use the link {{ .Link }}",
+    "smsconfirmationandlogin": "Enter the code {{ .Code }} in the form to verify your phonenumber on itsyou.online and continue to login, or use this link: {{ .Link }}",
+    "authorizeorganizationsms": "Enter the code {{ .Code }} in the form to continue signing in at itsyou.online to authorize the organization {{ .Organization }}, or use the link {{ .Link }}",
+    "signinsms": "Enter the code {{ .Code }} in the form to continue signing in at itsyou.online, or use this link: {{ .Link }}",
     "invalidlink": "Invalid or expired link",
     "smsloggingin": "You will be logged in within a few seconds",
     "error": "An unexpected error occurred, please try again later",
     "smsconfirmed": "Your phonenumber is confirmed",
     "smsconfirmedandlogin": "Your phonenumber is confirmed, and you will be logged in within a few seconds",
     "emailconfirmed": "Your email address has been confirmed",
-    "emailconfirmedextra": "You can now return to your active ItsYou.online window"
+    "return_to_window": "You can now return to your active ItsYou.online window"
 }

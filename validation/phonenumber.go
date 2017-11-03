@@ -35,7 +35,13 @@ func (service *IYOPhonenumberValidationService) RequestValidation(request *http.
 	}
 
 	translationValues := tools.TranslationValues{
-		"smsconfirmation": struct{ Code string }{Code: info.SMSCode},
+		"smsconfirmation": struct {
+			Code string
+			Link string
+		}{
+			Code: info.SMSCode,
+			Link: fmt.Sprintf("%s?c=%s&k=%s&l=%s", confirmationurl, info.SMSCode, url.QueryEscape(info.Key), langKey),
+		},
 	}
 
 	translations, err := tools.ParseTranslations(langKey, translationValues)
