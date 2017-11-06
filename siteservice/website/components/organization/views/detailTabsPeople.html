@@ -96,7 +96,7 @@
             <md-progress-circular md-mode="indeterminate"
                                   md-diameter="50"></md-progress-circular>
         </div>
-        <md-list-item class="md-3-line" ng-repeat="invite in vm.invitations track by $index"
+        <md-list-item class="md-3-line" ng-repeat="invite in vm.invitations track by vm.trackinvite(invite)"
                       aria-label="Invite" ng-if="!vm.loading.invitations">
             <div class="md-list-item-text">
                 <h3 class="text_align_center"
