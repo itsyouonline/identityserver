@@ -326,6 +326,22 @@ func (api OrganizationsAPI) inviteUser(w http.ResponseWriter, r *http.Request, r
 				return
 			}
 		}
+		// if the user was invited based on email address, then set this email address in the message
+		if isEmailAddress {
+			emailAddress = searchString
+		} else { // else try and get a validated email address to send the invite to
+			valMgr := validationdb.NewManager(r)
+			validatedEmails, err := valMgr.GetByUsernameValidatedEmailAddress(u.Username)
+			// No need to check for a not found error since we already established that the user exists
+			if err != nil {
+				log.Error("Failed to get validated email for user: ", err)
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+			if len(validatedEmails) > 0 {
+				emailAddress = validatedEmails[0].EmailAddress
+			}
+		}
 	}
 	// Create JoinRequest
 	invitationMgr := invitations.NewInvitationManager(r)
@@ -639,12 +655,12 @@ func (api OrganizationsAPI) AddOrganizationOwner(w http.ResponseWriter, r *http.
 }
 
 func (api OrganizationsAPI) sendInvite(r *http.Request, organizationRequest *invitations.JoinOrganizationInvitation) error {
-	switch organizationRequest.Method {
-	case invitations.MethodWebsite:
-		return nil
-	case invitations.MethodEmail:
+	// If there is an email address send an email
+	if organizationRequest.EmailAddress != "" {
 		return api.EmailAddressValidationService.SendOrganizationInviteEmail(r, organizationRequest)
-	case invitations.MethodPhone:
+	}
+	// Send an sms if the phone number is filled in and no email is used
+	if organizationRequest.PhoneNumber != "" {
 		return api.PhonenumberValidationService.SendOrganizationInviteSms(r, organizationRequest)
 	}
 	return nil
