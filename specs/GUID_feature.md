@@ -55,10 +55,13 @@ Info is stored in the database in a separate collection with the following field
 ## Additional work
 
 Because the user identifier middlewares need to be aware of the `client_id` to correctly
-authorize or block calls with a `GUID` as identifier. To enable this, the current
-implementation of setting the `client_id` in the authorization middleware will be removed,
-and implemented in a separate middleware at the beginning of the middleware chain.
-The useridentifier middlware can then use this `client_id` should it be required.
+authorize or block calls with a `GUID` as identifier, the `client_id` would ideally already
+be known when we try to dereference the identifier. This is currenlty not really possible
+since it is taken from the authorization supplied or cookie. 
+
+To solve this, the new middleware should set a context value with the `expected_client_id`,
+which can then later be checked against the actual `client_id`
+
 Also the functionality of the useridentifier middleware should be put in a separate function
 so that it can be reused by the endpoints which expect a json format.
 
