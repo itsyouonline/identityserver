@@ -117,7 +117,7 @@ func (service *IYOPhonenumberValidationService) ConfirmValidation(request *http.
 
 //SendOrganizationInviteSms Sends an organization invite SMS
 func (service *IYOPhonenumberValidationService) SendOrganizationInviteSms(request *http.Request, invite *invitations.JoinOrganizationInvitation) (err error) {
-	link := fmt.Sprintf(invitations.InviteUrl, request.Host, url.QueryEscape(invite.Code))
+	link := fmt.Sprintf(invitations.InviteURL, request.Host, url.QueryEscape(invite.Code))
 	// todo: perhaps this should be shorter but that might be confusing for the end user
 	message := fmt.Sprintf("You have been invited to the %s organization on It's You Online. Click the following link to accept it. %s", invite.Organization, link)
 	go service.SMSService.Send(invite.PhoneNumber, message)

@@ -10,14 +10,19 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// InvitationStatus is a string representation of the current status of an invite
 type InvitationStatus string
 
 const (
-	RequestPending  InvitationStatus = "pending"
+	// RequestPending is an open invite waiting to be accepted or rejected
+	RequestPending InvitationStatus = "pending"
+	// RequestAccepted is an invitation that has been accepted by the user
 	RequestAccepted InvitationStatus = "accepted"
+	// RequestRejected is an invitation that has been rejected by the user
 	RequestRejected InvitationStatus = "rejected"
 )
 
+// Denotes the different kind of roles in an organization
 const (
 	RoleMember    = "member"
 	RoleOwner     = "owner"
@@ -25,15 +30,19 @@ const (
 	RoleOrgOwner  = "orgowner"
 )
 
+// InviteMethod is a representation of how the user was invited
 type InviteMethod string
 
+// Denote the different ways a user can be invited
 const (
 	MethodWebsite InviteMethod = "website"
 	MethodEmail   InviteMethod = "email"
 	MethodPhone   InviteMethod = "phone"
 )
+
+// The url to link in an invitation email
 const (
-	InviteUrl = "https://%s/login#/organizationinvite/%s"
+	InviteURL = "https://%s/login#/organizationinvite/%s"
 )
 
 //JoinOrganizationInvitation defines an invitation to join an organization
@@ -63,6 +72,7 @@ func ParseInvitationType(invitationType string) string {
 	return reflect.ValueOf(RequestPending).String()
 }
 
+// JoinOrganizationInvitationView is a view of an OrganizationInvitation that is served by the API
 type JoinOrganizationInvitationView struct {
 	Organization   string           `json:"organization"`
 	Role           string           `json:"role"`
@@ -75,6 +85,7 @@ type JoinOrganizationInvitationView struct {
 	IsOrganization bool             `json:"isorganization"`
 }
 
+// ConvertToView converts a JoinOrganizationInvitation to a JoinOrganizationInvitationView
 func (inv *JoinOrganizationInvitation) ConvertToView(usrMgr *user.Manager, valMgr *validation.Manager) (*JoinOrganizationInvitationView, error) {
 	vw := &JoinOrganizationInvitationView{}
 	vw.Organization = inv.Organization

@@ -135,9 +135,9 @@ func (service *IYOEmailAddressValidationService) RequestPasswordReset(request *h
 
 //SendOrganizationInviteEmail Sends an organization invite email
 func (service *IYOEmailAddressValidationService) SendOrganizationInviteEmail(request *http.Request, invite *invitations.JoinOrganizationInvitation) (err error) {
-	inviteUrl := fmt.Sprintf(invitations.InviteUrl, request.Host, url.QueryEscape(invite.Code))
+	InviteURL := fmt.Sprintf(invitations.InviteURL, request.Host, url.QueryEscape(invite.Code))
 	templateParameters := EmailWithButtonTemplateParams{
-		Url:        inviteUrl,
+		Url:        InviteURL,
 		Username:   invite.EmailAddress,
 		Title:      "It's You Online organization invitation",
 		Text:       fmt.Sprintf("You have been invited to the %s organization on It's You Online. Click the button below to accept the invitation.", invite.Organization),
