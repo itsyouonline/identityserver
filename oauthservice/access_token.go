@@ -244,7 +244,7 @@ func convertCodeToAccessTokenHandler(code string, clientID string, secret string
 		return
 	}
 
-	if ar.ClientID != clientID || ar.State != state || ar.RedirectURL != redirectURI {
+	if ar.ClientID != clientID || (state != "" && ar.State != state) || ar.RedirectURL != redirectURI {
 		log.Debugf("Client id:%s - Expected client id:%s", clientID, ar.ClientID)
 		log.Debugf("State:%s - Expected state:%s", state, ar.State)
 		log.Debugf("Redirect url:%s - Expected redirect url:%s", redirectURI, ar.RedirectURL)
