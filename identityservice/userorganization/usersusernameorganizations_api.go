@@ -36,6 +36,7 @@ func (api UsersusernameorganizationsAPI) Get(w http.ResponseWriter, r *http.Requ
 
 	orgs, err := orgMgr.AllByUserChain(username)
 	if err != nil {
+		log.Error("Failed to load all organizations the user belongs to: ", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
