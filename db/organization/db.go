@@ -29,6 +29,31 @@ func InitModels() {
 
 	db.EnsureIndex(mongoCollectionName, index)
 
+	// Add indexes to search organizations based on user access ...
+	index = mgo.Index{
+		Key:        []string{"owners"},
+		Background: true,
+	}
+	db.EnsureIndex(mongoCollectionName, index)
+
+	index = mgo.Index{
+		Key:        []string{"members"},
+		Background: true,
+	}
+	db.EnsureIndex(mongoCollectionName, index)
+
+	index = mgo.Index{
+		Key:        []string{"orgowners"},
+		Background: true,
+	}
+	db.EnsureIndex(mongoCollectionName, index)
+
+	index = mgo.Index{
+		Key:        []string{"orgmembers"},
+		Background: true,
+	}
+	db.EnsureIndex(mongoCollectionName, index)
+
 	// Index the logo collection
 	index = mgo.Index{
 		Key:    []string{"globalid"},
@@ -150,11 +175,30 @@ func (m *Manager) GetOrganizations(organizationIDs []string) ([]Organization, er
 }
 
 // GetSubOrganizations returns all organizations which have {globalID} as parent (including the organization with {globalID} as globalid)
-//TODO: validate globalID since it is appended in the query
-//TODO: put an index on the globalid field
+// TODO: validate globalID since it is appended in the query
 func (m *Manager) GetSubOrganizations(globalID string) ([]Organization, error) {
 	var organizations = make([]Organization, 0, 0)
 	var qry = bson.M{"globalid": bson.M{"$regex": bson.RegEx{"^" + globalID + `\.`, ""}}}
+	if err := m.collection.Find(qry).All(&organizations); err != nil {
+		return nil, err
+	}
+
+	return organizations, nil
+}
+
+// GetSubOrganizationsMultiple loads all suborganizations of the input organizations
+func (m *Manager) GetSubOrganizationsMultiple(globalIDs []string) ([]Organization, error) {
+	var organizations = make([]Organization, 0, 0)
+
+	regexes := []interface{}{}
+
+	for _, globalID := range globalIDs {
+		regexes = append(regexes, bson.RegEx{"^" + globalID + `\.`, ""})
+
+	}
+
+	var qry = bson.M{"globalid": bson.M{"$in": regexes}}
+
 	if err := m.collection.Find(qry).All(&organizations); err != nil {
 		return nil, err
 	}
@@ -166,6 +210,18 @@ func (m *Manager) GetSubOrganizations(globalID string) ([]Organization, error) {
 func (m *Manager) isDirectOwner(globalID, username string) (isowner bool, err error) {
 	matches, err := m.collection.Find(bson.M{"globalid": globalID, "owners": username}).Count()
 	isowner = (matches > 0)
+	return
+}
+
+// isDirectOwnerOfOrgs takes a list of organizations and a username, and returns a list of organizations where
+// this username is in the list of "owners"
+func (m *Manager) isDirectOwnerOfOrgs(globalIDs []string, username string) (ownedOrgs []string, err error) {
+	var orgs []Organization
+	err = m.collection.Find(bson.M{"globalid": bson.M{"$in": globalIDs}, "owners": username}).Select(bson.M{"globalid": 1}).All(&orgs)
+	ownedOrgs = make([]string, len(orgs))
+	for i, org := range orgs {
+		ownedOrgs[i] = org.Globalid
+	}
 	return
 }
 
@@ -241,6 +297,125 @@ func (m *Manager) IsOwner(globalID, username string) (isowner bool, err error) {
 		}
 	}
 	// If not a direct or inherited owner, iterate through the list of owning organizations
+	var org Organization
+	err = m.collection.Find(bson.M{"globalid": globalID}).Select(bson.M{"orgowners": 1, "includesuborgsof": 1}).One(&org)
+	if err != nil {
+		if mgo.ErrNotFound == err {
+			err = nil
+		}
+		return
+	}
+	excludelist := make(map[string]bool)
+	excludelist[globalID] = true
+
+	// Also get the suborganizations if they have been added
+	var includesuborgs []string
+	for _, owner := range org.OrgOwners {
+		for _, include := range org.IncludeSubOrgsOf {
+			if owner == include {
+				includesuborgs = append(includesuborgs, include)
+			}
+		}
+	}
+	var subOrgs []Organization
+	for _, subOrg := range includesuborgs {
+		subOrganizations, err := m.GetSubOrganizations(subOrg)
+		if err != nil && err != mgo.ErrNotFound {
+			return false, err
+		}
+		subOrgs = append(subOrgs, subOrganizations...)
+	}
+	var orgs []string
+	for _, suborganization := range subOrgs {
+		orgs = append(orgs, suborganization.Globalid)
+	}
+
+	for _, owningOrganization := range append(orgs, org.OrgOwners...) {
+		isowner, err = m.isOwnerOrMember(owningOrganization, username, excludelist)
+		if isowner || err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+// SplitOwnedOrgs removes the organizations of which the user is an owner from the input lists and moves them
+// into a separate list which is returned
+func (m *Manager) SplitOwnedOrgs(globalIDs []string, username string) (ownedOrgs []string, err error) {
+
+	if len(globalIDs) == 0 {
+		return []string{}, nil
+	}
+	// Find all orgs where we are a direct owner
+	ownedOrgs, err = m.isDirectOwnerOfOrgs(globalIDs, username)
+	if err != nil {
+		return
+	}
+
+	// Remove all orgs we already know to be owned by this user
+	for _, ownedOrg := range ownedOrgs {
+		for i, org := range globalIDs {
+			if ownedOrg == org {
+				globalIDs = append(globalIDs[:i], globalIDs[i+1:]...)
+				break
+			}
+		}
+	}
+
+	// Now check all parent orgs
+	// TODO: sort and optimize this loop by manually iterating
+	parentOrgs := []string{}
+	for _, globalID := range globalIDs {
+		parents := findParentOrgs(globalID)
+		for _, parent := range parents {
+			alreadyKnown := false
+			for _, knownParent := range parentOrgs {
+				if parent == knownParent {
+					alreadyKnown = true
+					break
+				}
+			}
+			if !alreadyKnown {
+				parentOrgs = append(parentOrgs, parent)
+			}
+		}
+		// parentOrgs = append(parentOrgs, findParentOrgs(globalID)...)
+	}
+
+	ownedParentOrgs, err := m.SplitOwnedOrgs(parentOrgs, username)
+	if err != nil {
+		return
+	}
+
+	for _, ownedParent := range ownedParentOrgs {
+		for i, globalID := range globalIDs {
+			if strings.HasPrefix(globalID, ownedParent+".") {
+				ownedOrgs = append(ownedOrgs, globalID)
+				globalIDs = append(globalIDs[:i], globalIDs[i+1:]...)
+			}
+		}
+	}
+
+	// If not a direct or inherited owner, iterate through the list of owning organizations
+	// TODO: this can be fixed with a map imo, so we can keep the amount of db calls to a minimum
+	for i, globalID := range globalIDs {
+		var owned bool
+		owned, err = m.orgIsOwned(globalID, username)
+		if err != nil {
+			return
+		}
+		if owned {
+			ownedOrgs = append(ownedOrgs, globalID)
+			globalIDs = append(globalIDs[:i], globalIDs[i+1:]...)
+		}
+	}
+
+	return
+}
+
+// orgIsOwned checks if an organization is owned through organization ownership inclusion
+func (m *Manager) orgIsOwned(globalID, username string) (isowner bool, err error) {
 	var org Organization
 	err = m.collection.Find(bson.M{"globalid": globalID}).Select(bson.M{"orgowners": 1, "includesuborgsof": 1}).One(&org)
 	if err != nil {
@@ -411,17 +586,19 @@ func (m *Manager) AllByUserChain(username string) ([]string, error) {
 		err = nil
 	}
 
-	// Now load all suborganizations to account for owner- and member-heritance
-	var suborganizations []Organization
+	var orgIDs []string
 	for _, org := range userOrgs {
-		orgs, err := m.GetSubOrganizations(org.Globalid)
-		if err != nil {
-			if err != mgo.ErrNotFound {
-				return nil, err
-			}
-			err = nil
+		orgIDs = append(orgIDs, org.Globalid)
+	}
+
+	// Now load all suborganizations to account for owner- and member-heritance
+	// var suborganizations []Organization
+	suborganizations, err := m.GetSubOrganizationsMultiple(orgIDs)
+	if err != nil {
+		if err != mgo.ErrNotFound {
+			return nil, err
 		}
-		suborganizations = append(suborganizations, orgs...)
+		err = nil
 	}
 
 	newOrgsFound := true
@@ -454,52 +631,48 @@ func (m *Manager) AllByUserChain(username string) ([]string, error) {
 	for newOrgsFound {
 
 		// Get the organizations where our currently know organizations are owners or members.
-		for _, org := range orgs {
-			ownedbyorg, err := m.AllByOrg(org)
-			if err != nil {
-				if err != mgo.ErrNotFound {
-					return nil, err
-				}
-				err = nil
+		ownedbyorgs, err := m.AllByOrgs(orgs)
+		if err != nil {
+			if err != mgo.ErrNotFound {
+				return nil, err
 			}
-			for _, obOrg := range ownedbyorg {
-				alreadyFound := false
-				for _, knownOrg := range ownedOrgs {
-					if obOrg.Globalid == knownOrg {
-						alreadyFound = true
-						break
-					}
+			err = nil
+		}
+		for _, obOrg := range ownedbyorgs {
+			alreadyFound := false
+			for _, knownOrg := range ownedOrgs {
+				if obOrg.Globalid == knownOrg {
+					alreadyFound = true
+					break
 				}
-				if !alreadyFound {
-					ownedOrgs = append(ownedOrgs, obOrg.Globalid)
-					orgs = append(orgs, obOrg.Globalid)
-					orgsFoundThisIteration = append(orgsFoundThisIteration, obOrg.Globalid)
-				}
+			}
+			if !alreadyFound {
+				ownedOrgs = append(ownedOrgs, obOrg.Globalid)
+				orgs = append(orgs, obOrg.Globalid)
+				orgsFoundThisIteration = append(orgsFoundThisIteration, obOrg.Globalid)
 			}
 		}
 
 		// Now get the subOrganizations we haven't discovered yet
-		for _, org := range orgsFoundThisIteration {
-			subOrgs, err := m.GetSubOrganizations(org)
-			if err != nil {
-				if err != mgo.ErrNotFound {
-					return nil, err
-				}
-				err = nil
+		subOrgs, err := m.GetSubOrganizationsMultiple(orgs)
+		if err != nil {
+			if err != mgo.ErrNotFound {
+				return nil, err
 			}
-			for _, subOrg := range subOrgs {
-				alreadyFound := false
-				for _, knownOrg := range ownedOrgs {
-					if subOrg.Globalid == knownOrg {
-						alreadyFound = true
-						break
-					}
+			err = nil
+		}
+		for _, subOrg := range subOrgs {
+			alreadyFound := false
+			for _, knownOrg := range ownedOrgs {
+				if subOrg.Globalid == knownOrg {
+					alreadyFound = true
+					break
 				}
-				if !alreadyFound {
-					ownedOrgs = append(ownedOrgs, subOrg.Globalid)
-					orgs = append(orgs, subOrg.Globalid)
-					orgsFoundThisIteration = append(orgsFoundThisIteration, subOrg.Globalid)
-				}
+			}
+			if !alreadyFound {
+				ownedOrgs = append(ownedOrgs, subOrg.Globalid)
+				orgs = append(orgs, subOrg.Globalid)
+				orgsFoundThisIteration = append(orgsFoundThisIteration, subOrg.Globalid)
 			}
 		}
 
@@ -582,6 +755,20 @@ func (m *Manager) AllByOrg(globalID string) ([]Organization, error) {
 	condition := []interface{}{
 		bson.M{"orgmembers": globalID},
 		bson.M{"orgowners": globalID},
+	}
+
+	err := m.collection.Find(bson.M{"$or": condition}).All(&organizations)
+
+	return organizations, err
+}
+
+// AllByOrgs get organizations where at least one organization of those provided is an owner or member
+func (m *Manager) AllByOrgs(globalIDs []string) ([]Organization, error) {
+	var organizations []Organization
+
+	condition := []interface{}{
+		bson.M{"orgmembers": bson.M{"$in": globalIDs}},
+		bson.M{"orgowners": bson.M{"$in": globalIDs}},
 	}
 
 	err := m.collection.Find(bson.M{"$or": condition}).All(&organizations)
@@ -997,4 +1184,13 @@ func (m *DescriptionManager) GetDescription(globalId string) (OrganizationInfoTe
 	var info OrganizationInfoText
 	err := m.collection.Find(bson.M{"globalid": globalId}).One(&info)
 	return info, err
+}
+
+func findParentOrgs(globalID string) []string {
+	parentOrgs := []string{}
+	parts := strings.Split(globalID, ".")
+	for i := 1; i < len(parts); i++ {
+		parentOrgs = append(parentOrgs, strings.Join(parts[:i], "."))
+	}
+	return parentOrgs
 }

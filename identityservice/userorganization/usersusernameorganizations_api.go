@@ -50,16 +50,11 @@ func (api UsersusernameorganizationsAPI) Get(w http.ResponseWriter, r *http.Requ
 		Owner:  []string{},
 	}
 
-	for _, org := range orgs {
-		isOwner, err := orgMgr.IsOwner(org, username)
-		if err != nil {
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		}
-		if isOwner {
-			userOrgs.Owner = append(userOrgs.Owner, org)
-		} else {
-			userOrgs.Member = append(userOrgs.Member, org)
-		}
+	userOrgs.Member = orgs
+	userOrgs.Owner, err = orgMgr.SplitOwnedOrgs(userOrgs.Member, username)
+	if err != nil {
+		log.Error("Failed to sort organizations to owner and member: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 	w.Header().Set("Content-type", "application/json")
 	json.NewEncoder(w).Encode(&userOrgs)
