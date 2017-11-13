@@ -903,6 +903,8 @@ func (service *Service) ForgotPassword(w http.ResponseWriter, request *http.Requ
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
+	// Make field case insensitive
+	values.Login = strings.ToLower(values.Login)
 	userMgr := user.NewManager(request)
 	valMgr := validationdb.NewManager(request)
 	validatedemail, err := valMgr.GetByEmailAddressValidatedEmailAddress(values.Login)
