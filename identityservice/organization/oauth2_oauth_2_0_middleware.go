@@ -7,6 +7,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
+	"github.com/itsyouonline/identityserver/credentials/oauth2"
 	"github.com/itsyouonline/identityserver/db/organization"
 	"github.com/itsyouonline/identityserver/identityservice/security"
 	"github.com/itsyouonline/identityserver/oauthservice"
@@ -65,7 +66,21 @@ func (om *Oauth2oauth_2_0Middleware) Handler(next http.Handler) http.Handler {
 		var globalID string
 
 		accessToken := om.GetAccessToken(r)
-		if accessToken != "" {
+
+		token, err := oauth2.GetValidJWT(r, security.JWTPublicKey)
+		if err != nil {
+			log.Error(err)
+			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+			return
+		}
+		if token != nil {
+			// The token can either be for a user or an organization.
+			// The uncaught second assertion return value ensures a missing value is translated into an empty string
+			username, _ = token.Claims["username"].(string)
+			globalID, _ = token.Claims["globalid"].(string)
+			clientID = token.Claims["azp"].(string)
+			atscopestring = oauth2.GetScopestringFromJWT(token)
+		} else if accessToken != "" {
 			//TODO: cache
 			oauthMgr := oauthservice.NewManager(r)
 			at, err := oauthMgr.GetAccessToken(accessToken)
