@@ -389,9 +389,11 @@ func (m *Manager) SplitOwnedOrgs(globalIDs []string, username string) (ownedOrgs
 	}
 
 	for _, ownedParent := range ownedParentOrgs {
-		for i, globalID := range globalIDs {
-			if strings.HasPrefix(globalID, ownedParent+".") {
-				ownedOrgs = append(ownedOrgs, globalID)
+		// Backward loop so we can slice out the element in the globalIDs list without
+		// affecting the remainder of the elements
+		for i := len(globalIDs) - 1; i >= 0; i-- {
+			if strings.HasPrefix(globalIDs[i], ownedParent+".") {
+				ownedOrgs = append(ownedOrgs, globalIDs[i])
 				globalIDs = append(globalIDs[:i], globalIDs[i+1:]...)
 			}
 		}
