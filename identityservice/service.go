@@ -37,23 +37,17 @@ import (
 type Service struct {
 	smsService                   communication.SMSService
 	emailService                 communication.EmailService
-	mailService                  communication.MailService
 	phonenumberValidationService *validation.IYOPhonenumberValidationService
 	emailaddresValidationService *validation.IYOEmailAddressValidationService
-	addressValidationService     *validation.IYOAddressValidationService
 }
 
 //NewService creates and initializes a Service
-func NewService(smsService communication.SMSService, emailService communication.EmailService,
-	mailService communication.MailService) (service *Service) {
-	service = &Service{smsService: smsService, emailService: emailService, mailService: mailService}
+func NewService(smsService communication.SMSService, emailService communication.EmailService) (service *Service) {
+	service = &Service{smsService: smsService, emailService: emailService}
 	p := &validation.IYOPhonenumberValidationService{SMSService: smsService}
 	service.phonenumberValidationService = p
 	e := &validation.IYOEmailAddressValidationService{EmailService: emailService}
 	service.emailaddresValidationService = e
-	a := &validation.IYOAddressValidationService{MailService: mailService}
-	service.addressValidationService = a
-
 	return
 }
 

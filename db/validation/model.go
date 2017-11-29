@@ -1,10 +1,6 @@
 package validation
 
-import (
-	"time"
-
-	"github.com/itsyouonline/identityserver/db/user"
-)
+import "time"
 
 //ValidatedPhonenumber is a record of a phonenumber for a user and when it is validated
 type ValidatedPhonenumber struct {
@@ -35,19 +31,4 @@ type EmailAddressValidationInformation struct {
 	EmailAddress string
 	Confirmed    bool
 	CreatedAt    time.Time
-}
-
-type ValidatedAddress struct {
-	Username  string
-	Address   user.Address
-	CreatedAt time.Time
-}
-
-type AddressValidationInformation struct {
-	Key       string
-	Secret    string
-	Username  string
-	Address   user.Address
-	Confirmed bool
-	CreatedAt time.Time
 }
