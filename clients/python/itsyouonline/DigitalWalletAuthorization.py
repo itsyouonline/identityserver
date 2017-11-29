@@ -2,6 +2,7 @@
 Auto-generated class for DigitalWalletAuthorization
 """
 from .Label import Label
+from six import string_types
 
 from . import client_support
 
@@ -12,7 +13,7 @@ class DigitalWalletAuthorization(object):
     """
 
     @staticmethod
-    def create(currency, reallabel, requestedlabel):
+    def create(**kwargs):
         """
         :type currency: str
         :type reallabel: Label
@@ -20,54 +21,22 @@ class DigitalWalletAuthorization(object):
         :rtype: DigitalWalletAuthorization
         """
 
-        return DigitalWalletAuthorization(
-            currency=currency,
-            reallabel=reallabel,
-            requestedlabel=requestedlabel,
-        )
+        return DigitalWalletAuthorization(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'DigitalWalletAuthorization'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'currency'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.currency = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'reallabel'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [Label]
-            try:
-                self.reallabel = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'requestedlabel'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [Label]
-            try:
-                self.requestedlabel = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [string_types]
+        self.currency = client_support.set_property('currency', data, data_types, False, [], False, True, class_name)
+        data_types = [Label]
+        self.reallabel = client_support.set_property('reallabel', data, data_types, False, [], False, True, class_name)
+        data_types = [Label]
+        self.requestedlabel = client_support.set_property('requestedlabel', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

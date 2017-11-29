@@ -2,6 +2,7 @@
 Auto-generated class for See
 """
 from .SeeVersion import SeeVersion
+from six import string_types
 
 from . import client_support
 
@@ -12,7 +13,7 @@ class See(object):
     """
 
     @staticmethod
-    def create(globalid, uniqueid, username, versions):
+    def create(**kwargs):
         """
         :type globalid: str
         :type uniqueid: str
@@ -21,66 +22,24 @@ class See(object):
         :rtype: See
         """
 
-        return See(
-            globalid=globalid,
-            uniqueid=uniqueid,
-            username=username,
-            versions=versions,
-        )
+        return See(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'See'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'globalid'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.globalid = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'uniqueid'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.uniqueid = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'username'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.username = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'versions'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [SeeVersion]
-            try:
-                self.versions = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [string_types]
+        self.globalid = client_support.set_property('globalid', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.uniqueid = client_support.set_property('uniqueid', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.username = client_support.set_property('username', data, data_types, False, [], False, True, class_name)
+        data_types = [SeeVersion]
+        self.versions = client_support.set_property('versions', data, data_types, False, [], True, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

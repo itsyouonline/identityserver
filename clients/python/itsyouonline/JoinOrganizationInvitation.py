@@ -4,6 +4,8 @@ Auto-generated class for JoinOrganizationInvitation
 from .EnumJoinOrganizationInvitationMethod import EnumJoinOrganizationInvitationMethod
 from .EnumJoinOrganizationInvitationRole import EnumJoinOrganizationInvitationRole
 from .EnumJoinOrganizationInvitationStatus import EnumJoinOrganizationInvitationStatus
+from datetime import datetime
+from six import string_types
 
 from . import client_support
 
@@ -14,7 +16,7 @@ class JoinOrganizationInvitation(object):
     """
 
     @staticmethod
-    def create(emailaddress, isorganization, method, organization, phonenumber, role, status, user, created=None):
+    def create(**kwargs):
         """
         :type created: datetime
         :type emailaddress: str
@@ -28,124 +30,34 @@ class JoinOrganizationInvitation(object):
         :rtype: JoinOrganizationInvitation
         """
 
-        return JoinOrganizationInvitation(
-            created=created,
-            emailaddress=emailaddress,
-            isorganization=isorganization,
-            method=method,
-            organization=organization,
-            phonenumber=phonenumber,
-            role=role,
-            status=status,
-            user=user,
-        )
+        return JoinOrganizationInvitation(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'JoinOrganizationInvitation'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'created'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [datetime]
-            try:
-                self.created = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-
-        property_name = 'emailaddress'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.emailaddress = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'isorganization'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [bool]
-            try:
-                self.isorganization = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'method'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [EnumJoinOrganizationInvitationMethod]
-            try:
-                self.method = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'organization'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.organization = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'phonenumber'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.phonenumber = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'role'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [EnumJoinOrganizationInvitationRole]
-            try:
-                self.role = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'status'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [EnumJoinOrganizationInvitationStatus]
-            try:
-                self.status = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'user'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.user = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [datetime]
+        self.created = client_support.set_property('created', data, data_types, False, [], False, False, class_name)
+        data_types = [string_types]
+        self.emailaddress = client_support.set_property('emailaddress', data, data_types, False, [], False, True, class_name)
+        data_types = [bool]
+        self.isorganization = client_support.set_property('isorganization', data, data_types, False, [], False, True, class_name)
+        data_types = [EnumJoinOrganizationInvitationMethod]
+        self.method = client_support.set_property('method', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.organization = client_support.set_property('organization', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.phonenumber = client_support.set_property('phonenumber', data, data_types, False, [], False, True, class_name)
+        data_types = [EnumJoinOrganizationInvitationRole]
+        self.role = client_support.set_property('role', data, data_types, False, [], False, True, class_name)
+        data_types = [EnumJoinOrganizationInvitationStatus]
+        self.status = client_support.set_property('status', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.user = client_support.set_property('user', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)
