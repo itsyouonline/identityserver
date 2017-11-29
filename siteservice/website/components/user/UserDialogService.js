@@ -780,6 +780,12 @@
 
             function create(data) {
                 if (Object.keys($scope.dataform.$error).length > 0) {
+                    angular.forEach($scope.dataform.$error, function (field) {
+                        angular.forEach(field, function(errorField){
+                            // Touch all the error fields, so we are sure the error message renders
+                            errorField.$setTouched();
+                        })
+                    });
                     return;
                 }
                 $scope.validationerrors = {};

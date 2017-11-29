@@ -24,7 +24,7 @@ func (om *OAuth2Middleware) GetAccessToken(r *http.Request) string {
 		accessTokenQueryParameter := r.URL.Query().Get("access_token")
 		return accessTokenQueryParameter
 	}
-	if strings.HasPrefix(authorizationHeader, "bearer ") {
+	if strings.HasPrefix(authorizationHeader, "bearer ") || strings.HasPrefix(authorizationHeader, "Bearer ") {
 		return ""
 	}
 	accessToken := strings.TrimSpace(strings.TrimPrefix(authorizationHeader, "token"))
