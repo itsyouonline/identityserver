@@ -195,7 +195,7 @@ func main() {
 		}
 
 		is := identityservice.NewService(smsService, emailService)
-		sc := siteservice.NewService(cookieSecret, smsService, emailService, is, version)
+		sc := siteservice.NewService(cookieSecret, smsService, emailService, is, version, testEnv)
 
 		config := globalconfig.NewManager()
 
