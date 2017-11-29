@@ -1,6 +1,7 @@
 """
 Auto-generated class for RegistryEntry
 """
+from six import string_types
 
 from . import client_support
 
@@ -11,49 +12,27 @@ class RegistryEntry(object):
     """
 
     @staticmethod
-    def create(Key, Value):
+    def create(**kwargs):
         """
         :type Key: str
         :type Value: str
         :rtype: RegistryEntry
         """
 
-        return RegistryEntry(
-            Key=Key,
-            Value=Value,
-        )
+        return RegistryEntry(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'RegistryEntry'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'Key'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.Key = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'Value'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.Value = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [string_types]
+        self.Key = client_support.set_property('Key', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.Value = client_support.set_property('Value', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

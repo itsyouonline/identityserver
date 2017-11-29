@@ -1,6 +1,7 @@
 """
 Auto-generated class for Party
 """
+from six import string_types
 
 from . import client_support
 
@@ -11,49 +12,27 @@ class Party(object):
     """
 
     @staticmethod
-    def create(name, type):
+    def create(**kwargs):
         """
         :type name: str
         :type type: str
         :rtype: Party
         """
 
-        return Party(
-            name=name,
-            type=type,
-        )
+        return Party(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'Party'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'name'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.name = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'type'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.type = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [string_types]
+        self.name = client_support.set_property('name', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.type = client_support.set_property('type', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

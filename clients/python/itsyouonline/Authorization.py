@@ -2,6 +2,7 @@
 Auto-generated class for Authorization
 """
 from .AuthorizationMap import AuthorizationMap
+from six import string_types
 
 from . import client_support
 
@@ -12,7 +13,7 @@ class Authorization(object):
     """
 
     @staticmethod
-    def create(grantedTo, organizations, username, addresses=None, bankaccounts=None, emailaddresses=None, facebook=None, github=None, phonenumbers=None, publicKeys=None):
+    def create(**kwargs):
         """
         :type addresses: list[AuthorizationMap]
         :type bankaccounts: list[AuthorizationMap]
@@ -27,124 +28,36 @@ class Authorization(object):
         :rtype: Authorization
         """
 
-        return Authorization(
-            addresses=addresses,
-            bankaccounts=bankaccounts,
-            emailaddresses=emailaddresses,
-            facebook=facebook,
-            github=github,
-            grantedTo=grantedTo,
-            organizations=organizations,
-            phonenumbers=phonenumbers,
-            publicKeys=publicKeys,
-            username=username,
-        )
+        return Authorization(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'Authorization'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'addresses'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [AuthorizationMap]
-            try:
-                self.addresses = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-
-        property_name = 'bankaccounts'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [AuthorizationMap]
-            try:
-                self.bankaccounts = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-
-        property_name = 'emailaddresses'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [AuthorizationMap]
-            try:
-                self.emailaddresses = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-
-        property_name = 'facebook'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [bool]
-            try:
-                self.facebook = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-
-        property_name = 'github'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [bool]
-            try:
-                self.github = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-
-        property_name = 'grantedTo'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.grantedTo = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'organizations'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.organizations = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'phonenumbers'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [AuthorizationMap]
-            try:
-                self.phonenumbers = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-
-        property_name = 'publicKeys'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [AuthorizationMap]
-            try:
-                self.publicKeys = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-
-        property_name = 'username'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.username = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [AuthorizationMap]
+        self.addresses = client_support.set_property('addresses', data, data_types, False, [], True, False, class_name)
+        data_types = [AuthorizationMap]
+        self.bankaccounts = client_support.set_property('bankaccounts', data, data_types, False, [], True, False, class_name)
+        data_types = [AuthorizationMap]
+        self.emailaddresses = client_support.set_property('emailaddresses', data, data_types, False, [], True, False, class_name)
+        data_types = [bool]
+        self.facebook = client_support.set_property('facebook', data, data_types, False, [], False, False, class_name)
+        data_types = [bool]
+        self.github = client_support.set_property('github', data, data_types, False, [], False, False, class_name)
+        data_types = [string_types]
+        self.grantedTo = client_support.set_property('grantedTo', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.organizations = client_support.set_property('organizations', data, data_types, False, [], True, True, class_name)
+        data_types = [AuthorizationMap]
+        self.phonenumbers = client_support.set_property('phonenumbers', data, data_types, False, [], True, False, class_name)
+        data_types = [AuthorizationMap]
+        self.publicKeys = client_support.set_property('publicKeys', data, data_types, False, [], True, False, class_name)
+        data_types = [string_types]
+        self.username = client_support.set_property('username', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

@@ -2,6 +2,7 @@
 Auto-generated class for PublicKey
 """
 from .Label import Label
+from six import string_types
 
 from . import client_support
 
@@ -12,49 +13,27 @@ class PublicKey(object):
     """
 
     @staticmethod
-    def create(label, publickey):
+    def create(**kwargs):
         """
         :type label: Label
         :type publickey: str
         :rtype: PublicKey
         """
 
-        return PublicKey(
-            label=label,
-            publickey=publickey,
-        )
+        return PublicKey(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'PublicKey'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'label'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [Label]
-            try:
-                self.label = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'publickey'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.publickey = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [Label]
+        self.label = client_support.set_property('label', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.publickey = client_support.set_property('publickey', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

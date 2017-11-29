@@ -11,23 +11,21 @@ class Label(object):
     """
 
     @staticmethod
-    def create():
+    def create(**kwargs):
         """
         :rtype: Label
         """
 
-        return Label(
-        )
+        return Label(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'Label'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
+
+        # set attributes
 
     def __str__(self):
         return self.as_json(indent=4)

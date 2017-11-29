@@ -2,6 +2,7 @@
 Auto-generated class for Organization
 """
 from .RequiredScope import RequiredScope
+from six import string_types
 
 from . import client_support
 
@@ -12,7 +13,7 @@ class Organization(object):
     """
 
     @staticmethod
-    def create(dns, globalid, includes, includesuborgsof, members, orgmembers, orgowners, owners, publicKeys, requiredscopes):
+    def create(**kwargs):
         """
         :type dns: list[str]
         :type globalid: str
@@ -27,138 +28,36 @@ class Organization(object):
         :rtype: Organization
         """
 
-        return Organization(
-            dns=dns,
-            globalid=globalid,
-            includes=includes,
-            includesuborgsof=includesuborgsof,
-            members=members,
-            orgmembers=orgmembers,
-            orgowners=orgowners,
-            owners=owners,
-            publicKeys=publicKeys,
-            requiredscopes=requiredscopes,
-        )
+        return Organization(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'Organization'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'dns'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.dns = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'globalid'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.globalid = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'includes'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.includes = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'includesuborgsof'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.includesuborgsof = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'members'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.members = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'orgmembers'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.orgmembers = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'orgowners'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.orgowners = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'owners'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.owners = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'publicKeys'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.publicKeys = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'requiredscopes'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [RequiredScope]
-            try:
-                self.requiredscopes = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [string_types]
+        self.dns = client_support.set_property('dns', data, data_types, False, [], True, True, class_name)
+        data_types = [string_types]
+        self.globalid = client_support.set_property('globalid', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.includes = client_support.set_property('includes', data, data_types, False, [], True, True, class_name)
+        data_types = [string_types]
+        self.includesuborgsof = client_support.set_property('includesuborgsof', data, data_types, False, [], True, True, class_name)
+        data_types = [string_types]
+        self.members = client_support.set_property('members', data, data_types, False, [], True, True, class_name)
+        data_types = [string_types]
+        self.orgmembers = client_support.set_property('orgmembers', data, data_types, False, [], True, True, class_name)
+        data_types = [string_types]
+        self.orgowners = client_support.set_property('orgowners', data, data_types, False, [], True, True, class_name)
+        data_types = [string_types]
+        self.owners = client_support.set_property('owners', data, data_types, False, [], True, True, class_name)
+        data_types = [string_types]
+        self.publicKeys = client_support.set_property('publicKeys', data, data_types, False, [], True, True, class_name)
+        data_types = [RequiredScope]
+        self.requiredscopes = client_support.set_property('requiredscopes', data, data_types, False, [], True, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

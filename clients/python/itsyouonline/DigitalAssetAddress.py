@@ -2,6 +2,8 @@
 Auto-generated class for DigitalAssetAddress
 """
 from .Label import Label
+from datetime import datetime
+from six import string_types
 
 from . import client_support
 
@@ -12,7 +14,7 @@ class DigitalAssetAddress(object):
     """
 
     @staticmethod
-    def create(address, currencysymbol, expire, label, noexpiration=None):
+    def create(**kwargs):
         """
         :type address: str
         :type currencysymbol: str
@@ -22,76 +24,26 @@ class DigitalAssetAddress(object):
         :rtype: DigitalAssetAddress
         """
 
-        return DigitalAssetAddress(
-            address=address,
-            currencysymbol=currencysymbol,
-            expire=expire,
-            label=label,
-            noexpiration=noexpiration,
-        )
+        return DigitalAssetAddress(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'DigitalAssetAddress'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'address'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.address = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'currencysymbol'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.currencysymbol = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'expire'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [datetime]
-            try:
-                self.expire = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'label'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [Label]
-            try:
-                self.label = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'noexpiration'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [bool]
-            try:
-                self.noexpiration = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
+        # set attributes
+        data_types = [string_types]
+        self.address = client_support.set_property('address', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.currencysymbol = client_support.set_property('currencysymbol', data, data_types, False, [], False, True, class_name)
+        data_types = [datetime]
+        self.expire = client_support.set_property('expire', data, data_types, False, [], False, True, class_name)
+        data_types = [Label]
+        self.label = client_support.set_property('label', data, data_types, False, [], False, True, class_name)
+        data_types = [bool]
+        self.noexpiration = client_support.set_property('noexpiration', data, data_types, False, [], False, False, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

@@ -1,6 +1,8 @@
 """
 Auto-generated class for Signature
 """
+from datetime import datetime
+from six import string_types
 
 from . import client_support
 
@@ -11,7 +13,7 @@ class Signature(object):
     """
 
     @staticmethod
-    def create(date, publicKey, signature, signedBy):
+    def create(**kwargs):
         """
         :type date: datetime
         :type publicKey: str
@@ -20,66 +22,24 @@ class Signature(object):
         :rtype: Signature
         """
 
-        return Signature(
-            date=date,
-            publicKey=publicKey,
-            signature=signature,
-            signedBy=signedBy,
-        )
+        return Signature(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'Signature'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'date'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [datetime]
-            try:
-                self.date = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'publicKey'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.publicKey = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'signature'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.signature = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'signedBy'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.signedBy = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [datetime]
+        self.date = client_support.set_property('date', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.publicKey = client_support.set_property('publicKey', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.signature = client_support.set_property('signature', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.signedBy = client_support.set_property('signedBy', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

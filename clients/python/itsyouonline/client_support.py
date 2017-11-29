@@ -90,6 +90,46 @@ def val_factory(val, datatypes):
                      format(val=val, types=datatypes, excs=exceptions))
 
 
+def set_property(name, data, data_types, has_child_properties,
+                 required_child_properties, is_list, required, class_name):
+    """
+    Set a class property
+    :param name: property name to set
+    :param data: class data
+    :param data_types: the data types this property supports
+    :param has_child_properties: boolean indicating if the property has child properties
+    :param required_child_properties: a list of required child properties
+    :param is_list: boolean indicating if this property is a list
+    :param required: boolean indicating if this property is required or not
+    :param class_name: name of the class this property belongs to
+    :return:
+    """
+    create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
+    required_error = '{cls}: missing required property {prop}'
+    factory_value = None
+    val = data.get(name)
+    if val is not None:
+        try:
+            if is_list:
+                factory_value = list_factory(val, data_types)
+            elif has_child_properties:
+                factory_value = dict_factory(val, data_types)
+            else:
+                factory_value = val_factory(val, data_types)
+        except ValueError as err:
+            raise ValueError(create_error.format(cls=class_name, prop=name, val=val, err=err))
+        else:
+            if required_child_properties:
+                for child in required_child_properties:
+                    if not factory_value.get(child):
+                        child_prop_name = "{parent}.{child}".format(parent=name, child=child)
+                        raise ValueError(required_error.format(cls=class_name, prop=child_prop_name))
+    elif required:
+        raise ValueError(required_error.format(cls=class_name, prop=name))
+
+    return factory_value
+
+
 def to_json(cls, indent=0):
     """
     serialize to JSON

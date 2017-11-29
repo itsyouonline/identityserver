@@ -1,6 +1,7 @@
 """
 Auto-generated class for UpdateOrganizationOrgMemberShipReqBody
 """
+from six import string_types
 
 from . import client_support
 
@@ -11,49 +12,27 @@ class UpdateOrganizationOrgMemberShipReqBody(object):
     """
 
     @staticmethod
-    def create(org, role):
+    def create(**kwargs):
         """
         :type org: str
         :type role: str
         :rtype: UpdateOrganizationOrgMemberShipReqBody
         """
 
-        return UpdateOrganizationOrgMemberShipReqBody(
-            org=org,
-            role=role,
-        )
+        return UpdateOrganizationOrgMemberShipReqBody(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'UpdateOrganizationOrgMemberShipReqBody'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'org'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.org = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'role'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.role = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [string_types]
+        self.org = client_support.set_property('org', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.role = client_support.set_property('role', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

@@ -3,6 +3,8 @@ Auto-generated class for Contract
 """
 from .Party import Party
 from .Signature import Signature
+from datetime import datetime
+from six import string_types
 
 from . import client_support
 
@@ -13,7 +15,7 @@ class Contract(object):
     """
 
     @staticmethod
-    def create(content, contractId, contractType, expires, parties, signatures, extends=None, invalidates=None):
+    def create(**kwargs):
         """
         :type content: str
         :type contractId: str
@@ -26,110 +28,32 @@ class Contract(object):
         :rtype: Contract
         """
 
-        return Contract(
-            content=content,
-            contractId=contractId,
-            contractType=contractType,
-            expires=expires,
-            extends=extends,
-            invalidates=invalidates,
-            parties=parties,
-            signatures=signatures,
-        )
+        return Contract(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
         class_name = 'Contract'
-        create_error = '{cls}: unable to create {prop} from value: {val}: {err}'
-        required_error = '{cls}: missing required property {prop}'
-
         data = json or kwargs
 
-        property_name = 'content'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.content = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'contractId'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.contractId = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'contractType'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.contractType = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'expires'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [datetime]
-            try:
-                self.expires = client_support.val_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'extends'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.extends = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-
-        property_name = 'invalidates'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [str]
-            try:
-                self.invalidates = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-
-        property_name = 'parties'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [Party]
-            try:
-                self.parties = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
-
-        property_name = 'signatures'
-        val = data.get(property_name)
-        if val is not None:
-            datatypes = [Signature]
-            try:
-                self.signatures = client_support.list_factory(val, datatypes)
-            except ValueError as err:
-                raise ValueError(create_error.format(cls=class_name, prop=property_name, val=val, err=err))
-        else:
-            raise ValueError(required_error.format(cls=class_name, prop=property_name))
+        # set attributes
+        data_types = [string_types]
+        self.content = client_support.set_property('content', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.contractId = client_support.set_property('contractId', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.contractType = client_support.set_property('contractType', data, data_types, False, [], False, True, class_name)
+        data_types = [datetime]
+        self.expires = client_support.set_property('expires', data, data_types, False, [], False, True, class_name)
+        data_types = [string_types]
+        self.extends = client_support.set_property('extends', data, data_types, False, [], True, False, class_name)
+        data_types = [string_types]
+        self.invalidates = client_support.set_property('invalidates', data, data_types, False, [], True, False, class_name)
+        data_types = [Party]
+        self.parties = client_support.set_property('parties', data, data_types, False, [], True, True, class_name)
+        data_types = [Signature]
+        self.signatures = client_support.set_property('signatures', data, data_types, False, [], True, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)
