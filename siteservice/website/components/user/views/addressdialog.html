@@ -20,29 +20,47 @@
                             {{label | translate}}</md-option>
                         <md-option ng-value="::originalLabel" ng-if="::isCustomlabel(originalLabel)">{{originalLabel}}</md-option>
                     </md-select>
-                </md-input-container>
+                    <div ng-messages="dataform.labelinput.$error">
+                        <div ng-message="required" translate='required_field'>This field is required</div>
+                    </div>
+                </md-input-container>              
                 <div layout="column" layout-gt-sm="row">
                     <md-input-container flex>
                         <label translate='user.views.addressdialog.street'>Street</label>
                         <input ng-model="data.street" required type="text" maxlength="50" name="street">
+                        <div ng-messages="dataform.street.$error">
+                            <div ng-message="required" translate='required_field'>This field is required</div>
+                        </div>
                     </md-input-container>
                     <md-input-container>
                         <label translate='user.views.addressdialog.number'>Nr</label>
                         <input ng-model="data.nr" required type="text" maxlength="10" name="nr">
+                        <div ng-messages="dataform.nr.$error">
+                            <div ng-message="required" translate='required_field'>This field is required</div>
+                        </div>
                     </md-input-container>
                 </div>
                 <div layout="column" layout-gt-sm="row">
                     <md-input-container>
                         <label translate='user.views.addressdialog.postalcode'>Postal code</label>
                         <input ng-model="data.postalcode" required type="text" maxlength="20" name="postalcode">
+                        <div ng-messages="dataform.postalcode.$error">
+                            <div ng-message="required" translate='required_field'>This field is required</div>
+                        </div>
                     </md-input-container>
                     <md-input-container>
                         <label translate='user.views.addressdialog.city'>City</label>
                         <input ng-model="data.city" required type="text" maxlength="30" name="city">
+                        <div ng-messages="dataform.city.$error">
+                            <div ng-message="required" translate='required_field'>This field is required</div>
+                        </div>
                     </md-input-container>
                     <md-input-container>
                         <label translate='user.views.addressdialog.country'>Country</label>
-                        <input ng-model="data.country" required type="text" maxlength="40" name="coumtry">
+                        <input ng-model="data.country" required type="text" maxlength="40" name="country">
+                        <div ng-messages="dataform.country.$error">
+                            <div ng-message="required" translate='required_field'>This field is required</div>
+                        </div>
                     </md-input-container>
                 </div>
                 <md-input-container>
@@ -59,10 +77,10 @@
             <md-button ng-click="cancel()" translate='cancel'>
                 Cancel
             </md-button>
-            <md-button class="md-primary" ng-click="create(data)" ng-if="::!originalLabel" translate='add'>
+            <md-button class="md-primary" ng-click="create(data)" ng-if="::!originalLabel" translate='add' type='submit'>
                 Add
             </md-button>
-            <md-button class="md-primary" ng-click="update(originalLabel, data)" ng-if="::originalLabel" translate='save'>
+            <md-button class="md-primary" ng-click="update(originalLabel, data)" ng-if="::originalLabel" translate='save' type='submit'>
                 Save
             </md-button>
         </md-dialog-actions>
