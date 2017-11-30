@@ -342,10 +342,13 @@ func (m *Manager) IsOwner(globalID, username string) (isowner bool, err error) {
 
 // SplitOwnedOrgs removes the organizations of which the user is an owner from the input lists and moves them
 // into a separate list which is returned
-func (m *Manager) SplitOwnedOrgs(globalIDs []string, username string) (ownedOrgs []string, err error) {
+func (m *Manager) SplitOwnedOrgs(globalIDs []string, username string) (ownedOrgs []string, memberOrgs []string, err error) {
+
+	// Backward loops here are so we can slice out the element in the globalIDs list without
+	// affecting the remainder of the elements
 
 	if len(globalIDs) == 0 {
-		return []string{}, nil
+		return []string{}, []string{}, nil
 	}
 	// Find all orgs where we are a direct owner
 	ownedOrgs, err = m.isDirectOwnerOfOrgs(globalIDs, username)
@@ -355,8 +358,8 @@ func (m *Manager) SplitOwnedOrgs(globalIDs []string, username string) (ownedOrgs
 
 	// Remove all orgs we already know to be owned by this user
 	for _, ownedOrg := range ownedOrgs {
-		for i, org := range globalIDs {
-			if ownedOrg == org {
+		for i := len(globalIDs) - 1; i >= 0; i-- {
+			if ownedOrg == globalIDs[i] {
 				globalIDs = append(globalIDs[:i], globalIDs[i+1:]...)
 				break
 			}
@@ -380,17 +383,14 @@ func (m *Manager) SplitOwnedOrgs(globalIDs []string, username string) (ownedOrgs
 				parentOrgs = append(parentOrgs, parent)
 			}
 		}
-		// parentOrgs = append(parentOrgs, findParentOrgs(globalID)...)
 	}
 
-	ownedParentOrgs, err := m.SplitOwnedOrgs(parentOrgs, username)
+	ownedParentOrgs, parentOrgs, err := m.SplitOwnedOrgs(parentOrgs, username)
 	if err != nil {
 		return
 	}
 
 	for _, ownedParent := range ownedParentOrgs {
-		// Backward loop so we can slice out the element in the globalIDs list without
-		// affecting the remainder of the elements
 		for i := len(globalIDs) - 1; i >= 0; i-- {
 			if strings.HasPrefix(globalIDs[i], ownedParent+".") {
 				ownedOrgs = append(ownedOrgs, globalIDs[i])
@@ -401,17 +401,18 @@ func (m *Manager) SplitOwnedOrgs(globalIDs []string, username string) (ownedOrgs
 
 	// If not a direct or inherited owner, iterate through the list of owning organizations
 	// TODO: this can be fixed with a map imo, so we can keep the amount of db calls to a minimum
-	for i, globalID := range globalIDs {
+	for i := len(globalIDs) - 1; i >= 0; i-- {
 		var owned bool
-		owned, err = m.orgIsOwned(globalID, username)
+		owned, err = m.orgIsOwned(globalIDs[i], username)
 		if err != nil {
 			return
 		}
 		if owned {
-			ownedOrgs = append(ownedOrgs, globalID)
+			ownedOrgs = append(ownedOrgs, globalIDs[i])
 			globalIDs = append(globalIDs[:i], globalIDs[i+1:]...)
 		}
 	}
+	memberOrgs = globalIDs
 
 	return
 }

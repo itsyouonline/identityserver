@@ -51,7 +51,7 @@ func (api UsersusernameorganizationsAPI) Get(w http.ResponseWriter, r *http.Requ
 	}
 
 	userOrgs.Member = orgs
-	userOrgs.Owner, err = orgMgr.SplitOwnedOrgs(userOrgs.Member, username)
+	userOrgs.Owner, userOrgs.Member, err = orgMgr.SplitOwnedOrgs(userOrgs.Member, username)
 	if err != nil {
 		log.Error("Failed to sort organizations to owner and member: ", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
