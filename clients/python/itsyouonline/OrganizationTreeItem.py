@@ -1,7 +1,6 @@
 """
 Auto-generated class for OrganizationTreeItem
 """
-from .OrganizationTreeItem import OrganizationTreeItem
 from six import string_types
 
 from . import client_support
