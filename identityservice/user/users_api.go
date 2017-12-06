@@ -501,6 +501,7 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 			ValidatedPhonenumbers:   []user.AuthorizationMap{},
 			PublicKeys:              []user.AuthorizationMap{},
 			Avatars:                 []user.AuthorizationMap{},
+			Organizations:           []string{},
 		}
 		for _, address := range userobj.Addresses {
 			authorization.Addresses = append(authorization.Addresses, user.AuthorizationMap{RequestedLabel: address.Label, RealLabel: address.Label})
@@ -530,6 +531,13 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 		for _, a := range userobj.Avatars {
 			authorization.Avatars = append(authorization.Avatars, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
 		}
+		userOrgs, err := organizationDb.NewManager(r).AllByUserChain(username)
+		if handleServerError(w, "Getting user organizations", err) {
+			return
+		}
+		for _, a := range userOrgs {
+			authorization.Organizations = append(authorization.Organizations, a)
+		}
 
 	}
 	if authorization == nil {
@@ -551,8 +559,9 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 		OwnerOf: user.OwnerOf{
 			EmailAddresses: []string{},
 		},
-		PublicKeys: []user.PublicKey{},
-		Avatars:    []user.Avatar{},
+		PublicKeys:    []user.PublicKey{},
+		Avatars:       []user.Avatar{},
+		Organizations: []string{},
 	}
 
 	if authorization.Name {
@@ -669,6 +678,10 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 				log.Debug(err)
 			}
 		}
+	}
+
+	if authorization.Organizations != nil {
+		respBody.Organizations = authorization.Organizations
 	}
 
 	valMgr := validationdb.NewManager(r)
