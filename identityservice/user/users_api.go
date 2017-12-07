@@ -19,6 +19,7 @@ import (
 	"github.com/itsyouonline/identityserver/credentials/totp"
 	"github.com/itsyouonline/identityserver/db"
 	contractdb "github.com/itsyouonline/identityserver/db/contract"
+	"github.com/itsyouonline/identityserver/db/identifier"
 	"github.com/itsyouonline/identityserver/db/keystore"
 	organizationDb "github.com/itsyouonline/identityserver/db/organization"
 	"github.com/itsyouonline/identityserver/db/registry"
@@ -39,9 +40,12 @@ import (
 // label constants containing the reserved labels for avatars
 var reservedAvatarLabels = []string{"facebook", "github"}
 
-const maxAvatarFileSize = 100 << 10 // 100kb
-const maxAvatarAmount = 5
-const avatarLink = "https://%v/api/users/avatar/img/%v"
+const (
+	maxAvatarFileSize       = 100 << 10 // 100kb
+	maxAvatarAmount         = 5
+	avatarLink              = "https://%v/api/users/avatar/img/%v"
+	maxIDGenerationAttempts = 5
+)
 
 //UsersAPI is the actual implementation of the /users api
 type UsersAPI struct {
@@ -2963,6 +2967,131 @@ func (api UsersAPI) UpdateAvatarLink(w http.ResponseWriter, r *http.Request) {
 
 	replaceAvatar(w, r, oldAvatar, newAvatar, username, userMgr)
 
+}
+
+// ListIdentifiers is the handler for GET /users/{username}/identifiers
+// Lists the identifiers a party has generated for a user
+func (api UsersAPI) ListIdentifiers(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	azp, _ := context.Get(r, "client_id").(string)
+
+	mgr := identifier.NewManager(r)
+	idObj, err := mgr.GetByUsernameAndAZP(username, azp)
+	if err != nil && !db.IsNotFound(err) {
+		handleServerError(w, "listing user identifiers", err)
+		return
+	}
+	// If nothing is found we have no identifiers yet. So just create and return a template
+	// with an empty identifier list
+	if idObj == nil {
+		idObj = &identifier.Identifier{
+			Username: username,
+			Azp:      azp,
+			IDs:      []string{},
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(idObj)
+}
+
+// GenerateIdentifier is the handler for POST /users/{username}/identifiers
+// Generate a new identifier for a user and authorized party
+func (api UsersAPI) GenerateIdentifier(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	azp, _ := context.Get(r, "client_id").(string)
+
+	mgr := identifier.NewManager(r)
+
+	// might have an id collision, retry at most maxIDGenerationAttempts time
+	var err error
+	var id string
+	for attempts := 0; attempts < maxIDGenerationAttempts; attempts++ {
+		// Generate id
+		id, err = tools.GenerateRandomString()
+		if handleServerError(w, "generating identifier", err) {
+			return
+		}
+		err = mgr.UpsertIdentifier(username, azp, id)
+		if err != nil && err != identifier.ErrIDLimitReached && !db.IsDup(err) {
+			handleServerError(w, "saving identifier", err)
+			return
+		}
+		// If the user has too many ids report it
+		if err == identifier.ErrIDLimitReached {
+			// Max amount of ids reached
+			log.Debugf("Max id treshold reached for %s - %s", username, azp)
+			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+			return
+		}
+
+		// If we got ourselves a dup lets retry
+		if db.IsDup(err) {
+			continue
+		}
+
+		break
+	}
+
+	// If there is still an error, we have issues
+	if handleServerError(w, "saving new id after multiple tries", err) {
+		return
+	}
+
+	// If we manage to get here, all is good an the new id has been saved
+
+	// Load ids again
+	idObj, err := mgr.GetByUsernameAndAZP(username, azp)
+	if err != nil && !db.IsNotFound(err) {
+		handleServerError(w, "listing user identifiers", err)
+		return
+	}
+
+	// Only keep the latest id generated
+	idObj.IDs = idObj.IDs[len(idObj.IDs)-1 : len(idObj.IDs)]
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(idObj)
+}
+
+// LookupIdentifier is the handler for GET /users/{username}/identifiers/{identifier}
+// Lookup the username behind an indentifier
+func (api UsersAPI) LookupIdentifier(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["identifier"]
+	azp, _ := context.Get(r, "client_id").(string)
+
+	mgr := identifier.NewManager(r)
+	// Get the identifier object for the id and azp
+	idObj, err := mgr.GetByIDAndAZP(id, azp)
+	if err != nil && !db.IsNotFound(err) {
+		handleServerError(w, "listing user identifiers", err)
+		return
+	}
+
+	// Report if we didn't find anything
+	if db.IsNotFound(err) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	// If the identifier belongs to another azp report that we didn't find something for this user either
+	if idObj.Azp != azp {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	// Only reveal this id in the response object
+	for i, sid := range idObj.IDs {
+		if sid == id {
+			idObj.IDs = idObj.IDs[i : i+1]
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(idObj)
 }
 
 // validateAvatarUpdateLabels validates old and new avatar labels and returns a
