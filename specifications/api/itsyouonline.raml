@@ -575,6 +575,13 @@ types:
         keystore_label: string
         signature: string
 
+  IyoID:
+    description: Mapping between an Iyo ID, username and azp
+    properties:
+      username: string
+      iyoids: string[]
+      azp: string
+
 securedBy: [ oauth_2_0 ]
 /users:
   post:
@@ -1564,6 +1571,40 @@ securedBy: [ oauth_2_0 ]
                   type: SeeView
             404:
               description: Not found
+
+  /{username}/identifiers:
+    get:
+      displayName: ListIyoIds
+      description: List all generated iyo ids generated for a user by a party
+      responses: 
+        200:
+          body:
+            application/json:
+              type: IyoID
+
+    post:
+      displayName: GenerateIyoID
+      description: Generate a new iyo id for this user
+      responses: 
+        201:
+          body:
+            application/json:
+              type: IyoID
+        409:
+          description: Max amount of iyo ids reached for this user - azp relation
+
+  /identifiers/{identifier}:
+    get:
+      displayName: LookupIyoID
+      description: Lookup the username for an iyo id
+      repsonses: 
+        200:
+          body:
+            application/json:
+              type: IyoID
+        404:
+          descripton: The iyo id is not found, or this azp does not have access to look it up
+
 
 /organizations:
   post:

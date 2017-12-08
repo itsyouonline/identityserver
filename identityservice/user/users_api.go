@@ -2969,9 +2969,9 @@ func (api UsersAPI) UpdateAvatarLink(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// ListIdentifiers is the handler for GET /users/{username}/identifiers
-// Lists the identifiers a party has generated for a user
-func (api UsersAPI) ListIdentifiers(w http.ResponseWriter, r *http.Request) {
+// ListIyoIDs is the handler for GET /users/{username}/identifiers
+// Lists the iyo ids a party has generated for a user
+func (api UsersAPI) ListIyoIDs(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	azp, _ := context.Get(r, "client_id").(string)
 
@@ -2981,8 +2981,8 @@ func (api UsersAPI) ListIdentifiers(w http.ResponseWriter, r *http.Request) {
 		handleServerError(w, "listing user iyoids", err)
 		return
 	}
-	// If nothing is found we have no identifiers yet. So just create and return a template
-	// with an empty identifier list
+	// If nothing is found we have no iyoids yet. So just create and return a template
+	// with an empty iyo ids list
 	if idObj == nil {
 		idObj = &iyoid.Identifier{
 			Username: username,
@@ -2996,9 +2996,9 @@ func (api UsersAPI) ListIdentifiers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(idObj)
 }
 
-// GenerateIdentifier is the handler for POST /users/{username}/identifiers
-// Generate a new identifier for a user and authorized party
-func (api UsersAPI) GenerateIdentifier(w http.ResponseWriter, r *http.Request) {
+// GenerateIyoID is the handler for POST /users/{username}/identifiers
+// Generate a new iyo id for a user and authorized party
+func (api UsersAPI) GenerateIyoID(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	azp, _ := context.Get(r, "client_id").(string)
 
@@ -3056,9 +3056,9 @@ func (api UsersAPI) GenerateIdentifier(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(idObj)
 }
 
-// LookupIdentifier is the handler for GET /users/{username}/identifiers/{identifier}
-// Lookup the username behind an indentifier
-func (api UsersAPI) LookupIdentifier(w http.ResponseWriter, r *http.Request) {
+// LookupIyoID is the handler for GET /users/identifiers/{identifier}
+// Lookup the username behind an iyo id
+func (api UsersAPI) LookupIyoID(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["identifier"]
 	azp, _ := context.Get(r, "client_id").(string)
 

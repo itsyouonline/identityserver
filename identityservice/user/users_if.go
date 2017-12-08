@@ -191,15 +191,15 @@ type UsersInterface interface { // Post is the handler for POST /users
 	// UpdateAvatarLink is the handler for PUT /users/{username}/avatar/{label}
 	// Update the avatar and possibly the link to the avatar
 	UpdateAvatarLink(http.ResponseWriter, *http.Request)
-	// ListIdentifiers is the handler for GET /users/{username}/identifiers
-	// Lists the identifiers a party has generated for a user
-	ListIdentifiers(http.ResponseWriter, *http.Request)
-	// GenerateIdentifier is the handler for POST /users/{username}/identifiers
-	// Generate a new identifier for a user and authorized party
-	GenerateIdentifier(http.ResponseWriter, *http.Request)
-	// LookupIdentifier is the handler for GET /users/{username}/identifiers/{identifier}
-	// Lookup the username behind an indentifier
-	LookupIdentifier(http.ResponseWriter, *http.Request)
+	// ListIyoIds is the handler for GET /users/{username}/identifiers
+	// Lists the iyo ids a party has generated for a user
+	ListIyoIDs(http.ResponseWriter, *http.Request)
+	// GenerateIyoID is the handler for POST /users/{username}/identifiers
+	// Generate a new iyo id for a user and authorized party
+	GenerateIyoID(http.ResponseWriter, *http.Request)
+	// LookupIyoID is the handler for GET /users/{username}/identifiers/{identifier}
+	// Lookup the username behind an iyo id
+	LookupIyoID(http.ResponseWriter, *http.Request)
 }
 
 // UsersInterfaceRoutes is routing for /users root endpoint
@@ -279,7 +279,7 @@ func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
 	r.Handle("/users/{username}/avatar/{label}", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.DeleteAvatar))).Methods("DELETE")
 	r.Handle("/users/{username}/avatar/{label}/to/{newlabel}", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.UpdateAvatarFile))).Methods("PUT")
 	r.Handle("/users/{username}/avatar/{label}", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.UpdateAvatarLink))).Methods("PUT")
-	r.Handle("/users/{username}/identifiers", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin", "user:info"}).Handler).Then(http.HandlerFunc(i.ListIdentifiers))).Methods("GET")
-	r.Handle("/users/{username}/identifiers", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin", "user:info"}).Handler).Then(http.HandlerFunc(i.GenerateIdentifier))).Methods("POST")
-	r.Handle("/users/identifiers/{identifier}", alice.New(newClientIDMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.LookupIdentifier))).Methods("GET")
+	r.Handle("/users/{username}/identifiers", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin", "user:info"}).Handler).Then(http.HandlerFunc(i.ListIyoIDs))).Methods("GET")
+	r.Handle("/users/{username}/identifiers", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin", "user:info"}).Handler).Then(http.HandlerFunc(i.GenerateIyoID))).Methods("POST")
+	r.Handle("/users/identifiers/{identifier}", alice.New(newClientIDMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.LookupIyoID))).Methods("GET")
 }
