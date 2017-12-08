@@ -1,4 +1,4 @@
-# GUID feature
+# IYO ID feature
 
 ## Description
 
@@ -30,27 +30,28 @@ Info is stored in the database in a separate collection with the following field
 (naming subject to change):
 
   - `username`: The username of the person this identifier will representing
-  - `grantedTo`: The username or globalid of the party requesting this identifier.
+  - `azp`: The username or globalid of the party requesting this identifier.
     Only this party can use this identifier.
-  - `identifier`: The generated random identifier for the user
+  - `iyoids`: A list with all of the generated identifiers for the above username and azp
 
 ## Endpoints
 
-1. `GET /users/{username}/generateidentifier`
+1. `POST /users/{username}/identifiers`
   - Generate a new identifier.
-  - Use the client_id from the request as set by the middleware as the grantedTo party
+  - Use the client_id from the request as set by the middleware as the azp
   - Save the user identifier in the db and return only this id in the response body
-  - There is a limit to the max amount of identifiers a user-azp relation can have
+  - There is a limit to the max amount of identifiers a user-azp relation can have - currently 25
 
-2. `GET /users/{username}/listidentifiers`
+2. `GET /users/{username}/identifiers`
   - List all generated identifiers for this party
   - Does not generate a new identifier itself
 
-3. `GET /users/identifier/lookup?id={identifier}`
+3. `GET /users/identifier/{identifier}`
   - Lookup the username behind an identifier;
   - Only if the client_id from the request matches the one saved in the db
-  - If the id is not found, also return a `403` (this party is not authorized to look up this identifier)
-  - Return username as json in response body
+  - If the id is not found, or the id does not belong to this azp, return `404` 
+(not found for user - azp releation)
+
 
 ## Additional work
 
@@ -84,9 +85,3 @@ so that it can be reused by the endpoints which expect a json format.
   user client credentials jwt or access token, and in this case take the username from the jwt. But this
   feels like building in code dependency and loss of separation again.
 
-## Further remarks:
-
-- Find a good limit to the amount of generated identifiers:
-  Although a limit should be installed to prevent malicious parties from filling the
-  database with identifiers, most blockchain related services will require a large amount
-  of identifiers to maintain full transparency and avoid all data mining.
