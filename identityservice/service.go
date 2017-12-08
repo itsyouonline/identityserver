@@ -9,7 +9,7 @@ import (
 	"github.com/itsyouonline/identityserver/db"
 	companydb "github.com/itsyouonline/identityserver/db/company"
 	contractdb "github.com/itsyouonline/identityserver/db/contract"
-	"github.com/itsyouonline/identityserver/db/identifier"
+	"github.com/itsyouonline/identityserver/db/iyoid"
 	"github.com/itsyouonline/identityserver/db/keystore"
 	organizationdb "github.com/itsyouonline/identityserver/db/organization"
 	"github.com/itsyouonline/identityserver/db/see"
@@ -59,7 +59,7 @@ func (service *Service) AddRoutes(router *mux.Router) {
 	userdb.InitModels()
 	totp.InitModels()
 	see.InitModels()
-	identifier.InitModels()
+	iyoid.InitModels()
 
 	// Company API
 	company.CompaniesInterfaceRoutes(router, company.CompaniesAPI{})

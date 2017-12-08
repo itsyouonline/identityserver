@@ -19,7 +19,7 @@ import (
 	"github.com/itsyouonline/identityserver/credentials/totp"
 	"github.com/itsyouonline/identityserver/db"
 	contractdb "github.com/itsyouonline/identityserver/db/contract"
-	"github.com/itsyouonline/identityserver/db/identifier"
+	"github.com/itsyouonline/identityserver/db/iyoid"
 	"github.com/itsyouonline/identityserver/db/keystore"
 	organizationDb "github.com/itsyouonline/identityserver/db/organization"
 	"github.com/itsyouonline/identityserver/db/registry"
@@ -2975,19 +2975,19 @@ func (api UsersAPI) ListIdentifiers(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	azp, _ := context.Get(r, "client_id").(string)
 
-	mgr := identifier.NewManager(r)
+	mgr := iyoid.NewManager(r)
 	idObj, err := mgr.GetByUsernameAndAZP(username, azp)
 	if err != nil && !db.IsNotFound(err) {
-		handleServerError(w, "listing user identifiers", err)
+		handleServerError(w, "listing user iyoids", err)
 		return
 	}
 	// If nothing is found we have no identifiers yet. So just create and return a template
 	// with an empty identifier list
 	if idObj == nil {
-		idObj = &identifier.Identifier{
+		idObj = &iyoid.Identifier{
 			Username: username,
 			Azp:      azp,
-			IDs:      []string{},
+			IyoIDs:   []string{},
 		}
 	}
 
@@ -3002,7 +3002,7 @@ func (api UsersAPI) GenerateIdentifier(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	azp, _ := context.Get(r, "client_id").(string)
 
-	mgr := identifier.NewManager(r)
+	mgr := iyoid.NewManager(r)
 
 	// might have an id collision, retry at most maxIDGenerationAttempts time
 	var err error
@@ -3010,18 +3010,18 @@ func (api UsersAPI) GenerateIdentifier(w http.ResponseWriter, r *http.Request) {
 	for attempts := 0; attempts < maxIDGenerationAttempts; attempts++ {
 		// Generate id
 		id, err = tools.GenerateRandomString()
-		if handleServerError(w, "generating identifier", err) {
+		if handleServerError(w, "generating iyoid", err) {
 			return
 		}
 		err = mgr.UpsertIdentifier(username, azp, id)
-		if err != nil && err != identifier.ErrIDLimitReached && !db.IsDup(err) {
-			handleServerError(w, "saving identifier", err)
+		if err != nil && err != iyoid.ErrIDLimitReached && !db.IsDup(err) {
+			handleServerError(w, "saving iyoid", err)
 			return
 		}
-		// If the user has too many ids report it
-		if err == identifier.ErrIDLimitReached {
-			// Max amount of ids reached
-			log.Debugf("Max id treshold reached for %s - %s", username, azp)
+		// If the user has too many iyoids report it
+		if err == iyoid.ErrIDLimitReached {
+			// Max amount of iyoids reached
+			log.Debugf("Max iyoid treshold reached for %s - %s", username, azp)
 			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
 			return
 		}
@@ -3044,12 +3044,12 @@ func (api UsersAPI) GenerateIdentifier(w http.ResponseWriter, r *http.Request) {
 	// Load ids again
 	idObj, err := mgr.GetByUsernameAndAZP(username, azp)
 	if err != nil && !db.IsNotFound(err) {
-		handleServerError(w, "listing user identifiers", err)
+		handleServerError(w, "listing user iyo-ids", err)
 		return
 	}
 
 	// Only keep the latest id generated
-	idObj.IDs = idObj.IDs[len(idObj.IDs)-1 : len(idObj.IDs)]
+	idObj.IyoIDs = idObj.IyoIDs[len(idObj.IyoIDs)-1 : len(idObj.IyoIDs)]
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -3062,11 +3062,11 @@ func (api UsersAPI) LookupIdentifier(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["identifier"]
 	azp, _ := context.Get(r, "client_id").(string)
 
-	mgr := identifier.NewManager(r)
+	mgr := iyoid.NewManager(r)
 	// Get the identifier object for the id and azp
 	idObj, err := mgr.GetByIDAndAZP(id, azp)
 	if err != nil && !db.IsNotFound(err) {
-		handleServerError(w, "listing user identifiers", err)
+		handleServerError(w, "listing user iyoids", err)
 		return
 	}
 
@@ -3083,9 +3083,9 @@ func (api UsersAPI) LookupIdentifier(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Only reveal this id in the response object
-	for i, sid := range idObj.IDs {
+	for i, sid := range idObj.IyoIDs {
 		if sid == id {
-			idObj.IDs = idObj.IDs[i : i+1]
+			idObj.IyoIDs = idObj.IyoIDs[i : i+1]
 		}
 	}
 

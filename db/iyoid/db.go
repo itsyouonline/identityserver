@@ -1,4 +1,4 @@
-package identifier
+package iyoid
 
 import (
 	"errors"
@@ -10,13 +10,13 @@ import (
 )
 
 const (
-	mongoIdentifierCollectionName = "identifiers"
+	mongoIdentifierCollectionName = "iyoids"
 	maxIdentifiers                = 25
 )
 
 var (
 	// ErrIDLimitReached indicates that the max amount of ids has been reached
-	ErrIDLimitReached = errors.New("Max amount of identifiers reached for this username and azp")
+	ErrIDLimitReached = errors.New("Max amount of iyoids reached for this username and azp")
 )
 
 //InitModels initialize models in mongo, if required.
@@ -29,14 +29,14 @@ func InitModels() {
 	db.EnsureIndex(mongoIdentifierCollectionName, index)
 
 	index = mgo.Index{
-		Key:    []string{"ids"},
+		Key:    []string{"iyoids"},
 		Unique: true,
 	}
 
 	db.EnsureIndex(mongoIdentifierCollectionName, index)
 
 	index = mgo.Index{
-		Key:    []string{"ids", "azp"},
+		Key:    []string{"iyoids", "azp"},
 		Unique: true,
 	}
 
@@ -60,18 +60,18 @@ func (m *Manager) getIdentifierCollection() *mgo.Collection {
 	return db.GetCollection(m.session, mongoIdentifierCollectionName)
 }
 
-// GetByIDAndAZP gets an identifier by ID.
-func (m *Manager) GetByIDAndAZP(id, azp string) (*Identifier, error) {
+// GetByIDAndAZP gets an Identifier object by IyoID.
+func (m *Manager) GetByIDAndAZP(iyoid, azp string) (*Identifier, error) {
 	var idObj Identifier
 
-	if err := m.getIdentifierCollection().Find(bson.M{"ids": id, "azp": azp}).One(&idObj); err != nil {
+	if err := m.getIdentifierCollection().Find(bson.M{"iyoids": iyoid, "azp": azp}).One(&idObj); err != nil {
 		return nil, err
 	}
 
 	return &idObj, nil
 }
 
-// GetByUsernameAndAZP returns the identifier object for this username and azp combo
+// GetByUsernameAndAZP returns the Identifier object for this username and azp combo
 func (m *Manager) GetByUsernameAndAZP(username, azp string) (*Identifier, error) {
 	var idObj Identifier
 
@@ -82,9 +82,9 @@ func (m *Manager) GetByUsernameAndAZP(username, azp string) (*Identifier, error)
 	return &idObj, nil
 }
 
-// UpsertIdentifier adds a new identifier to a mapping or creates a new mapping
-func (m *Manager) UpsertIdentifier(username, azp, id string) error {
-	// Count the amount of identifiers we already have first
+// UpsertIdentifier adds a new iyoid to a mapping or creates a new mapping
+func (m *Manager) UpsertIdentifier(username, azp, iyoid string) error {
+	// Count the amount of iyoids we already have first
 	idObj, err := m.GetByUsernameAndAZP(username, azp)
 	if err != nil && !db.IsNotFound(err) {
 		return err
@@ -92,10 +92,10 @@ func (m *Manager) UpsertIdentifier(username, azp, id string) error {
 	if db.IsNotFound(err) {
 		idObj = &Identifier{}
 	}
-	if len(idObj.IDs) >= maxIdentifiers {
+	if len(idObj.IyoIDs) >= maxIdentifiers {
 		return ErrIDLimitReached
 	}
 
-	_, err = m.getIdentifierCollection().Upsert(bson.M{"username": username, "azp": azp}, bson.M{"$push": bson.M{"ids": id}})
+	_, err = m.getIdentifierCollection().Upsert(bson.M{"username": username, "azp": azp}, bson.M{"$push": bson.M{"iyoids": iyoid}})
 	return err
 }
