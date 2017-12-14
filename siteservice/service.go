@@ -4,17 +4,20 @@ import (
 	"bytes"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/itsyouonline/identityserver/communication"
 	"github.com/itsyouonline/identityserver/siteservice/apiconsole"
+	"github.com/itsyouonline/identityserver/siteservice/middleware"
 	"github.com/itsyouonline/identityserver/siteservice/website/packaged/assets"
 	"github.com/itsyouonline/identityserver/siteservice/website/packaged/components"
 	"github.com/itsyouonline/identityserver/siteservice/website/packaged/html"
 	"github.com/itsyouonline/identityserver/siteservice/website/packaged/thirdpartyassets"
 	"github.com/itsyouonline/identityserver/specifications"
 	"github.com/itsyouonline/identityserver/validation"
+	"github.com/justinas/alice"
 
 	"encoding/json"
 
@@ -71,12 +74,12 @@ func (service *Service) AddRoutes(router *mux.Router) {
 	router.Methods("GET").Path("/phonevalidation").HandlerFunc(service.PhonenumberValidation)
 	router.Methods("GET").Path("/pvl").HandlerFunc(service.PhonenumberValidationAndLogin)
 	router.Methods("GET").Path("/emailvalidation").HandlerFunc(service.EmailValidation)
-	router.Methods("POST").Path("/register/resendsms").HandlerFunc(service.ResendPhonenumberConfirmation)
+	router.Handle("/register/resendsms", alice.New(middleware.RateLimit(time.Minute*10, 3).Handler).Then(http.HandlerFunc(service.ResendPhonenumberConfirmation))).Methods("POST")
 	router.Methods("GET").Path("/register/smsconfirmed").HandlerFunc(service.CheckRegistrationSMSConfirmation)
 	router.Methods("GET").Path("/register/emailconfirmed").HandlerFunc(service.CheckRegistrationEmailConfirmation)
 	router.Methods("POST").Path("/register/smsconfirmation").HandlerFunc(service.ProcessPhonenumberConfirmationForm)
 	router.Methods("POST").Path("/register/validation").HandlerFunc(service.ValidateInfo)
-	router.Methods("POST").Path("/register/resendvalidation").HandlerFunc(service.ResendValidationInfo)
+	router.Handle("/register/resendvalidation", alice.New(middleware.RateLimit(time.Minute*10, 3).Handler).Then(http.HandlerFunc(service.ResendValidationInfo))).Methods("POST")
 	//Enable us to "forget" users in case we are not in production
 	router.Methods("GET").Path("/register/delete").HandlerFunc(service.ServeForgetAccountPage)
 	router.Methods("POST").Path("/register/delete").HandlerFunc(service.ForgetAccountHandler)
@@ -85,9 +88,9 @@ func (service *Service) AddRoutes(router *mux.Router) {
 	router.Methods("POST").Path("/login").HandlerFunc(service.ProcessLoginForm)
 	router.Methods("GET").Path("/login/twofamethods").HandlerFunc(service.GetTwoFactorAuthenticationMethods)
 	router.Methods("POST").Path("/login/totpconfirmation").HandlerFunc(service.ProcessTOTPConfirmation)
-	router.Methods("POST").Path("/login/smscode/{phoneLabel}").HandlerFunc(service.GetSmsCode)
+	router.Handle("/login/smscode/{phoneLabel}", alice.New(middleware.RateLimit(time.Minute*10, 3).Handler).Then(http.HandlerFunc(service.GetSmsCode))).Methods("POST")
 	router.Methods("POST").Path("/login/smsconfirmation").HandlerFunc(service.Process2FASMSConfirmation)
-	router.Methods("POST").Path("/login/resendsms").HandlerFunc(service.LoginResendPhonenumberConfirmation)
+	router.Handle("/login/resendsms", alice.New(middleware.RateLimit(time.Minute*10, 3).Handler).Then(http.HandlerFunc(service.LoginResendPhonenumberConfirmation))).Methods("POST")
 	router.Methods("GET").Path("/sc").HandlerFunc(service.MobileSMSConfirmation)
 	router.Methods("GET").Path("/login/smsconfirmed").HandlerFunc(service.Check2FASMSConfirmation)
 	router.Methods("POST").Path("/login/validateemail").HandlerFunc(service.ValidateEmail)
