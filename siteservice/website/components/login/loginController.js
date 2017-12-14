@@ -80,7 +80,7 @@
         function submit() {
             vm.loading = true;            
             var data = {
-                login: vm.login.toLowerCase(),
+                login: vm.login.toLowerCase().trim(),
                 password: vm.password
             };
             var url = '/login' + $window.location.search;
