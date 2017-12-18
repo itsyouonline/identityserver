@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/itsyouonline/identityserver/db/iyoid"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 
@@ -2234,22 +2236,38 @@ func handleServerError(responseWriter http.ResponseWriter, actionText string, er
 	return false
 }
 
-func SearchUser(r *http.Request, searchString string) (usr *user.User, err1 error) {
+// SearchUser identifies a user based on a valid user identifier
+func SearchUser(r *http.Request, searchString string) (*user.User, error) {
 	userMgr := user.NewManager(r)
-	usr, err1 = userMgr.GetByName(searchString)
-	if err1 == mgo.ErrNotFound {
-		valMgr := validationdb.NewManager(r)
-		validatedPhonenumber, err2 := valMgr.GetByPhoneNumber(searchString)
-		if err2 == mgo.ErrNotFound {
-			validatedEmailAddress, err3 := valMgr.GetByEmailAddress(searchString)
-			if err3 != nil {
-				return nil, err3
-			}
-			return userMgr.GetByName(validatedEmailAddress.Username)
-		}
+	usr, err := userMgr.GetByName(searchString)
+	if usr != nil {
+		return usr, err
+	}
+	if err != nil && !db.IsNotFound(err) {
+		return nil, err
+	}
+	valMgr := validationdb.NewManager(r)
+	validatedPhonenumber, err := valMgr.GetByPhoneNumber(searchString)
+	if err != nil && !db.IsNotFound(err) {
+		return nil, err
+	}
+	if !db.IsNotFound(err) {
 		return userMgr.GetByName(validatedPhonenumber.Username)
 	}
-	return usr, err1
+	validatedEmailAddress, err := valMgr.GetByEmailAddress(searchString)
+	if err != nil && !db.IsNotFound(err) {
+		return nil, err
+	}
+	if !db.IsNotFound(err) {
+		return userMgr.GetByName(validatedEmailAddress.Username)
+	}
+	idMgr := iyoid.NewManager(r)
+	clientID, _ := context.Get(r, "client_id").(string)
+	idObj, err := idMgr.GetByIDAndAZP(searchString, clientID)
+	if err != nil {
+		return nil, err
+	}
+	return userMgr.GetByName(idObj.Username)
 }
 
 // parseLangKey return the first 2 characters of a string in lowercase. If the string is empty or has only 1 character, and empty string is returned

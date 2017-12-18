@@ -125,6 +125,13 @@ func (om *Oauth2oauth_2_0Middleware) Handler(next http.Handler) http.Handler {
 			authorizedScopes = append(authorizedScopes, "user:info")
 		}
 
+		idAzp := context.Get(r, "iyoid_azp")
+		if idAzp != "" && idAzp != clientID {
+			log.Debugf("Iyo id azp from the user identifier and client ID mismatch: client: %s, iyo id belongs to %s", clientID, idAzp)
+			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+			return
+		}
+
 		context.Set(r, "client_id", clientID)
 		context.Set(r, "availablescopes", strings.Join(authorizedScopes, ","))
 

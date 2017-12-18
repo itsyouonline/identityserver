@@ -82,6 +82,17 @@ func (m *Manager) GetByUsernameAndAZP(username, azp string) (*Identifier, error)
 	return &idObj, nil
 }
 
+// GetByID returns the full identifier object for this iyoid
+func (m *Manager) GetByID(iyoid string) (*Identifier, error) {
+	var idObj Identifier
+
+	if err := m.getIdentifierCollection().Find(bson.M{"iyoids": iyoid}).One(&idObj); err != nil {
+		return nil, err
+	}
+
+	return &idObj, nil
+}
+
 // UpsertIdentifier adds a new iyoid to a mapping or creates a new mapping
 func (m *Manager) UpsertIdentifier(username, azp, iyoid string) error {
 	// Count the amount of iyoids we already have first
