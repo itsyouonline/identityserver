@@ -47,7 +47,7 @@ func RateLimit(period time.Duration, limit int) RateLimiter {
 		// Write some info back to the client
 		w.WriteHeader(http.StatusTooManyRequests)
 		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("You have the reached maximum request limit."))
+		w.Write([]byte("You have reached the maximum request limit."))
 		return
 	}
 	return RateLimiter{middleware}
