@@ -303,20 +303,15 @@ func verifyScopes(scopeString string, username string, clientID string, orgMgr *
 		// or if we have the scope on one or more children. In case of the latter, replace
 		// the scopes by the appropriate ones
 		if scope == "user:memberof:"+clientID {
-			isMember, err := orgMgr.IsMember(clientID, username)
+			inOrg, err := orgMgr.IsInOrgs(username, clientID)
 			if err != nil {
 				return scopeString, err
 			}
-			if isMember {
+			// Should only have 1 result, and result MUST be clientID
+			if len(inOrg) == 1 && inOrg[0] == clientID {
 				return scopeString, nil
 			}
-			isOwner, err := orgMgr.IsOwner(clientID, username)
-			if err != nil {
-				return scopeString, err
-			}
-			if isOwner {
-				return scopeString, nil
-			}
+
 			log.Debugf("Access token contains scope %v, but user is not a member of %v - parse suborganizations",
 				scope, clientID)
 			// Remove the memberof:parentOrg scope
@@ -347,28 +342,12 @@ func findSuborgScopes(parentID string, username string, orgMgr *organization.Man
 
 	var foundScopes []string
 
-	var foundID string
-	for _, orgID := range orgIds {
-		if foundID != "" && strings.HasPrefix(orgID, foundID) {
-			// This is a suborg of an organization we already know about so skip it
-			continue
-		}
-		isMember, err := orgMgr.IsMember(orgID, username)
-		if err != nil {
-			return nil, err
-		}
-		if isMember {
-			foundScopes = append(foundScopes, "user:memberof:"+orgID)
-			foundID = orgID
-		}
-		isOwner, err := orgMgr.IsOwner(orgID, username)
-		if err != nil {
-			return nil, err
-		}
-		if isOwner {
-			foundScopes = append(foundScopes, "user:memberof:"+orgID)
-			foundID = orgID
-		}
+	foundOrgs, err := orgMgr.IsInOrgs(username, orgIds...)
+	if err != nil {
+		return nil, err
+	}
+	for _, orgID := range foundOrgs {
+		foundScopes = append(foundScopes, "user:memberof:"+orgID)
 	}
 	return foundScopes, nil
 }

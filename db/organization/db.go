@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+	"sync"
 	"time"
 
 	"gopkg.in/mgo.v2"
@@ -223,6 +224,36 @@ func (m *Manager) isDirectOwnerOfOrgs(globalIDs []string, username string) (owne
 		ownedOrgs[i] = org.Globalid
 	}
 	return
+}
+
+// IsInOrgs checks if a user is somehow in the provided orgs
+// returns a list of all the orgs where the user is an owner or member
+func (m *Manager) IsInOrgs(username string, globalIDs ...string) ([]string, error) {
+	var wg sync.WaitGroup
+	passed := make([]bool, len(globalIDs))
+	errors := make([]error, len(globalIDs))
+	for i, globalID := range globalIDs {
+		wg.Add(1)
+		go func(index int, gID string) {
+			defer wg.Done()
+			passed[index], errors[index] = m.isOwnerOrMember(gID, username, make(map[string]bool))
+		}(i, globalID)
+	}
+	// Wait untill we are done
+	wg.Wait()
+	// Report if there was any error
+	for _, err := range errors {
+		if err != nil {
+			return nil, err
+		}
+	}
+	var result []string
+	for i, p := range passed {
+		if p {
+			result = append(result, globalIDs[i])
+		}
+	}
+	return result, nil
 }
 
 func (m *Manager) isOwnerOrMember(globalID, username string, excludelist map[string]bool) (result bool, err error) {
