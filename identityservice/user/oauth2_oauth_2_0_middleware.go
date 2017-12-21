@@ -126,8 +126,8 @@ func (om *Oauth2oauth_2_0Middleware) Handler(next http.Handler) http.Handler {
 		}
 
 		idAzp := context.Get(r, "iyoid_azp")
-		if idAzp != "" && idAzp != clientID {
-			log.Debugf("Iyo id azp from the user identifier and client ID mismatch: client: %s, iyo id belongs to %s", clientID, idAzp)
+		if idAzp != nil && idAzp.(string) != clientID {
+			log.Debugf("Iyo id azp from the user identifier and client ID mismatch: client: %s, iyo id belongs to %s", clientID, idAzp.(string))
 			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			return
 		}
