@@ -65,7 +65,9 @@ def dict_factory(val, objmap):
                 except Exception:
                     pass
             if objdict.get(attrname) is None:
-                raise ValueError('dict_factory: {attr}: unable to instantiate with any supplied type'.format(attr=attrname))
+                raise ValueError(
+                    'dict_factory: {attr}: unable to instantiate with any supplied type'.format(
+                        attr=attrname))
         elif attrdict.get('required'):
             raise ValueError('dict_factory: {attr} is required'.format(attr=attrname))
 

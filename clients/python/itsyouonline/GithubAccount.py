@@ -33,7 +33,8 @@ class GithubAccount(object):
 
         # set attributes
         data_types = [string_types]
-        self.avatar_url = client_support.set_property('avatar_url', data, data_types, False, [], False, True, class_name)
+        self.avatar_url = client_support.set_property(
+            'avatar_url', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
         self.html_url = client_support.set_property('html_url', data, data_types, False, [], False, True, class_name)
         data_types = [int]

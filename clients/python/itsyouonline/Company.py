@@ -41,7 +41,8 @@ class Company(object):
         data_types = [string_types]
         self.info = client_support.set_property('info', data, data_types, False, [], True, False, class_name)
         data_types = [string_types]
-        self.organizations = client_support.set_property('organizations', data, data_types, False, [], True, False, class_name)
+        self.organizations = client_support.set_property(
+            'organizations', data, data_types, False, [], True, False, class_name)
         data_types = [string_types]
         self.publicKeys = client_support.set_property('publicKeys', data, data_types, False, [], True, True, class_name)
         data_types = [string_types]

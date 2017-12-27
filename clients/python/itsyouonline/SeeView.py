@@ -44,25 +44,31 @@ class SeeView(object):
         data_types = [string_types]
         self.category = client_support.set_property('category', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.content_type = client_support.set_property('content_type', data, data_types, False, [], False, True, class_name)
+        self.content_type = client_support.set_property(
+            'content_type', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.creation_date = client_support.set_property('creation_date', data, data_types, False, [], False, True, class_name)
+        self.creation_date = client_support.set_property(
+            'creation_date', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
         self.end_date = client_support.set_property('end_date', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
         self.globalid = client_support.set_property('globalid', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.keystore_label = client_support.set_property('keystore_label', data, data_types, False, [], False, True, class_name)
+        self.keystore_label = client_support.set_property(
+            'keystore_label', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
         self.link = client_support.set_property('link', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.markdown_full_description = client_support.set_property('markdown_full_description', data, data_types, False, [], False, True, class_name)
+        self.markdown_full_description = client_support.set_property(
+            'markdown_full_description', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.markdown_short_description = client_support.set_property('markdown_short_description', data, data_types, False, [], False, True, class_name)
+        self.markdown_short_description = client_support.set_property(
+            'markdown_short_description', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
         self.signature = client_support.set_property('signature', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.start_date = client_support.set_property('start_date', data, data_types, False, [], False, True, class_name)
+        self.start_date = client_support.set_property(
+            'start_date', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
         self.uniqueid = client_support.set_property('uniqueid', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]

@@ -30,7 +30,8 @@ class ContractSigningRequest(object):
 
         # set attributes
         data_types = [string_types]
-        self.contractId = client_support.set_property('contractId', data, data_types, False, [], False, True, class_name)
+        self.contractId = client_support.set_property(
+            'contractId', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
         self.party = client_support.set_property('party', data, data_types, False, [], False, True, class_name)
 

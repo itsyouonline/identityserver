@@ -31,7 +31,8 @@ class EmailAddress(object):
 
         # set attributes
         data_types = [string_types]
-        self.emailaddress = client_support.set_property('emailaddress', data, data_types, False, [], False, True, class_name)
+        self.emailaddress = client_support.set_property(
+            'emailaddress', data, data_types, False, [], False, True, class_name)
         data_types = [Label]
         self.label = client_support.set_property('label', data, data_types, False, [], False, True, class_name)
 

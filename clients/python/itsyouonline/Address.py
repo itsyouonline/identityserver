@@ -46,7 +46,8 @@ class Address(object):
         data_types = [string_types]
         self.other = client_support.set_property('other', data, data_types, False, [], False, False, class_name)
         data_types = [string_types]
-        self.postalcode = client_support.set_property('postalcode', data, data_types, False, [], False, True, class_name)
+        self.postalcode = client_support.set_property(
+            'postalcode', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
         self.street = client_support.set_property('street', data, data_types, False, [], False, True, class_name)
 

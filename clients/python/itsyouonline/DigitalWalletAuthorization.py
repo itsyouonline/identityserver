@@ -36,7 +36,8 @@ class DigitalWalletAuthorization(object):
         data_types = [Label]
         self.reallabel = client_support.set_property('reallabel', data, data_types, False, [], False, True, class_name)
         data_types = [Label]
-        self.requestedlabel = client_support.set_property('requestedlabel', data, data_types, False, [], False, True, class_name)
+        self.requestedlabel = client_support.set_property(
+            'requestedlabel', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

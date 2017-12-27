@@ -41,9 +41,11 @@ class Authorization(object):
         data_types = [AuthorizationMap]
         self.addresses = client_support.set_property('addresses', data, data_types, False, [], True, False, class_name)
         data_types = [AuthorizationMap]
-        self.bankaccounts = client_support.set_property('bankaccounts', data, data_types, False, [], True, False, class_name)
+        self.bankaccounts = client_support.set_property(
+            'bankaccounts', data, data_types, False, [], True, False, class_name)
         data_types = [AuthorizationMap]
-        self.emailaddresses = client_support.set_property('emailaddresses', data, data_types, False, [], True, False, class_name)
+        self.emailaddresses = client_support.set_property(
+            'emailaddresses', data, data_types, False, [], True, False, class_name)
         data_types = [bool]
         self.facebook = client_support.set_property('facebook', data, data_types, False, [], False, False, class_name)
         data_types = [bool]
@@ -51,11 +53,14 @@ class Authorization(object):
         data_types = [string_types]
         self.grantedTo = client_support.set_property('grantedTo', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.organizations = client_support.set_property('organizations', data, data_types, False, [], True, True, class_name)
+        self.organizations = client_support.set_property(
+            'organizations', data, data_types, False, [], True, True, class_name)
         data_types = [AuthorizationMap]
-        self.phonenumbers = client_support.set_property('phonenumbers', data, data_types, False, [], True, False, class_name)
+        self.phonenumbers = client_support.set_property(
+            'phonenumbers', data, data_types, False, [], True, False, class_name)
         data_types = [AuthorizationMap]
-        self.publicKeys = client_support.set_property('publicKeys', data, data_types, False, [], True, False, class_name)
+        self.publicKeys = client_support.set_property(
+            'publicKeys', data, data_types, False, [], True, False, class_name)
         data_types = [string_types]
         self.username = client_support.set_property('username', data, data_types, False, [], False, True, class_name)
 

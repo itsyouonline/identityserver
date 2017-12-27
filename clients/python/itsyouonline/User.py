@@ -50,11 +50,14 @@ class User(object):
         data_types = [Address]
         self.addresses = client_support.set_property('addresses', data, data_types, False, [], True, True, class_name)
         data_types = [BankAccount]
-        self.bankaccounts = client_support.set_property('bankaccounts', data, data_types, False, [], True, True, class_name)
+        self.bankaccounts = client_support.set_property(
+            'bankaccounts', data, data_types, False, [], True, True, class_name)
         data_types = [DigitalAssetAddress]
-        self.digitalwallet = client_support.set_property('digitalwallet', data, data_types, False, [], True, True, class_name)
+        self.digitalwallet = client_support.set_property(
+            'digitalwallet', data, data_types, False, [], True, True, class_name)
         data_types = [EmailAddress]
-        self.emailaddresses = client_support.set_property('emailaddresses', data, data_types, False, [], True, True, class_name)
+        self.emailaddresses = client_support.set_property(
+            'emailaddresses', data, data_types, False, [], True, True, class_name)
         data_types = [datetime]
         self.expire = client_support.set_property('expire', data, data_types, False, [], False, False, class_name)
         data_types = [FacebookAccount]
@@ -66,7 +69,8 @@ class User(object):
         data_types = [string_types]
         self.lastname = client_support.set_property('lastname', data, data_types, False, [], False, True, class_name)
         data_types = [Phonenumber]
-        self.phonenumbers = client_support.set_property('phonenumbers', data, data_types, False, [], True, True, class_name)
+        self.phonenumbers = client_support.set_property(
+            'phonenumbers', data, data_types, False, [], True, True, class_name)
         data_types = [string_types]
         self.publicKeys = client_support.set_property('publicKeys', data, data_types, False, [], True, True, class_name)
         data_types = [string_types]

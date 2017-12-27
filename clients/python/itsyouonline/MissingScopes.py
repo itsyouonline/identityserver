@@ -30,7 +30,8 @@ class MissingScopes(object):
 
         # set attributes
         data_types = [string_types]
-        self.organization = client_support.set_property('organization', data, data_types, False, [], False, True, class_name)
+        self.organization = client_support.set_property(
+            'organization', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
         self.scopes = client_support.set_property('scopes', data, data_types, False, [], True, True, class_name)
 

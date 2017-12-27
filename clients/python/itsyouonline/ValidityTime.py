@@ -1,12 +1,11 @@
 """
-Auto-generated class for UpdateOrganizationApikeyReqBody
+Auto-generated class for ValidityTime
 """
-from .OrganizationAPIKey import OrganizationAPIKey
 
 from . import client_support
 
 
-class UpdateOrganizationApikeyReqBody(object):
+class ValidityTime(object):
     """
     auto-generated. don't touch.
     """
@@ -14,22 +13,19 @@ class UpdateOrganizationApikeyReqBody(object):
     @staticmethod
     def create(**kwargs):
         """
-        :type type: OrganizationAPIKey
-        :rtype: UpdateOrganizationApikeyReqBody
+        :rtype: ValidityTime
         """
 
-        return UpdateOrganizationApikeyReqBody(**kwargs)
+        return ValidityTime(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'UpdateOrganizationApikeyReqBody'
+        class_name = 'ValidityTime'
         data = json or kwargs
 
         # set attributes
-        data_types = [OrganizationAPIKey]
-        self.type = client_support.set_property('type', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

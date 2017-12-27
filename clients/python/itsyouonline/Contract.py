@@ -41,15 +41,18 @@ class Contract(object):
         data_types = [string_types]
         self.content = client_support.set_property('content', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.contractId = client_support.set_property('contractId', data, data_types, False, [], False, True, class_name)
+        self.contractId = client_support.set_property(
+            'contractId', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.contractType = client_support.set_property('contractType', data, data_types, False, [], False, True, class_name)
+        self.contractType = client_support.set_property(
+            'contractType', data, data_types, False, [], False, True, class_name)
         data_types = [datetime]
         self.expires = client_support.set_property('expires', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
         self.extends = client_support.set_property('extends', data, data_types, False, [], True, False, class_name)
         data_types = [string_types]
-        self.invalidates = client_support.set_property('invalidates', data, data_types, False, [], True, False, class_name)
+        self.invalidates = client_support.set_property(
+            'invalidates', data, data_types, False, [], True, False, class_name)
         data_types = [Party]
         self.parties = client_support.set_property('parties', data, data_types, False, [], True, True, class_name)
         data_types = [Signature]

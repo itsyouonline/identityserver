@@ -45,7 +45,8 @@ class Organization(object):
         data_types = [string_types]
         self.includes = client_support.set_property('includes', data, data_types, False, [], True, True, class_name)
         data_types = [string_types]
-        self.includesuborgsof = client_support.set_property('includesuborgsof', data, data_types, False, [], True, True, class_name)
+        self.includesuborgsof = client_support.set_property(
+            'includesuborgsof', data, data_types, False, [], True, True, class_name)
         data_types = [string_types]
         self.members = client_support.set_property('members', data, data_types, False, [], True, True, class_name)
         data_types = [string_types]
@@ -57,7 +58,8 @@ class Organization(object):
         data_types = [string_types]
         self.publicKeys = client_support.set_property('publicKeys', data, data_types, False, [], True, True, class_name)
         data_types = [RequiredScope]
-        self.requiredscopes = client_support.set_property('requiredscopes', data, data_types, False, [], True, True, class_name)
+        self.requiredscopes = client_support.set_property(
+            'requiredscopes', data, data_types, False, [], True, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

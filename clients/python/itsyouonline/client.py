@@ -1,14 +1,13 @@
 import requests
 
-from .organizations_service import OrganizationsService 
-from .users_service import UsersService 
+from .organizations_service import OrganizationsService
+from .users_service import UsersService
 
 
 class Client:
     def __init__(self, base_uri="https://itsyou.online/api"):
         self.base_url = base_uri
         self.session = requests.Session()
-        
         self.organizations = OrganizationsService(self)
         self.users = UsersService(self)
 
@@ -46,7 +45,7 @@ class Client:
             res = method(uri, files=data, headers=headers, params=params)
         elif data is None:
             res = method(uri, headers=headers, params=params)
-        elif type(data) is str:
+        elif isinstance(data, str):
             res = method(uri, data=data, headers=headers, params=params)
         else:
             res = method(uri, json=data, headers=headers, params=params)

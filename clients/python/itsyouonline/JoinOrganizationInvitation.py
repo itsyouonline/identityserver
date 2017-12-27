@@ -43,15 +43,19 @@ class JoinOrganizationInvitation(object):
         data_types = [datetime]
         self.created = client_support.set_property('created', data, data_types, False, [], False, False, class_name)
         data_types = [string_types]
-        self.emailaddress = client_support.set_property('emailaddress', data, data_types, False, [], False, True, class_name)
+        self.emailaddress = client_support.set_property(
+            'emailaddress', data, data_types, False, [], False, True, class_name)
         data_types = [bool]
-        self.isorganization = client_support.set_property('isorganization', data, data_types, False, [], False, True, class_name)
+        self.isorganization = client_support.set_property(
+            'isorganization', data, data_types, False, [], False, True, class_name)
         data_types = [EnumJoinOrganizationInvitationMethod]
         self.method = client_support.set_property('method', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.organization = client_support.set_property('organization', data, data_types, False, [], False, True, class_name)
+        self.organization = client_support.set_property(
+            'organization', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.phonenumber = client_support.set_property('phonenumber', data, data_types, False, [], False, True, class_name)
+        self.phonenumber = client_support.set_property(
+            'phonenumber', data, data_types, False, [], False, True, class_name)
         data_types = [EnumJoinOrganizationInvitationRole]
         self.role = client_support.set_property('role', data, data_types, False, [], False, True, class_name)
         data_types = [EnumJoinOrganizationInvitationStatus]

@@ -30,7 +30,8 @@ class GetOrganizationUsersResponseBody(object):
 
         # set attributes
         data_types = [bool]
-        self.haseditpermissions = client_support.set_property('haseditpermissions', data, data_types, False, [], False, True, class_name)
+        self.haseditpermissions = client_support.set_property(
+            'haseditpermissions', data, data_types, False, [], False, True, class_name)
         data_types = [OrganizationUser]
         self.users = client_support.set_property('users', data, data_types, False, [], True, True, class_name)
 

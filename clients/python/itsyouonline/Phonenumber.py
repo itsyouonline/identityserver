@@ -33,7 +33,8 @@ class Phonenumber(object):
         data_types = [Label]
         self.label = client_support.set_property('label', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.phonenumber = client_support.set_property('phonenumber', data, data_types, False, [], False, True, class_name)
+        self.phonenumber = client_support.set_property(
+            'phonenumber', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

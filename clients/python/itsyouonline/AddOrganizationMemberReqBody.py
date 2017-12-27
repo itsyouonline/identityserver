@@ -29,7 +29,8 @@ class AddOrganizationMemberReqBody(object):
 
         # set attributes
         data_types = [string_types]
-        self.searchstring = client_support.set_property('searchstring', data, data_types, False, [], False, True, class_name)
+        self.searchstring = client_support.set_property(
+            'searchstring', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

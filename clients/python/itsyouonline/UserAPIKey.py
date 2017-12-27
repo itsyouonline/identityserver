@@ -36,7 +36,8 @@ class UserAPIKey(object):
         data_types = [string_types]
         self.apikey = client_support.set_property('apikey', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.applicationid = client_support.set_property('applicationid', data, data_types, False, [], False, True, class_name)
+        self.applicationid = client_support.set_property(
+            'applicationid', data, data_types, False, [], False, True, class_name)
         data_types = [Label]
         self.label = client_support.set_property('label', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]

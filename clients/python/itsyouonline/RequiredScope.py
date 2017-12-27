@@ -30,7 +30,8 @@ class RequiredScope(object):
 
         # set attributes
         data_types = [string_types]
-        self.accessscopes = client_support.set_property('accessscopes', data, data_types, False, [], True, True, class_name)
+        self.accessscopes = client_support.set_property(
+            'accessscopes', data, data_types, False, [], True, True, class_name)
         data_types = [string_types]
         self.scope = client_support.set_property('scope', data, data_types, False, [], False, True, class_name)
 
