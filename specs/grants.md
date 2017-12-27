@@ -13,7 +13,7 @@ Grants are application defined properties a third-party can stick on a user. Obv
 
 In order to make the best use of grants, the app should workt with refresheable JWT's. When a grant gets added, the app can then simply call the JWT refresh endpoint. This will then return an updated JWT, including the new grant. In this way, a user can be given specific in app authorizations (e.g. folder access), without passing through ItsYou.online to accept an invite for a suborganization. 
 
-### Techincal spec
+### Technical spec
 
 - a grant is a scope of the form `grant:...`
 - grants are stored on an authorization
@@ -24,4 +24,46 @@ In order to make the best use of grants, the app should workt with refresheable 
 - existing functions to deal with authorizations and scopes must be checked to only verify `user:...` scopes and not grants
 - a small set op api endpoints should be created to expose searching / sorting based on grants. To be defined
 
-### TODO: Define api endpoints
+## Define api endpoints
+
+Because these calls are only usefull for the organization and less so for the user (and they definetely should not be able to add
+grants themselves), these endpoints are all under the `/api/organizations/{globalid}` endpoint. The user MUST have an existing
+authorization for the grants to be added on. If the user deletes his authorization, all grants are removed.
+
+1. GET `/api/organizations/{globalid}/grants/{useridentifier}`:
+
+    Returns all the grants added to the authorization for the user
+
+2. DELETE `/api/organizations/{globalid}/grants/{useridentifier}/{grant}`:
+
+    Deletes the specified grant for the user
+
+3. DELETE `/api/organizations/{globalid}/grants/{useridentifier}`:
+
+    Deletes all grants for the user
+
+4. POST: `/api/organizations/{globalid}/grants`:
+
+    Creates a new grant for the user
+
+    Body:
+
+        useridentifier: string
+        grant: string
+
+5. PUT: `/api/organizations/{globalid}/grants`:
+
+    Updates a grant to a new one for a user
+
+    Body:
+
+        useridentifier: string
+        oldgrant: string
+        newgrant: string
+
+6. GET: `/api/organizations/{globalid}/grants/havegrant/{grant}`:
+
+    Lists all users who have a specified tag added onto them.
+
+
+
