@@ -9,12 +9,17 @@ RUN git checkout $GOBINDATAVERSION
 RUN go get github.com/jteeuwen/go-bindata/...
 
 
-ARG GORAMLVERSION=b1b1d7ba50eb4189deeb29e38ebb358d298bf630
+ARG GORAMLVERSION=a5aed17caa97fd822abd86c59abf4465b07172a6
 
 RUN git clone https://github.com/Jumpscale/go-raml.git $GOPATH/src/github.com/Jumpscale/go-raml
 WORKDIR $GOPATH/src/github.com/Jumpscale/go-raml
 RUN git checkout $GORAMLVERSION
 RUN ./build.sh
+
+# autopep8 is required by go-raml 
+RUN apt-get update
+RUN apt-get install -y python-pip
+RUN pip install autopep8
 
 ENV CGO_ENABLED 0
 WORKDIR /go/src/github.com/itsyouonline/identityserver
