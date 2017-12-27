@@ -1,5 +1,5 @@
 """
-Auto-generated class for GetNotificationsReqBody
+Auto-generated class for Notification
 """
 from .ContractSigningRequest import ContractSigningRequest
 from .JoinOrganizationInvitation import JoinOrganizationInvitation
@@ -8,7 +8,7 @@ from .MissingScopes import MissingScopes
 from . import client_support
 
 
-class GetNotificationsReqBody(object):
+class Notification(object):
     """
     auto-generated. don't touch.
     """
@@ -20,27 +20,30 @@ class GetNotificationsReqBody(object):
         :type contractRequests: list[ContractSigningRequest]
         :type invitations: list[JoinOrganizationInvitation]
         :type missingscopes: list[MissingScopes]
-        :rtype: GetNotificationsReqBody
+        :rtype: Notification
         """
 
-        return GetNotificationsReqBody(**kwargs)
+        return Notification(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'GetNotificationsReqBody'
+        class_name = 'Notification'
         data = json or kwargs
 
         # set attributes
         data_types = [JoinOrganizationInvitation]
         self.approvals = client_support.set_property('approvals', data, data_types, False, [], True, True, class_name)
         data_types = [ContractSigningRequest]
-        self.contractRequests = client_support.set_property('contractRequests', data, data_types, False, [], True, True, class_name)
+        self.contractRequests = client_support.set_property(
+            'contractRequests', data, data_types, False, [], True, True, class_name)
         data_types = [JoinOrganizationInvitation]
-        self.invitations = client_support.set_property('invitations', data, data_types, False, [], True, True, class_name)
+        self.invitations = client_support.set_property(
+            'invitations', data, data_types, False, [], True, True, class_name)
         data_types = [MissingScopes]
-        self.missingscopes = client_support.set_property('missingscopes', data, data_types, False, [], True, True, class_name)
+        self.missingscopes = client_support.set_property(
+            'missingscopes', data, data_types, False, [], True, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

@@ -1,12 +1,12 @@
 """
-Auto-generated class for CreateUserBankAccountReqBody
+Auto-generated class for TwoFAMethods
 """
-from .BankAccount import BankAccount
+from .Phonenumber import Phonenumber
 
 from . import client_support
 
 
-class CreateUserBankAccountReqBody(object):
+class TwoFAMethods(object):
     """
     auto-generated. don't touch.
     """
@@ -14,22 +14,25 @@ class CreateUserBankAccountReqBody(object):
     @staticmethod
     def create(**kwargs):
         """
-        :type type: BankAccount
-        :rtype: CreateUserBankAccountReqBody
+        :type sms: list[Phonenumber]
+        :type totp: bool
+        :rtype: TwoFAMethods
         """
 
-        return CreateUserBankAccountReqBody(**kwargs)
+        return TwoFAMethods(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'CreateUserBankAccountReqBody'
+        class_name = 'TwoFAMethods'
         data = json or kwargs
 
         # set attributes
-        data_types = [BankAccount]
-        self.type = client_support.set_property('type', data, data_types, False, [], False, True, class_name)
+        data_types = [Phonenumber]
+        self.sms = client_support.set_property('sms', data, data_types, False, [], True, True, class_name)
+        data_types = [bool]
+        self.totp = client_support.set_property('totp', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

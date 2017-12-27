@@ -1,12 +1,12 @@
 """
-Auto-generated class for SetupTotpreqBody
+Auto-generated class for IyoID
 """
 from six import string_types
 
 from . import client_support
 
 
-class SetupTotpreqBody(object):
+class IyoID(object):
     """
     auto-generated. don't touch.
     """
@@ -14,25 +14,28 @@ class SetupTotpreqBody(object):
     @staticmethod
     def create(**kwargs):
         """
-        :type totpcode: str
-        :type totpsecret: str
-        :rtype: SetupTotpreqBody
+        :type azp: str
+        :type iyoids: list[str]
+        :type username: str
+        :rtype: IyoID
         """
 
-        return SetupTotpreqBody(**kwargs)
+        return IyoID(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'SetupTotpreqBody'
+        class_name = 'IyoID'
         data = json or kwargs
 
         # set attributes
         data_types = [string_types]
-        self.totpcode = client_support.set_property('totpcode', data, data_types, False, [], False, True, class_name)
+        self.azp = client_support.set_property('azp', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.totpsecret = client_support.set_property('totpsecret', data, data_types, False, [], False, True, class_name)
+        self.iyoids = client_support.set_property('iyoids', data, data_types, False, [], True, True, class_name)
+        data_types = [string_types]
+        self.username = client_support.set_property('username', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

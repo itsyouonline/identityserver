@@ -37,13 +37,15 @@ class DigitalAssetAddress(object):
         data_types = [string_types]
         self.address = client_support.set_property('address', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.currencysymbol = client_support.set_property('currencysymbol', data, data_types, False, [], False, True, class_name)
+        self.currencysymbol = client_support.set_property(
+            'currencysymbol', data, data_types, False, [], False, True, class_name)
         data_types = [datetime]
         self.expire = client_support.set_property('expire', data, data_types, False, [], False, True, class_name)
         data_types = [Label]
         self.label = client_support.set_property('label', data, data_types, False, [], False, True, class_name)
         data_types = [bool]
-        self.noexpiration = client_support.set_property('noexpiration', data, data_types, False, [], False, False, class_name)
+        self.noexpiration = client_support.set_property(
+            'noexpiration', data, data_types, False, [], False, False, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

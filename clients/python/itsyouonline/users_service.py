@@ -1,4 +1,31 @@
 
+from .Address import Address
+from .Authorization import Authorization
+from .Avatar import Avatar
+from .BankAccount import BankAccount
+from .Contract import Contract
+from .DigitalAssetAddress import DigitalAssetAddress
+from .EmailAddress import EmailAddress
+from .Error import Error
+from .IyoID import IyoID
+from .JoinOrganizationInvitation import JoinOrganizationInvitation
+from .KeyStoreKey import KeyStoreKey
+from .Notification import Notification
+from .PhoneNumberValidation import PhoneNumberValidation
+from .Phonenumber import Phonenumber
+from .PublicKey import PublicKey
+from .RegistryEntry import RegistryEntry
+from .See import See
+from .SeeView import SeeView
+from .TOTPSecret import TOTPSecret
+from .TwoFAMethods import TwoFAMethods
+from .User import User
+from .UserAPIKey import UserAPIKey
+from .UserOrganizations import UserOrganizations
+from .api_response import APIResponse
+from .unhandled_api_error import UnhandledAPIError
+from .unmarshall_error import UnmarshallError
+from .userview import userview
 
 
 class UsersService:
@@ -12,6 +39,14 @@ class UsersService:
         It is method for GET /users/avatar/img/{hash}
         """
         uri = self.client.base_url + "/users/avatar/img/"+hash
+        return self.client.get(uri, None, headers, query_params, content_type)
+
+    def LookupIyoID(self, identifier, headers=None, query_params=None, content_type="application/json"):
+        """
+        Lookup the username for an iyo id
+        It is method for GET /users/identifiers/{identifier}
+        """
+        uri = self.client.base_url + "/users/identifiers/"+identifier
         return self.client.get(uri, None, headers, query_params, content_type)
 
     def DeleteUserAddress(self, label, username, headers=None, query_params=None, content_type="application/json"):
@@ -28,7 +63,20 @@ class UsersService:
         It is method for GET /users/{username}/addresses/{label}
         """
         uri = self.client.base_url + "/users/"+username+"/addresses/"+label
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=Address(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def UpdateUserAddress(self, data, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -44,7 +92,23 @@ class UsersService:
         It is method for GET /users/{username}/addresses
         """
         uri = self.client.base_url + "/users/"+username+"/addresses"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                resps = []
+                for elem in resp.json():
+                    resps.append(Address(elem))
+                return APIResponse(data=resps, response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def RegisterNewUserAddress(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -52,7 +116,20 @@ class UsersService:
         It is method for POST /users/{username}/addresses
         """
         uri = self.client.base_url + "/users/"+username+"/addresses"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=Address(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def DeleteAPIkey(self, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -68,7 +145,20 @@ class UsersService:
         It is method for GET /users/{username}/apikeys/{label}
         """
         uri = self.client.base_url + "/users/"+username+"/apikeys/"+label
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=UserAPIKey(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def UpdateAPIkey(self, data, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -84,7 +174,23 @@ class UsersService:
         It is method for GET /users/{username}/apikeys
         """
         uri = self.client.base_url + "/users/"+username+"/apikeys"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                resps = []
+                for elem in resp.json():
+                    resps.append(UserAPIKey(elem))
+                return APIResponse(data=resps, response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def AddApiKey(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -92,7 +198,20 @@ class UsersService:
         It is method for POST /users/{username}/apikeys
         """
         uri = self.client.base_url + "/users/"+username+"/apikeys"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=UserAPIKey(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def DeleteAuthorization(self, grantedTo, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -108,7 +227,20 @@ class UsersService:
         It is method for GET /users/{username}/authorizations/{grantedTo}
         """
         uri = self.client.base_url + "/users/"+username+"/authorizations/"+grantedTo
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=Authorization(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def UpdateAuthorization(self, data, grantedTo, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -124,7 +256,23 @@ class UsersService:
         It is method for GET /users/{username}/authorizations
         """
         uri = self.client.base_url + "/users/"+username+"/authorizations"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                resps = []
+                for elem in resp.json():
+                    resps.append(Authorization(elem))
+                return APIResponse(data=resps, response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def CreateAvatarFromImage(self, data, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -132,7 +280,20 @@ class UsersService:
         It is method for POST /users/{username}/avatar/img/{label}
         """
         uri = self.client.base_url + "/users/"+username+"/avatar/img/"+label
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=Avatar(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def UpdateAvatarFile(self, data, newlabel, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -140,7 +301,20 @@ class UsersService:
         It is method for PUT /users/{username}/avatar/{label}/to/{newlabel}
         """
         uri = self.client.base_url + "/users/"+username+"/avatar/"+label+"/to/"+newlabel
-        return self.client.put(uri, data, headers, query_params, content_type)
+        resp = self.client.put(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=Avatar(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def DeleteAvatar(self, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -156,7 +330,20 @@ class UsersService:
         It is method for PUT /users/{username}/avatar/{label}
         """
         uri = self.client.base_url + "/users/"+username+"/avatar/"+label
-        return self.client.put(uri, data, headers, query_params, content_type)
+        resp = self.client.put(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=Avatar(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def GetAvatars(self, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -164,7 +351,20 @@ class UsersService:
         It is method for GET /users/{username}/avatar
         """
         uri = self.client.base_url + "/users/"+username+"/avatar"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=Avatar(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def CreateAvatarFromLink(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -172,7 +372,20 @@ class UsersService:
         It is method for POST /users/{username}/avatar
         """
         uri = self.client.base_url + "/users/"+username+"/avatar"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=Avatar(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def DeleteUserBankAccount(self, username, label, headers=None, query_params=None, content_type="application/json"):
         """
@@ -188,7 +401,20 @@ class UsersService:
         It is method for GET /users/{username}/banks/{label}
         """
         uri = self.client.base_url + "/users/"+username+"/banks/"+label
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=BankAccount(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def UpdateUserBankAccount(self, data, username, label, headers=None, query_params=None, content_type="application/json"):
         """
@@ -196,7 +422,20 @@ class UsersService:
         It is method for PUT /users/{username}/banks/{label}
         """
         uri = self.client.base_url + "/users/"+username+"/banks/"+label
-        return self.client.put(uri, data, headers, query_params, content_type)
+        resp = self.client.put(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=BankAccount(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def GetUserBankAccounts(self, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -204,7 +443,23 @@ class UsersService:
         It is method for GET /users/{username}/banks
         """
         uri = self.client.base_url + "/users/"+username+"/banks"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                resps = []
+                for elem in resp.json():
+                    resps.append(BankAccount(elem))
+                return APIResponse(data=resps, response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def CreateUserBankAccount(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -212,7 +467,20 @@ class UsersService:
         It is method for POST /users/{username}/banks
         """
         uri = self.client.base_url + "/users/"+username+"/banks"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=BankAccount(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def GetUserContracts(self, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -220,7 +488,23 @@ class UsersService:
         It is method for GET /users/{username}/contracts
         """
         uri = self.client.base_url + "/users/"+username+"/contracts"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                resps = []
+                for elem in resp.json():
+                    resps.append(Contract(elem))
+                return APIResponse(data=resps, response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def CreateUserContract(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -228,7 +512,20 @@ class UsersService:
         It is method for POST /users/{username}/contracts
         """
         uri = self.client.base_url + "/users/"+username+"/contracts"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=Contract(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def DeleteDigitalAssetAddress(self, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -244,7 +541,20 @@ class UsersService:
         It is method for GET /users/{username}/digitalwallet/{label}
         """
         uri = self.client.base_url + "/users/"+username+"/digitalwallet/"+label
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=DigitalAssetAddress(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def UpdateDigitalAssetAddress(self, data, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -260,7 +570,23 @@ class UsersService:
         It is method for GET /users/{username}/digitalwallet
         """
         uri = self.client.base_url + "/users/"+username+"/digitalwallet"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                resps = []
+                for elem in resp.json():
+                    resps.append(DigitalAssetAddress(elem))
+                return APIResponse(data=resps, response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def RegisterNewDigitalAssetAddress(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -268,7 +594,20 @@ class UsersService:
         It is method for POST /users/{username}/digitalwallet
         """
         uri = self.client.base_url + "/users/"+username+"/digitalwallet"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=DigitalAssetAddress(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def ValidateEmailAddress(self, data, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -300,7 +639,23 @@ class UsersService:
         It is method for GET /users/{username}/emailaddresses
         """
         uri = self.client.base_url + "/users/"+username+"/emailaddresses"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                resps = []
+                for elem in resp.json():
+                    resps.append(EmailAddress(elem))
+                return APIResponse(data=resps, response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def RegisterNewEmailAddress(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -308,7 +663,20 @@ class UsersService:
         It is method for POST /users/{username}/emailaddresses
         """
         uri = self.client.base_url + "/users/"+username+"/emailaddresses"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=EmailAddress(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def DeleteFacebookAccount(self, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -326,13 +694,68 @@ class UsersService:
         uri = self.client.base_url + "/users/"+username+"/github"
         return self.client.delete(uri, None, headers, query_params, content_type)
 
+    def ListIyoIds(self, username, headers=None, query_params=None, content_type="application/json"):
+        """
+        List all generated iyo ids generated for a user by a party
+        It is method for GET /users/{username}/identifiers
+        """
+        uri = self.client.base_url + "/users/"+username+"/identifiers"
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=IyoID(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
+
+    def GenerateIyoID(self, data, username, headers=None, query_params=None, content_type="application/json"):
+        """
+        Generate a new iyo id for this user
+        It is method for POST /users/{username}/identifiers
+        """
+        uri = self.client.base_url + "/users/"+username+"/identifiers"
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=IyoID(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
+
     def GetUserInformation(self, username, headers=None, query_params=None, content_type="application/json"):
         """
         Get all of the user his information. This will be limited to the scopes that the user has authorized. See https://gig.gitbooks.io/itsyouonline/content/oauth2/scopes.html and https://gig.gitbooks.io/itsyouonline/content/oauth2/availableScopes.html for more information.
         It is method for GET /users/{username}/info
         """
         uri = self.client.base_url + "/users/"+username+"/info"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=userview(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def GetKeyStoreKey(self, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -340,7 +763,20 @@ class UsersService:
         It is method for GET /users/{username}/keystore/{label}
         """
         uri = self.client.base_url + "/users/"+username+"/keystore/"+label
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=KeyStoreKey(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def GetKeyStore(self, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -348,7 +784,23 @@ class UsersService:
         It is method for GET /users/{username}/keystore
         """
         uri = self.client.base_url + "/users/"+username+"/keystore"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                resps = []
+                for elem in resp.json():
+                    resps.append(KeyStoreKey(elem))
+                return APIResponse(data=resps, response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def SaveKeyStoreKey(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -356,7 +808,20 @@ class UsersService:
         It is method for POST /users/{username}/keystore
         """
         uri = self.client.base_url + "/users/"+username+"/keystore"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=KeyStoreKey(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def UpdateUserName(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -372,7 +837,20 @@ class UsersService:
         It is method for GET /users/{username}/notifications
         """
         uri = self.client.base_url + "/users/"+username+"/notifications"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=Notification(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def LeaveOrganization(self, globalid, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -380,7 +858,18 @@ class UsersService:
         It is method for DELETE /users/{username}/organizations/{globalid}/leave
         """
         uri = self.client.base_url + "/users/"+username+"/organizations/"+globalid+"/leave"
-        return self.client.delete(uri, None, headers, query_params, content_type)
+        resp = self.client.delete(uri, None, headers, query_params, content_type)
+        try:
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def RejectMembership(self, globalid, role, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -396,7 +885,20 @@ class UsersService:
         It is method for POST /users/{username}/organizations/{globalid}/roles/{role}
         """
         uri = self.client.base_url + "/users/"+username+"/organizations/"+globalid+"/roles/"+role
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=JoinOrganizationInvitation(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def GetUserOrganizations(self, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -404,7 +906,20 @@ class UsersService:
         It is method for GET /users/{username}/organizations
         """
         uri = self.client.base_url + "/users/"+username+"/organizations"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=UserOrganizations(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def UpdatePassword(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -412,7 +927,18 @@ class UsersService:
         It is method for PUT /users/{username}/password
         """
         uri = self.client.base_url + "/users/"+username+"/password"
-        return self.client.put(uri, data, headers, query_params, content_type)
+        resp = self.client.put(uri, data, headers, query_params, content_type)
+        try:
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def ValidatePhonenumber(self, data, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -420,7 +946,20 @@ class UsersService:
         It is method for POST /users/{username}/phonenumbers/{label}/validate
         """
         uri = self.client.base_url + "/users/"+username+"/phonenumbers/"+label+"/validate"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=PhoneNumberValidation(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def VerifyPhoneNumber(self, data, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -428,7 +967,18 @@ class UsersService:
         It is method for PUT /users/{username}/phonenumbers/{label}/validate
         """
         uri = self.client.base_url + "/users/"+username+"/phonenumbers/"+label+"/validate"
-        return self.client.put(uri, data, headers, query_params, content_type)
+        resp = self.client.put(uri, data, headers, query_params, content_type)
+        try:
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def DeleteUserPhonenumber(self, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -444,7 +994,20 @@ class UsersService:
         It is method for GET /users/{username}/phonenumbers/{label}
         """
         uri = self.client.base_url + "/users/"+username+"/phonenumbers/"+label
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=Phonenumber(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def UpdateUserPhonenumber(self, data, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -460,7 +1023,23 @@ class UsersService:
         It is method for GET /users/{username}/phonenumbers
         """
         uri = self.client.base_url + "/users/"+username+"/phonenumbers"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                resps = []
+                for elem in resp.json():
+                    resps.append(Phonenumber(elem))
+                return APIResponse(data=resps, response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def RegisterNewUserPhonenumber(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -468,7 +1047,20 @@ class UsersService:
         It is method for POST /users/{username}/phonenumbers
         """
         uri = self.client.base_url + "/users/"+username+"/phonenumbers"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=Phonenumber(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def DeletePublicKey(self, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -484,7 +1076,20 @@ class UsersService:
         It is method for GET /users/{username}/publickeys/{label}
         """
         uri = self.client.base_url + "/users/"+username+"/publickeys/"+label
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=PublicKey(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def UpdatePublicKey(self, data, label, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -492,7 +1097,20 @@ class UsersService:
         It is method for PUT /users/{username}/publickeys/{label}
         """
         uri = self.client.base_url + "/users/"+username+"/publickeys/"+label
-        return self.client.put(uri, data, headers, query_params, content_type)
+        resp = self.client.put(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=PublicKey(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def ListPublicKeys(self, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -500,7 +1118,23 @@ class UsersService:
         It is method for GET /users/{username}/publickeys
         """
         uri = self.client.base_url + "/users/"+username+"/publickeys"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                resps = []
+                for elem in resp.json():
+                    resps.append(PublicKey(elem))
+                return APIResponse(data=resps, response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def AddPublicKey(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -508,7 +1142,20 @@ class UsersService:
         It is method for POST /users/{username}/publickeys
         """
         uri = self.client.base_url + "/users/"+username+"/publickeys"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=PublicKey(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def DeleteUserRegistryEntry(self, key, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -524,7 +1171,20 @@ class UsersService:
         It is method for GET /users/{username}/registry/{key}
         """
         uri = self.client.base_url + "/users/"+username+"/registry/"+key
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=RegistryEntry(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def ListUserRegistry(self, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -532,7 +1192,23 @@ class UsersService:
         It is method for GET /users/{username}/registry
         """
         uri = self.client.base_url + "/users/"+username+"/registry"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                resps = []
+                for elem in resp.json():
+                    resps.append(RegistryEntry(elem))
+                return APIResponse(data=resps, response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def AddUserRegistryEntry(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -540,7 +1216,20 @@ class UsersService:
         It is method for POST /users/{username}/registry
         """
         uri = self.client.base_url + "/users/"+username+"/registry"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=RegistryEntry(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def SignSeeObject(self, data, version, uniqueid, globalid, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -548,7 +1237,20 @@ class UsersService:
         It is method for PUT /users/{username}/see/{uniqueid}/{globalid}/sign/{version}
         """
         uri = self.client.base_url + "/users/"+username+"/see/"+uniqueid+"/"+globalid+"/sign/"+version
-        return self.client.put(uri, data, headers, query_params, content_type)
+        resp = self.client.put(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=SeeView(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def GetSeeObject(self, uniqueid, globalid, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -556,7 +1258,20 @@ class UsersService:
         It is method for GET /users/{username}/see/{uniqueid}/{globalid}
         """
         uri = self.client.base_url + "/users/"+username+"/see/"+uniqueid+"/"+globalid
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=See(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def UpdateSeeObject(self, data, uniqueid, globalid, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -564,7 +1279,20 @@ class UsersService:
         It is method for PUT /users/{username}/see/{uniqueid}/{globalid}
         """
         uri = self.client.base_url + "/users/"+username+"/see/"+uniqueid+"/"+globalid
-        return self.client.put(uri, data, headers, query_params, content_type)
+        resp = self.client.put(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=SeeView(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def GetSeeObjects(self, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -572,7 +1300,23 @@ class UsersService:
         It is method for GET /users/{username}/see
         """
         uri = self.client.base_url + "/users/"+username+"/see"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                resps = []
+                for elem in resp.json():
+                    resps.append(SeeView(elem))
+                return APIResponse(data=resps, response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def CreateSeeObject(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -580,7 +1324,20 @@ class UsersService:
         It is method for POST /users/{username}/see
         """
         uri = self.client.base_url + "/users/"+username+"/see"
-        return self.client.post(uri, data, headers, query_params, content_type)
+        resp = self.client.post(uri, data, headers, query_params, content_type)
+        try:
+            if resp.status_code == 201:
+                return APIResponse(data=SeeView(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def RemoveTOTP(self, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -596,7 +1353,20 @@ class UsersService:
         It is method for GET /users/{username}/totp
         """
         uri = self.client.base_url + "/users/"+username+"/totp"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=TOTPSecret(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def SetupTOTP(self, data, username, headers=None, query_params=None, content_type="application/json"):
         """
@@ -612,14 +1382,40 @@ class UsersService:
         It is method for GET /users/{username}/twofamethods
         """
         uri = self.client.base_url + "/users/"+username+"/twofamethods"
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=TwoFAMethods(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def GetUser(self, username, headers=None, query_params=None, content_type="application/json"):
         """
         It is method for GET /users/{username}
         """
         uri = self.client.base_url + "/users/"+username
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return APIResponse(data=User(resp.json()), response=resp)
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def CreateUser(self, data, headers=None, query_params=None, content_type="application/json"):
         """

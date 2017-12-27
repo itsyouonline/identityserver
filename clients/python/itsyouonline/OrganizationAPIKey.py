@@ -33,9 +33,11 @@ class OrganizationAPIKey(object):
 
         # set attributes
         data_types = [string_types]
-        self.callbackURL = client_support.set_property('callbackURL', data, data_types, False, [], False, False, class_name)
+        self.callbackURL = client_support.set_property(
+            'callbackURL', data, data_types, False, [], False, False, class_name)
         data_types = [bool]
-        self.clientCredentialsGrantType = client_support.set_property('clientCredentialsGrantType', data, data_types, False, [], False, False, class_name)
+        self.clientCredentialsGrantType = client_support.set_property(
+            'clientCredentialsGrantType', data, data_types, False, [], False, False, class_name)
         data_types = [Label]
         self.label = client_support.set_property('label', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]

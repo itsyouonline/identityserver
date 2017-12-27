@@ -32,7 +32,8 @@ class VerifyPhoneNumberReqBody(object):
         data_types = [string_types]
         self.smscode = client_support.set_property('smscode', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.validationkey = client_support.set_property('validationkey', data, data_types, False, [], False, True, class_name)
+        self.validationkey = client_support.set_property(
+            'validationkey', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

@@ -1,12 +1,11 @@
 """
-Auto-generated class for ValidatePhonenumberReqBody
+Auto-generated class for IsMember
 """
-from six import string_types
 
 from . import client_support
 
 
-class ValidatePhonenumberReqBody(object):
+class IsMember(object):
     """
     auto-generated. don't touch.
     """
@@ -14,22 +13,22 @@ class ValidatePhonenumberReqBody(object):
     @staticmethod
     def create(**kwargs):
         """
-        :type validationkey: str
-        :rtype: ValidatePhonenumberReqBody
+        :type IsMember: bool
+        :rtype: IsMember
         """
 
-        return ValidatePhonenumberReqBody(**kwargs)
+        return IsMember(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'ValidatePhonenumberReqBody'
+        class_name = 'IsMember'
         data = json or kwargs
 
         # set attributes
-        data_types = [string_types]
-        self.validationkey = client_support.set_property('validationkey', data, data_types, False, [], False, True, class_name)
+        data_types = [bool]
+        self.IsMember = client_support.set_property('IsMember', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

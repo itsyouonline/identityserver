@@ -1,12 +1,12 @@
 """
-Auto-generated class for SetOrganizationLogoReqBody
+Auto-generated class for UpdateApIkeyReqBody
 """
-from six import string_types
+from .Label import Label
 
 from . import client_support
 
 
-class SetOrganizationLogoReqBody(object):
+class UpdateApIkeyReqBody(object):
     """
     auto-generated. don't touch.
     """
@@ -14,22 +14,22 @@ class SetOrganizationLogoReqBody(object):
     @staticmethod
     def create(**kwargs):
         """
-        :type logo: str
-        :rtype: SetOrganizationLogoReqBody
+        :type label: Label
+        :rtype: UpdateApIkeyReqBody
         """
 
-        return SetOrganizationLogoReqBody(**kwargs)
+        return UpdateApIkeyReqBody(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'SetOrganizationLogoReqBody'
+        class_name = 'UpdateApIkeyReqBody'
         data = json or kwargs
 
         # set attributes
-        data_types = [string_types]
-        self.logo = client_support.set_property('logo', data, data_types, False, [], False, True, class_name)
+        data_types = [Label]
+        self.label = client_support.set_property('label', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

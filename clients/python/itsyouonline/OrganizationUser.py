@@ -31,7 +31,8 @@ class OrganizationUser(object):
 
         # set attributes
         data_types = [string_types]
-        self.missingscopes = client_support.set_property('missingscopes', data, data_types, False, [], True, True, class_name)
+        self.missingscopes = client_support.set_property(
+            'missingscopes', data, data_types, False, [], True, True, class_name)
         data_types = [string_types]
         self.role = client_support.set_property('role', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]

@@ -1,12 +1,12 @@
 """
-Auto-generated class for GetUserOrganizationsReqBody
+Auto-generated class for UserOrganizations
 """
 from six import string_types
 
 from . import client_support
 
 
-class GetUserOrganizationsReqBody(object):
+class UserOrganizations(object):
     """
     auto-generated. don't touch.
     """
@@ -16,16 +16,16 @@ class GetUserOrganizationsReqBody(object):
         """
         :type member: list[str]
         :type owner: list[str]
-        :rtype: GetUserOrganizationsReqBody
+        :rtype: UserOrganizations
         """
 
-        return GetUserOrganizationsReqBody(**kwargs)
+        return UserOrganizations(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'GetUserOrganizationsReqBody'
+        class_name = 'UserOrganizations'
         data = json or kwargs
 
         # set attributes

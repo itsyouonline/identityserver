@@ -1,12 +1,12 @@
 """
-Auto-generated class for UpdatePasswordReqBody
+Auto-generated class for TOTPSecret
 """
 from six import string_types
 
 from . import client_support
 
 
-class UpdatePasswordReqBody(object):
+class TOTPSecret(object):
     """
     auto-generated. don't touch.
     """
@@ -14,27 +14,26 @@ class UpdatePasswordReqBody(object):
     @staticmethod
     def create(**kwargs):
         """
-        :type currentpassword: str
-        :type newpassword: str
-        :rtype: UpdatePasswordReqBody
+        :type totpcode: str
+        :type totpsecret: str
+        :rtype: TOTPSecret
         """
 
-        return UpdatePasswordReqBody(**kwargs)
+        return TOTPSecret(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'UpdatePasswordReqBody'
+        class_name = 'TOTPSecret'
         data = json or kwargs
 
         # set attributes
         data_types = [string_types]
-        self.currentpassword = client_support.set_property(
-            'currentpassword', data, data_types, False, [], False, True, class_name)
+        self.totpcode = client_support.set_property('totpcode', data, data_types, False, [], False, True, class_name)
         data_types = [string_types]
-        self.newpassword = client_support.set_property(
-            'newpassword', data, data_types, False, [], False, True, class_name)
+        self.totpsecret = client_support.set_property(
+            'totpsecret', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

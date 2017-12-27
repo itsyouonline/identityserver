@@ -1,12 +1,12 @@
 """
-Auto-generated class for AddOrganizationMemberReqBody
+Auto-generated class for UpdateOrganizationApiKeyReqBody
 """
-from six import string_types
+from .OrganizationAPIKey import OrganizationAPIKey
 
 from . import client_support
 
 
-class AddOrganizationMemberReqBody(object):
+class UpdateOrganizationApiKeyReqBody(object):
     """
     auto-generated. don't touch.
     """
@@ -14,23 +14,22 @@ class AddOrganizationMemberReqBody(object):
     @staticmethod
     def create(**kwargs):
         """
-        :type searchstring: str
-        :rtype: AddOrganizationMemberReqBody
+        :type type: OrganizationAPIKey
+        :rtype: UpdateOrganizationApiKeyReqBody
         """
 
-        return AddOrganizationMemberReqBody(**kwargs)
+        return UpdateOrganizationApiKeyReqBody(**kwargs)
 
     def __init__(self, json=None, **kwargs):
         if json is None and not kwargs:
             raise ValueError('No data or kwargs present')
 
-        class_name = 'AddOrganizationMemberReqBody'
+        class_name = 'UpdateOrganizationApiKeyReqBody'
         data = json or kwargs
 
         # set attributes
-        data_types = [string_types]
-        self.searchstring = client_support.set_property(
-            'searchstring', data, data_types, False, [], False, True, class_name)
+        data_types = [OrganizationAPIKey]
+        self.type = client_support.set_property('type', data, data_types, False, [], False, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)

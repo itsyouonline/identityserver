@@ -29,7 +29,8 @@ class Ownerof(object):
 
         # set attributes
         data_types = [EmailAddress]
-        self.emailaddresses = client_support.set_property('emailaddresses', data, data_types, False, [], True, True, class_name)
+        self.emailaddresses = client_support.set_property(
+            'emailaddresses', data, data_types, False, [], True, True, class_name)
 
     def __str__(self):
         return self.as_json(indent=4)
