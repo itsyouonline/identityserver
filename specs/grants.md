@@ -27,18 +27,17 @@ In order to make the best use of grants, the app should workt with refresheable 
 ## Define api endpoints
 
 Because these calls are only usefull for the organization and less so for the user (and they definetely should not be able to add
-grants themselves), these endpoints are all under the `/api/organizations/{globalid}` endpoint. The user MUST have an existing
-authorization for the grants to be added on. If the user deletes his authorization, all grants are removed.
+grants themselves), these endpoints are all under the `/api/organizations/{globalid}` endpoint.
 
-1. GET `/api/organizations/{globalid}/grants/{useridentifier}`:
+1. GET `/api/organizations/{globalid}/grants/{user}`:
 
     Returns all the grants added to the authorization for the user
 
-2. DELETE `/api/organizations/{globalid}/grants/{useridentifier}/{grant}`:
+2. DELETE `/api/organizations/{globalid}/grants/{user}/{grant}`:
 
     Deletes the specified grant for the user
 
-3. DELETE `/api/organizations/{globalid}/grants/{useridentifier}`:
+3. DELETE `/api/organizations/{globalid}/grants/{user}`:
 
     Deletes all grants for the user
 
@@ -48,7 +47,7 @@ authorization for the grants to be added on. If the user deletes his authorizati
 
     Body:
 
-        useridentifier: string
+        user: string
         grant: string
 
 5. PUT: `/api/organizations/{globalid}/grants`:
@@ -57,7 +56,7 @@ authorization for the grants to be added on. If the user deletes his authorizati
 
     Body:
 
-        useridentifier: string
+        user: string
         oldgrant: string
         newgrant: string
 
