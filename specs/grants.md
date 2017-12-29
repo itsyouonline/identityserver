@@ -29,15 +29,15 @@ In order to make the best use of grants, the app should workt with refresheable 
 Because these calls are only usefull for the organization and less so for the user (and they definetely should not be able to add
 grants themselves), these endpoints are all under the `/api/organizations/{globalid}` endpoint.
 
-1. GET `/api/organizations/{globalid}/grants/{user}`:
+1. GET `/api/organizations/{globalid}/grants/{username}`:
 
     Returns all the grants added to the authorization for the user
 
-2. DELETE `/api/organizations/{globalid}/grants/{user}/{grant}`:
+2. DELETE `/api/organizations/{globalid}/grants/{username}/{grant}`:
 
     Deletes the specified grant for the user
 
-3. DELETE `/api/organizations/{globalid}/grants/{user}`:
+3. DELETE `/api/organizations/{globalid}/grants/{username}`:
 
     Deletes all grants for the user
 

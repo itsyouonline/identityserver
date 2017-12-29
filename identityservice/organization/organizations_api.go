@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/itsyouonline/identityserver/db/grants"
 	"github.com/itsyouonline/identityserver/db/iyoid"
 
 	log "github.com/Sirupsen/logrus"
@@ -2216,6 +2217,268 @@ func (api OrganizationsAPI) UserIsMember(w http.ResponseWriter, r *http.Request)
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&response)
+}
+
+// GetUserGrants lists all grants for a user
+func (api OrganizationsAPI) GetUserGrants(w http.ResponseWriter, r *http.Request) {
+	globalID := mux.Vars(r)["globalid"]
+	userIdentifier := mux.Vars(r)["username"]
+
+	userObj, err := SearchUser(r, userIdentifier)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up user identifier: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if err != nil {
+		// No user found for this identifier, return an empty list of grants
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode([]string{})
+	}
+
+	// userMgr := user.NewManager(r)
+	// authorization, err := userMgr.GetAuthorization(userObj.Username, globalID)
+	// if err != nil && !db.IsNotFound(err) {
+	// 	log.Error("Failed to retrieve authorization: ", err)
+	// 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	// 	return
+	// }
+	// if err != nil || authorization == nil {
+	// 	// return an empty list
+	// }
+	// authorization.
+
+	grantMgr := grants.NewManager(r)
+	grantObj, err := grantMgr.GetGrantsForUser(userObj.Username, globalID)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up user grants: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if db.IsNotFound(err) {
+		grantObj = &grants.SavedGrants{Grants: []grants.Grant{}}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(grantObj.Grants)
+}
+
+// DeleteUserGrant removes a single named grant for the user
+func (api OrganizationsAPI) DeleteUserGrant(w http.ResponseWriter, r *http.Request) {
+	globalid := mux.Vars(r)["globalid"]
+	userIdentifier := mux.Vars(r)["username"]
+	grantString := mux.Vars(r)["grant"]
+
+	grant := grants.Grant(grantString)
+
+	userObj, err := SearchUser(r, userIdentifier)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up user identifier: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if err != nil {
+		// No user found for this identifier, since the user thus no longer has the grant requested
+		// for removal, we can also return a 204 here
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	grantMgr := grants.NewManager(r)
+	err = grantMgr.DeleteUserGrant(userObj.Username, globalid, grant)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to delete user grant: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// DeleteAllUserGrants removes all grants for a user given by an organization
+func (api OrganizationsAPI) DeleteAllUserGrants(w http.ResponseWriter, r *http.Request) {
+	globalid := mux.Vars(r)["globalid"]
+	userIdentifier := mux.Vars(r)["username"]
+
+	userObj, err := SearchUser(r, userIdentifier)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up user identifier: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if err != nil {
+		// No user found for this identifier, since the user thus no longer has the grant requested
+		// for removal, we can also return a 204 here
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	grantMgr := grants.NewManager(r)
+	err = grantMgr.DeleteUserGrants(userObj.Username, globalid)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to delete user grants: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// CreateUserGrant gives a new grant to a user
+func (api OrganizationsAPI) CreateUserGrant(w http.ResponseWriter, r *http.Request) {
+	globalid := mux.Vars(r)["globalid"]
+
+	body := struct {
+		Username string       `json:"username"`
+		Grant    grants.Grant `json:"grant"`
+	}{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		log.Debug("Error decoding create grant body:", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	userObj, err := SearchUser(r, body.Username)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up user identifier: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if err != nil {
+		// We can't give a grant to a user that doesn't exist
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	grantMgr := grants.NewManager(r)
+	err = grantMgr.UpserGrant(userObj.Username, globalid, body.Grant)
+	if err != nil && err != grants.ErrGrantLimitReached {
+		log.Error("Failed to create user grant: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	if err != nil {
+		log.Debug("Max amount of grants reached")
+		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+	}
+
+	grantObj, err := grantMgr.GetGrantsForUser(userObj.Username, globalid)
+	if err != nil {
+		log.Error("Failed to look up user grants: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(grantObj.Grants)
+}
+
+// UpdateUserGrant changes an existing grant to a new one
+func (api OrganizationsAPI) UpdateUserGrant(w http.ResponseWriter, r *http.Request) {
+	globalid := mux.Vars(r)["globalid"]
+
+	body := struct {
+		Username string       `json:"username"`
+		OldGrant grants.Grant `json:"oldgrant"`
+		NewGrant grants.Grant `json:"newgrant"`
+	}{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		log.Debug("Error decoding create grant body:", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	userObj, err := SearchUser(r, body.Username)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up user identifier: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if err != nil {
+		// We can't give a grant to a user that doesn't exist
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	grantMgr := grants.NewManager(r)
+	savedGrants, err := grantMgr.GetGrantsForUser(userObj.Username, globalid)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to get user grants: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if db.IsNotFound(err) {
+		log.Debug("Can't update grants if user doesn't have any")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	found := false
+	for _, grant := range savedGrants.Grants {
+		if grant == body.OldGrant {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		log.Debug("Can't update grant if user doesn't have it")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	err = grantMgr.UpdateGrant(userObj.Username, globalid, body.OldGrant, body.NewGrant)
+	if err != nil {
+		log.Error("Failed to update user grant: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	grantObj, err := grantMgr.GetGrantsForUser(userObj.Username, globalid)
+	if err != nil {
+		log.Error("Failed to look up user grants: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(grantObj.Grants)
+}
+
+// ListUsersWithGrant lists all users with a given grant
+func (api OrganizationsAPI) ListUsersWithGrant(w http.ResponseWriter, r *http.Request) {
+	globalID := mux.Vars(r)["globalid"]
+	grantString := mux.Vars(r)["grant"]
+
+	grant := grants.Grant(grantString)
+
+	grantMgr := grants.NewManager(r)
+	grantObjs, err := grantMgr.GetByGrant(grant, globalID)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up users with grant: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	usernames := []string{}
+	for _, grantObj := range grantObjs {
+		usernames = append(usernames, grantObj.Username)
+	}
+
+	userIdentifiers, err := organization.ConvertUsernamesToIdentifiers(usernames, validationdb.NewManager(r))
+	if err != nil {
+		log.Error("Failed to convert usernames to identifiers: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(userIdentifiers)
 }
 
 func writeErrorResponse(responseWriter http.ResponseWriter, httpStatusCode int, message string) {
