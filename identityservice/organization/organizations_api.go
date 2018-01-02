@@ -2340,6 +2340,12 @@ func (api OrganizationsAPI) CreateUserGrant(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	if err := body.Grant.Validate(); err != nil {
+		log.Debug("Invalid grant: ", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	userObj, err := SearchUser(r, body.Username)
 	if err != nil && !db.IsNotFound(err) {
 		log.Error("Failed to look up user identifier: ", err)
@@ -2389,6 +2395,18 @@ func (api OrganizationsAPI) UpdateUserGrant(w http.ResponseWriter, r *http.Reque
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		log.Debug("Error decoding create grant body:", err)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	if err := body.OldGrant.Validate(); err != nil {
+		log.Debug("Invalid grant: ", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := body.NewGrant.Validate(); err != nil {
+		log.Debug("Invalid grant: ", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -2455,6 +2473,11 @@ func (api OrganizationsAPI) ListUsersWithGrant(w http.ResponseWriter, r *http.Re
 	grantString := mux.Vars(r)["grant"]
 
 	grant := grants.Grant(grantString)
+	if err := grant.Validate(); err != nil {
+		log.Debug("Invalid grant: ", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	grantMgr := grants.NewManager(r)
 	grantObjs, err := grantMgr.GetByGrant(grant, globalID)
