@@ -167,6 +167,16 @@ func (service *Service) AccessTokenHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	// Add grants
+	grantList, err := getGrants(at.Username, clientID, r)
+	if err != nil {
+		log.Error("Failed to get grants: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	scope = strings.Join([]string{scope, strings.Join(grantList, ",")}, ",")
+
 	response := struct {
 		AccessToken string      `json:"access_token"`
 		TokenType   string      `json:"token_type"`
@@ -278,6 +288,7 @@ func convertCodeToAccessTokenHandler(code string, clientID string, secret string
 	}
 
 	at = newAccessToken(ar.Username, "", ar.ClientID, ar.Scope)
+	// Add grants to access token
 	return
 }
 
