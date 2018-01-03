@@ -9,9 +9,15 @@ Suborganizations are a handy concept bu not really lightweight sine a user needs
 
 ### High level description
 
-Grants are application defined properties a third-party can stick on a user. Obviously, grants can only be added for users who are sharing information with the third-party (even if we allow grants to be added for arbitrary users, they won't be available unless info is shared anyway). Grants are only restricted in length and number. Besides that, an app can define any grant it wants for users. This allows the application more freedom to store small amounts of data.
+Grants are application defined properties a third-party can stick on a user. Grants are only restricted in length and number. Besides that, an app can define any grant it wants for users. This allows the application more freedom to store small amounts of data. It is essentially a replacement for the current (ab)use of subgroups to manage access rights. While these subgroups work fine for actual members of organizations, an invite to a subgroup needs to be accepted first before being able to authorize the memberof scope for it, thus this system is not able to manage access rights in real time, and requires a client - server operation instead of only a server operation. 
 
-In order to make the best use of grants, the app should workt with refresheable JWT's. When a grant gets added, the app can then simply call the JWT refresh endpoint. This will then return an updated JWT, including the new grant. In this way, a user can be given specific in app authorizations (e.g. folder access), without passing through ItsYou.online to accept an invite for a suborganization. 
+In order to make the best use of grants, the app should workt with refresheable JWT's. When a grant gets added, the app can then simply call the JWT refresh endpoint. This will then return an updated JWT, including the new grant. In this way, a user can be given specific in app authorizations (e.g. folder access), without passing through ItsYou.online to accept an invite for a suborganization.
+
+It should be noted that JWT's could be transfered to other servers (not under controll of the original authorized party).
+Because you might not want to disclose the grants you use to these people, or because you want to reduce the size of the 
+JWT which is send, grants are not automatically added to the JWT. To add them, the queryparameter `add_grants=true` must be 
+provided when retrieving the JWT from Itsyou.Online. Adding grants can be done at any time, e.g. it is possible to only
+add them after a JWT is refreshed (if they are not present in the original JWT for example) 
 
 ### Technical spec
 
