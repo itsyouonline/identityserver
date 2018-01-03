@@ -31,21 +31,12 @@ type SavedGrants struct {
 // Validate validates a raw grant. Validation is successfull if the error is nil
 func (grant *Grant) Validate() error {
 	g := string(*grant)
-	fmt.Println(len(g))
 	if len(g) > grantMaxLen {
 		return ErrGrantTooLarge
 	}
 	if len(g) < 2 {
 		return errors.New("grants must have a minimum size of 2 bytes")
 	}
-	// Index function
-	// f := func(r rune) bool {
-	//     return r < 'A' || r > 'z'
-	// }
-	// if strings.IndexFunc("HelloWorld", f) != -1 {
-	//     fmt.Println("Found special char")
-	// }
-
 	for i := 0; i < len(g); i++ {
 		// First Check if a byte represents an ascii number
 		if g[i] >= 48 && g[i] <= 57 {
