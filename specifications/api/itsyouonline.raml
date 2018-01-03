@@ -626,6 +626,38 @@ types:
       owner: string[]
       member: string[]
 
+  Grant:
+    type: string
+    minLength: 2
+    maxLength: 100
+    pattern: ^[a-zA-Z0-9\-_]{2,100}$
+
+  UserGrants:
+    type: Grant[]
+    description: All the grants a user has
+
+  CreateGrantBody:
+    properties: 
+      username:
+        type: string
+        description: User identifier of the user for whom to add the grant
+      grant:
+        type: Grant
+        description: The grant to add for the user
+
+  UpdateGrantBody:
+    properties: 
+      username:
+        type: string
+        description: User identifier of the user for whom to add the grant
+      oldgrant:
+        type: Grant
+        description: The old grant, to be replaced
+      newgrant:
+        type: Grant
+        description: The new grant which will replace the old grant
+  
+
 securedBy: [ oauth_2_0 ]
 /users:
   post:
@@ -1684,6 +1716,79 @@ securedBy: [ oauth_2_0 ]
       responses:
         204:
           description: Organization and all child organizations deleted
+
+    /grants:
+      post:
+        securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
+        displayName: CreateUserGrant
+        description: Create a new grant for a user
+        body:
+          application/json:
+            type: CreateGrantBody
+        responses: 
+          201:
+            body:
+              application/json:
+                type: UserGrants
+          404:
+            description: User not found
+          409:
+            description: Max amount of grants reached for this user
+
+      put:
+        securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
+        displayName: UpdateUserGrant
+        description: Update an existing grant for a user
+        body:
+          application/json:
+            type: UpdateGrantBody
+        responses:
+          200:
+            body:
+              application/json:
+                type: UserGrants
+          404:
+            description: User not found or the specified grant to update does not exist
+          
+      /{username}:
+        get:
+          securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
+          displayName: GetUserGrants
+          description: Get all grants for a user
+          responses:
+            200:
+              body:
+                application/json:
+                  type: UserGrants
+
+        delete:
+          securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
+          displayName: DeleteAllUserGrants
+          description: Delete all grants for this user
+          responses:
+            204:
+              description: Grants successfully removed
+      
+        /{grant}:
+          delete:
+            securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
+            displayName: DeleteUserGrant
+            description: Delete a specified grant for this user
+            responses:
+              204:
+                description: Grant successfully removed    
+
+      /havegrant/{grant}:
+        get:
+          securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
+          displayName: ListUsersWithGrant
+          description: Delete a specified grant for this user
+          responses: 
+            200:
+              body:
+                application/json:
+                  type: string[]
+                  description: a list off user identifiers of users who have the specified grant
 
     /description:
       post:

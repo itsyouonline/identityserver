@@ -2237,18 +2237,6 @@ func (api OrganizationsAPI) GetUserGrants(w http.ResponseWriter, r *http.Request
 		json.NewEncoder(w).Encode([]string{})
 	}
 
-	// userMgr := user.NewManager(r)
-	// authorization, err := userMgr.GetAuthorization(userObj.Username, globalID)
-	// if err != nil && !db.IsNotFound(err) {
-	// 	log.Error("Failed to retrieve authorization: ", err)
-	// 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-	// 	return
-	// }
-	// if err != nil || authorization == nil {
-	// 	// return an empty list
-	// }
-	// authorization.
-
 	grantMgr := grants.NewManager(r)
 	grantObj, err := grantMgr.GetGrantsForUser(userObj.Username, globalID)
 	if err != nil && !db.IsNotFound(err) {
@@ -2354,7 +2342,7 @@ func (api OrganizationsAPI) CreateUserGrant(w http.ResponseWriter, r *http.Reque
 	}
 	if err != nil {
 		// We can't give a grant to a user that doesn't exist
-		w.WriteHeader(http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
@@ -2418,7 +2406,7 @@ func (api OrganizationsAPI) UpdateUserGrant(w http.ResponseWriter, r *http.Reque
 	}
 	if err != nil {
 		// We can't give a grant to a user that doesn't exist
-		w.WriteHeader(http.StatusNotFound)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
 
@@ -2463,7 +2451,7 @@ func (api OrganizationsAPI) UpdateUserGrant(w http.ResponseWriter, r *http.Reque
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(grantObj.Grants)
 }
 
