@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/itsyouonline/identityserver/db/grants"
+
 	"github.com/gorilla/mux"
 
 	"github.com/itsyouonline/identityserver/db"
@@ -60,6 +62,7 @@ func (service *Service) AddRoutes(router *mux.Router) {
 	totp.InitModels()
 	see.InitModels()
 	iyoid.InitModels()
+	grants.InitModels()
 
 	// Company API
 	company.CompaniesInterfaceRoutes(router, company.CompaniesAPI{})
