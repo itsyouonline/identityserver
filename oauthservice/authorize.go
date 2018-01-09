@@ -250,6 +250,7 @@ func (service *Service) AuthorizeHandler(w http.ResponseWriter, request *http.Re
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+	log.Debug("Redirecting from authorize handler to: ", rederictURI)
 	http.Redirect(w, request, redirectURI, http.StatusFound)
 
 }
