@@ -2,13 +2,14 @@ language: go
 
 addons:
   # Currently there is a bug in firefox 55.0 causing disconnects in travis and test failures
-  firefox: "54.0"
+  firefox: latest
   chrome: stable
 
 install:
   - go get -u github.com/jteeuwen/go-bindata/...
   - go get -u -d github.com/Jumpscale/go-raml
   - npm install
+  - pip install --user autopep8  
 
 go:
   - 1.7
@@ -18,7 +19,6 @@ before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
   # Some time for xvfb to start
-  - pip install --user autopep8
   - sleep 3
 
 script:
