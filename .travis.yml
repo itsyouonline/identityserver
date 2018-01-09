@@ -18,7 +18,7 @@ before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
   # Some time for xvfb to start
-  - pip install autopep8
+  - pip install --user autopep8
   - sleep 3
 
 script:
