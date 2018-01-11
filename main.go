@@ -194,6 +194,9 @@ func main() {
 			emailService = communication.NewSMTPEmailService(smtpserver, smtpport, smtpuser, smtppassword)
 		}
 
+		// Max 5 sms per 10 mins per phone number
+		smsService = communication.NewRateLimitedSMSService(600, 5, smsService)
+
 		is := identityservice.NewService(smsService, emailService)
 		sc := siteservice.NewService(cookieSecret, smsService, emailService, is, version, testEnv)
 
