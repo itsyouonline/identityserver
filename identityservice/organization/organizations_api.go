@@ -2188,7 +2188,7 @@ func (api OrganizationsAPI) UserIsMember(w http.ResponseWriter, r *http.Request)
 	var isMember bool
 
 	user, err := SearchUser(r, username)
-	if err == mgo.ErrNotFound {
+	if db.IsNotFound(err) {
 		user = nil
 	} else if handleServerError(w, "getting user from database", err) {
 		return
@@ -2196,17 +2196,11 @@ func (api OrganizationsAPI) UserIsMember(w http.ResponseWriter, r *http.Request)
 
 	if user != nil {
 		orgMgr := organization.NewManager(r)
-		isMember, err = orgMgr.IsMember(globalID, username)
-		if handleServerError(w, "checking if user is a member of the organization", err) {
+		inOrgs, err := orgMgr.IsInOrgs(username, globalID)
+		if handleServerError(w, "checking if user is in organization", err) {
 			return
 		}
-
-		if !isMember {
-			isMember, err = orgMgr.IsOwner(globalID, username)
-			if handleServerError(w, "checking if user is an owner of the organization", err) {
-				return
-			}
-		}
+		isMember = len(inOrgs) > 0 && inOrgs[0] == globalID
 	}
 
 	response := struct {
