@@ -175,7 +175,7 @@ func (service *Service) ProcessLoginForm(w http.ResponseWriter, request *http.Re
 
 		validAuthorization, err := service.verifyExistingAuthorization(request, u.Username, client, possibleScopes)
 		if err != nil {
-			log.Error(err)
+			log.Error("Failed to check if authorization is valid: ", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -222,7 +222,22 @@ func (service *Service) verifyExistingAuthorization(request *http.Request, usern
 
 	if authorizedScopes != nil {
 
+		// Check if all authorizatons are given
 		validAuthorization = oauthservice.IsAuthorizationValid(possibleScopes, authorizedScopes)
+		// Check if the user still has the given authorizations
+		authorization, err := user.NewManager(request).GetAuthorization(username, clientID)
+		if err != nil {
+			log.Error("Failed to load authorization: ", err)
+			return false, err
+		}
+		if validAuthorization {
+			validAuthorization, err = oauthservice.UserHasAuthorizedScopes(request, authorization)
+			if err != nil {
+				log.Error("Failed to check if authorizated labels are still present: ", err)
+				return false, err
+			}
+		}
+
 		//Check if we are redirected from the authorize page, it might be that not all authorizations were given,
 		// authorize the login but only with the authorized scopes
 		referrer := request.Header.Get("Referer")

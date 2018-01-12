@@ -10,7 +10,10 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/itsyouonline/identityserver/credentials/oauth2"
+	"github.com/itsyouonline/identityserver/db"
 	organizationdb "github.com/itsyouonline/identityserver/db/organization"
+	"github.com/itsyouonline/identityserver/db/user"
+	"github.com/itsyouonline/identityserver/db/validation"
 )
 
 type authorizationRequest struct {
@@ -196,6 +199,23 @@ func (service *Service) AuthorizeHandler(w http.ResponseWriter, request *http.Re
 	if authorizedScopes != nil {
 		authorizedScopeString = strings.Join(authorizedScopes, ",")
 		validAuthorization = IsAuthorizationValid(possibleScopes, authorizedScopes)
+
+		// Check if the user still has the given authorizations
+		authorization, err := user.NewManager(request).GetAuthorization(username, clientID)
+		if err != nil {
+			log.Error("Failed to load authorization: ", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		if validAuthorization {
+			validAuthorization, err = UserHasAuthorizedScopes(request, authorization)
+			if err != nil {
+				log.Error("Failed to check if authorizated labels are still present: ", err)
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+		}
+
 		//Check if we are redirected from the authorize page, it might be that not all authorizations were given,
 		// authorize the login but only with the authorized scopes
 		referrer := request.Header.Get("Referer")
@@ -305,4 +325,163 @@ POSSIBLESCOPES:
 	// and all possible scopes are exhausted. Therefore the standing authorization
 	// is valid
 	return true
+}
+
+// UserHasAuthorizedScopes checks if all labels from an authorization scope mapping are still present on the user
+func UserHasAuthorizedScopes(r *http.Request, authorization *user.Authorization) (bool, error) {
+	log.Debug("Checking if user still has all mapped scopes")
+	user, err := user.NewManager(r).GetByName(authorization.Username)
+	if err != nil {
+		return false, err
+	}
+
+	found := false
+	if authorization.Addresses != nil {
+		for _, am := range authorization.Addresses {
+			for _, a := range user.Addresses {
+				if am.RealLabel == a.Label {
+					found = true
+					break
+				}
+			}
+			if !found {
+				log.Debug("Authorized real label not found for address")
+				return false, nil
+			}
+		}
+	}
+
+	found = false
+	if authorization.BankAccounts != nil {
+		for _, ba := range authorization.BankAccounts {
+			for _, b := range user.BankAccounts {
+				if ba.RealLabel == b.Label {
+					found = true
+					break
+				}
+			}
+			if !found {
+				log.Debug("Authorized real label not found for bank account")
+				return false, nil
+			}
+		}
+	}
+
+	found = false
+	if authorization.DigitalWallet != nil {
+		for _, dw := range authorization.DigitalWallet {
+			for _, d := range user.DigitalWallet {
+				if dw.RealLabel == d.Label {
+					found = true
+					break
+				}
+			}
+			if !found {
+				log.Debug("Authorized real label not found for digital wallet")
+				return false, nil
+			}
+		}
+	}
+
+	found = false
+	if authorization.EmailAddresses != nil {
+		for _, ea := range authorization.EmailAddresses {
+			for _, e := range user.EmailAddresses {
+				if ea.RealLabel == e.Label {
+					found = true
+					break
+				}
+			}
+			if !found {
+				log.Debug("Authorized real label not found for email address")
+				return false, nil
+			}
+		}
+	}
+
+	found = false
+	if authorization.Phonenumbers != nil {
+		for _, ep := range authorization.Phonenumbers {
+			for _, p := range user.Phonenumbers {
+				if ep.RealLabel == p.Label {
+					found = true
+					break
+				}
+			}
+			if !found {
+				log.Debug("Authorized real label not found for phone number")
+				return false, nil
+			}
+		}
+	}
+
+	found = false
+	if authorization.PublicKeys != nil {
+		for _, pk := range authorization.PublicKeys {
+			for _, p := range user.PublicKeys {
+				if pk.RealLabel == p.Label {
+					found = true
+					break
+				}
+			}
+			if !found {
+				log.Debug("Authorized real label not found for public key")
+				return false, nil
+			}
+		}
+	}
+
+	found = false
+	valMgr := validation.NewManager(r)
+	if authorization.ValidatedEmailAddresses != nil {
+		for _, vea := range authorization.ValidatedEmailAddresses {
+			for _, e := range user.EmailAddresses {
+				if vea.RealLabel == e.Label {
+					// Check that the email address is actually validated by the user in the authorization
+					validatedEmail, err := valMgr.GetByEmailAddressValidatedEmailAddress(e.EmailAddress)
+					if err != nil && !db.IsNotFound(err) {
+						return false, err
+					}
+					if db.IsNotFound(err) {
+						return false, nil
+					}
+					if validatedEmail.Username == authorization.Username {
+						found = true
+						break
+					}
+				}
+			}
+			if !found {
+				log.Debug("Validated email address in authorization does not belong to the user")
+				return false, nil
+			}
+		}
+	}
+
+	found = false
+	if authorization.ValidatedPhonenumbers != nil {
+		for _, vpn := range authorization.ValidatedPhonenumbers {
+			for _, p := range user.Phonenumbers {
+				if vpn.RealLabel == p.Label {
+					// Check that the phone is actually validated by the user in the authorization
+					validatedPhone, err := valMgr.GetByPhoneNumber(p.Phonenumber)
+					if err != nil && !db.IsNotFound(err) {
+						return false, err
+					}
+					if db.IsNotFound(err) {
+						return false, nil
+					}
+					if validatedPhone.Username == authorization.Username {
+						found = true
+						break
+					}
+				}
+			}
+			if !found {
+				log.Debug("Validated phone number in authorization does not belong to the user")
+				return false, nil
+			}
+		}
+	}
+	return true, nil
 }
