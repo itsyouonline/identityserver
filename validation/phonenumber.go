@@ -115,6 +115,24 @@ func (service *IYOPhonenumberValidationService) ConfirmValidation(request *http.
 	return
 }
 
+// ConfirmRegistrationValidation confirms a validation in the registartion flow. It does not add an entry in the validated
+// phone numbers collection
+func (service *IYOPhonenumberValidationService) ConfirmRegistrationValidation(r *http.Request, key, code string) (err error) {
+	info, err := service.getPhonenumberValidationInformation(r, key)
+	if err != nil {
+		return
+	}
+	if info == nil {
+		err = ErrInvalidOrExpiredKey
+		return
+	}
+	if info.SMSCode != code {
+		err = ErrInvalidCode
+		return
+	}
+	return validation.NewManager(r).UpdatePhonenumberValidationInformation(key, true)
+}
+
 //SendOrganizationInviteSms Sends an organization invite SMS
 func (service *IYOPhonenumberValidationService) SendOrganizationInviteSms(request *http.Request, invite *invitations.JoinOrganizationInvitation) (err error) {
 	link := fmt.Sprintf(invitations.InviteURL, request.Host, url.QueryEscape(invite.Code))

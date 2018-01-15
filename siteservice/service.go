@@ -62,7 +62,6 @@ func NewService(cookieSecret string, smsService communication.SMSService, emailS
 //InitModels initialize persistance models
 func (service *Service) InitModels() {
 	service.initLoginModels()
-	service.initRegistrationModels()
 }
 
 //AddRoutes registers the http routes with the router
@@ -72,9 +71,10 @@ func (service *Service) AddRoutes(router *mux.Router) {
 	router.Methods("GET").Path("/register").HandlerFunc(service.ShowRegistrationForm)
 	router.Methods("POST").Path("/register").HandlerFunc(service.ProcessRegistrationForm)
 	router.Methods("GET").Path("/phonevalidation").HandlerFunc(service.PhonenumberValidation)
+	router.Methods("GET").Path("/phoneregistrationvalidation").HandlerFunc(service.PhonenumberRegistrationValidation)
 	router.Methods("GET").Path("/pvl").HandlerFunc(service.PhonenumberValidationAndLogin)
 	router.Methods("GET").Path("/emailvalidation").HandlerFunc(service.EmailValidation)
-	router.Handle("/register/resendsms", alice.New(middleware.RateLimit(time.Minute*10, 3).Handler).Then(http.HandlerFunc(service.ResendPhonenumberConfirmation))).Methods("POST")
+	router.Methods("GET").Path("/emailregistrationvalidation").HandlerFunc(service.EmailRegistrationValidation)
 	router.Methods("GET").Path("/register/smsconfirmed").HandlerFunc(service.CheckRegistrationSMSConfirmation)
 	router.Methods("GET").Path("/register/emailconfirmed").HandlerFunc(service.CheckRegistrationEmailConfirmation)
 	router.Methods("POST").Path("/register/smsconfirmation").HandlerFunc(service.ProcessPhonenumberConfirmationForm)

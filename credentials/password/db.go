@@ -121,7 +121,7 @@ func (pwm *Manager) Save(username, password string) error {
 }
 
 // Check to see if a password is valid for a user.
-func (pwm *Manager) Check(username, password string) error {
+func Check(password string) error {
 	if len(password) < passwordMinLength {
 		return ErrInvalidPassword
 	}

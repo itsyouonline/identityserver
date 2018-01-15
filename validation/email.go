@@ -214,3 +214,21 @@ func (service *IYOEmailAddressValidationService) ConfirmValidation(request *http
 	}
 	return
 }
+
+// ConfirmRegistrationValidation checks if the supplied code matches the username and key. It does not add an entry
+// in the validated email addresses collection
+func (service *IYOEmailAddressValidationService) ConfirmRegistrationValidation(r *http.Request, key, secret string) (err error) {
+	info, err := service.getEmailAddressValidationInformation(r, key)
+	if err != nil {
+		return
+	}
+	if info == nil {
+		err = ErrInvalidOrExpiredKey
+		return
+	}
+	if info.Secret != secret {
+		err = ErrInvalidCode
+		return
+	}
+	return validation.NewManager(r).UpdateEmailAddressValidationInformation(key, true)
+}
