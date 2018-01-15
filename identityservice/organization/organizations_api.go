@@ -2508,10 +2508,10 @@ func handleServerError(responseWriter http.ResponseWriter, actionText string, er
 func SearchUser(r *http.Request, searchString string) (*user.User, error) {
 	userMgr := user.NewManager(r)
 	usr, err := userMgr.GetByName(searchString)
-	if usr != nil {
+	if err == nil {
 		return usr, err
 	}
-	if err != nil && !db.IsNotFound(err) {
+	if !db.IsNotFound(err) {
 		return nil, err
 	}
 	valMgr := validationdb.NewManager(r)
