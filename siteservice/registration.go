@@ -514,7 +514,7 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 		_ = service.phonenumberValidationService.ExpireValidation(r, registeringUser.PhoneValidationKey)
 
 		phonenumber := user.Phonenumber{Phonenumber: data.Phone}
-		validationkey, err := service.phonenumberValidationService.RequestValidation(r, registeringUser.SessionKey, phonenumber, fmt.Sprintf("https://%s/phonevalidation", r.Host), data.LangKey)
+		validationkey, err := service.phonenumberValidationService.RequestValidation(r, registeringUser.SessionKey, phonenumber, fmt.Sprintf("https://%s/phoneregistrationvalidation", r.Host), data.LangKey)
 		if err != nil {
 			log.Error("Failed to send phonenumber verification in registration flow: ", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -621,7 +621,7 @@ func (service *Service) ResendValidationInfo(w http.ResponseWriter, r *http.Requ
 
 		log.Debug("Sending new phone number confirmation")
 
-		validationkey, err := service.phonenumberValidationService.RequestValidation(r, registeringUser.SessionKey, user.Phonenumber{Phonenumber: phonenumber}, fmt.Sprintf("https://%s/phonevalidation", r.Host), data.LangKey)
+		validationkey, err := service.phonenumberValidationService.RequestValidation(r, registeringUser.SessionKey, user.Phonenumber{Phonenumber: phonenumber}, fmt.Sprintf("https://%s/phoneregistrationvalidation", r.Host), data.LangKey)
 		if err != nil {
 			log.Error("ResendPhonenumberConfirmation: Could not get validationkey: ", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
