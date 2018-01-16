@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	mongoRegistrationsInProgressCollectionName = "RegistrationsInProgress"
+	mongoRegistrationsInProgressCollectionName = "registrationsinprogress"
 )
 
 // InitModels intializes the mongo models
