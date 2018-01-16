@@ -9,6 +9,8 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/itsyouonline/identityserver/db/persistentlog"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/sessions"
 	"github.com/itsyouonline/identityserver/credentials/password"
@@ -83,6 +85,10 @@ func (service *Service) CheckRegistrationSMSConfirmation(w http.ResponseWriter, 
 	}
 	response["confirmed"] = confirmed
 
+	if confirmed {
+		persistentlog.NewManager(r).SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "Users phone is confirmed"))
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
@@ -133,6 +139,10 @@ func (service *Service) CheckRegistrationEmailConfirmation(w http.ResponseWriter
 	}
 	response["confirmed"] = confirmed
 
+	if confirmed {
+		persistentlog.NewManager(r).SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "Users email is confirmed"))
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
@@ -167,7 +177,7 @@ func (service *Service) ProcessPhonenumberConfirmationForm(w http.ResponseWriter
 
 	registrationSession, err := service.GetSession(r, SessionForRegistration, "registrationdetails")
 	if err != nil {
-		log.Debug(err)
+		log.Debug("Failed to get registration session: ", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -194,7 +204,9 @@ func (service *Service) ProcessPhonenumberConfirmationForm(w http.ResponseWriter
 		return
 	}
 
+	logMgr := persistentlog.NewManager(r)
 	if isConfirmed, _ := service.phonenumberValidationService.IsConfirmed(r, registeringUser.PhoneValidationKey); isConfirmed {
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User processed phone number form, but phone is already confirmed"))
 		response.Confirmed = true
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(response)
@@ -203,12 +215,14 @@ func (service *Service) ProcessPhonenumberConfirmationForm(w http.ResponseWriter
 
 	err = service.phonenumberValidationService.ConfirmRegistrationValidation(r, registeringUser.PhoneValidationKey, values.Smscode)
 	if err == validation.ErrInvalidCode {
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User processed phone number form with invalid code"))
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		response.Error = "invalid_sms_code"
 		json.NewEncoder(w).Encode(&response)
 		return
 	}
 	if err == validation.ErrInvalidOrExpiredKey {
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User processed phone number form, but key is expired"))
 		sessions.Save(r, w)
 		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(&response)
@@ -217,6 +231,7 @@ func (service *Service) ProcessPhonenumberConfirmationForm(w http.ResponseWriter
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+	logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User processed phone number form successfully, phone is confirmed"))
 	response.Confirmed = true
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
@@ -273,10 +288,14 @@ func (service *Service) ProcessRegistrationForm(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	logMgr := persistentlog.NewManager(r)
+
 	// check if phone number is validated or sms code is provided to validate phone
 	phonevalidationkey := registeringUser.PhoneValidationKey
 
 	if isConfirmed, _ := service.phonenumberValidationService.IsConfirmed(r, phonevalidationkey); !isConfirmed {
+
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User tried to register without validated phone"))
 
 		smscode := values.PhonenumberCode
 		if smscode == "" {
@@ -304,12 +323,14 @@ func (service *Service) ProcessRegistrationForm(w http.ResponseWriter, r *http.R
 			return
 		}
 
-		return
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User confirmed phone number in final registration step"))
+
 	}
 
 	emailvalidationkey := registeringUser.EmailValidationKey
 	emailConfirmed, _ := service.emailaddressValidationService.IsConfirmed(r, emailvalidationkey)
 	if !emailConfirmed {
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User tried to register without validated email"))
 		log.Debug("Email not confirmed yet")
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
@@ -372,6 +393,7 @@ func (service *Service) ProcessRegistrationForm(w http.ResponseWriter, r *http.R
 		return
 	}
 
+	logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "Registration finished, user created"))
 	log.Debug("Finished saving new user information")
 
 	// Ideally, we would remove the registration session here as registration is completed.
@@ -405,6 +427,8 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 
 	rMgr := registration.NewManager(r)
 
+	logMgr := persistentlog.NewManager(r)
+
 	var registeringUser *registration.InProgressRegistration
 	sessionKey, existingSession := registrationSession.Values["sessionkey"].(string)
 	if existingSession {
@@ -414,6 +438,7 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User updated his info"))
 	} else {
 		sessionKey, err = tools.GenerateRandomString()
 		if err != nil {
@@ -422,6 +447,7 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		registeringUser = registration.New(sessionKey)
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, fmt.Sprintf("User started registration flow. State: %s", r.URL.Query().Get("state"))))
 	}
 
 	registrationSession.Values["sessionkey"] = sessionKey
@@ -443,6 +469,7 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 
 	// Check the users first name
 	if !user.ValidateName(strings.ToLower(data.Firstname)) {
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User first name invalid"))
 		writeErrorResponse(w, "invalid_first_name", http.StatusUnprocessableEntity)
 		return
 	}
@@ -450,6 +477,7 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 
 	// Check the users last name
 	if !user.ValidateName(strings.ToLower(data.Lastname)) {
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User last name invalid"))
 		writeErrorResponse(w, "invalid_last_name", http.StatusUnprocessableEntity)
 		return
 	}
@@ -460,6 +488,7 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 	// See https://tools.ietf.org/html/rfc5322#section-3.4.1 for details
 	data.Email = strings.ToLower(data.Email)
 	if !user.ValidateEmailAddress(data.Email) {
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User email invalid"))
 		writeErrorResponse(w, "invalid_email_format", http.StatusUnprocessableEntity)
 		return
 	}
@@ -467,6 +496,7 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 	// Check if the email is already known
 	valMgr := validationdb.NewManager(r)
 	if _, err = valMgr.GetByEmailAddress(data.Email); !db.IsNotFound(err) {
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User email already confirmed by someone else"))
 		writeErrorResponse(w, "email_already_used", http.StatusUnprocessableEntity)
 		return
 	}
@@ -474,12 +504,14 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 	registeringUser.Email = data.Email
 
 	if !user.ValidatePhoneNumber(data.Phone) {
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User phone number invalid"))
 		writeErrorResponse(w, "invalid_phonenumber", http.StatusUnprocessableEntity)
 		return
 	}
 
 	// Check if the phone number is already known
 	if _, err = valMgr.GetByPhoneNumber(data.Phone); !db.IsNotFound(err) {
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User phone number already confirmed by someone else"))
 		writeErrorResponse(w, "phone_already_used", http.StatusUnprocessableEntity)
 		return
 	}
@@ -493,6 +525,7 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User password invalid"))
 		log.Debug("User password is invalid")
 		writeErrorResponse(w, "invalid_password", http.StatusUnprocessableEntity)
 		return
@@ -521,6 +554,8 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		registeringUser.PhoneValidationKey = validationkey
+
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User started phone validation for new phone"))
 	}
 
 	// Email validation
@@ -537,6 +572,8 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		registeringUser.EmailValidationKey = mailvalidationkey
+
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User started email validation for new email"))
 	}
 
 	// Save the info we have so far about the user registering
@@ -545,6 +582,8 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
+	logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User info processed, moving to validations"))
 
 	sessions.Save(r, w)
 	// validations created
@@ -590,6 +629,8 @@ func (service *Service) ResendValidationInfo(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
+	logMgr := persistentlog.NewManager(r)
+
 	rMgr := registration.NewManager(r)
 	registeringUser, err := rMgr.GetRegisteringUserBySessionKey(sessionKey)
 	if err != nil {
@@ -604,6 +645,8 @@ func (service *Service) ResendValidationInfo(w http.ResponseWriter, r *http.Requ
 	phoneConfirmed, err := service.phonenumberValidationService.IsConfirmed(r, phonevalidationkey)
 	if err != nil {
 		log.Error("Failed to check if phone number is already confirmed: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 
 	if !phoneConfirmed {
@@ -628,6 +671,8 @@ func (service *Service) ResendValidationInfo(w http.ResponseWriter, r *http.Requ
 			return
 		}
 		registeringUser.PhoneValidationKey = validationkey
+
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "Resending phone validation"))
 	}
 
 	// There is no point in resending the validation request if the email is already
@@ -636,6 +681,8 @@ func (service *Service) ResendValidationInfo(w http.ResponseWriter, r *http.Requ
 	emailConfirmed, err := service.emailaddressValidationService.IsConfirmed(r, emailvalidationkey)
 	if err != nil && err != validation.ErrInvalidOrExpiredKey {
 		log.Error("Failed to check if email address is already confirmed: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 
 	if phoneConfirmed && !emailConfirmed {
@@ -659,6 +706,8 @@ func (service *Service) ResendValidationInfo(w http.ResponseWriter, r *http.Requ
 			return
 		}
 		registeringUser.EmailValidationKey = emailvalidationkey
+
+		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "Resending emal validation"))
 	}
 
 	// Save the info we have so far about the user registering

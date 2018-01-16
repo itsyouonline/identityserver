@@ -4,6 +4,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/itsyouonline/identityserver/db/persistentlog"
+	"github.com/itsyouonline/identityserver/db/registration"
+
 	"github.com/itsyouonline/identityserver/db/grants"
 
 	"github.com/gorilla/mux"
@@ -91,6 +94,11 @@ func (service *Service) AddRoutes(router *mux.Router) {
 
 	// Initialize keystore models
 	keystore.InitModels()
+
+	// Initialize registration models
+	registration.InitModels()
+
+	persistentlog.InitModels()
 }
 
 func generateRandomBytes(n int) ([]byte, error) {
