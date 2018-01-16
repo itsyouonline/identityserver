@@ -1052,82 +1052,78 @@ func (api OrganizationsAPI) DeleteOrganization(w http.ResponseWriter, r *http.Re
 		return
 	}
 	for _, org := range suborganizations {
-		api.actualOrganizationDeletion(w, r, org.Globalid)
+		if err = api.actualOrganizationDeletion(r, org.Globalid); err != nil {
+			handleServerError(w, "deleting organization", err)
+			return
+		}
 	}
-	api.actualOrganizationDeletion(w, r, globalid)
+	if err = api.actualOrganizationDeletion(r, globalid); err != nil {
+		handleServerError(w, "deleting organization", err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // Delete organization with globalid.
-func (api OrganizationsAPI) actualOrganizationDeletion(w http.ResponseWriter, r *http.Request, globalid string) {
+func (api OrganizationsAPI) actualOrganizationDeletion(r *http.Request, globalid string) error {
 	orgMgr := organization.NewManager(r)
 	logoMgr := organization.NewLogoManager(r)
+	// If the organization does not exist then it should be completely cleaned up already.
+	// Since the goal of this method is to make sure it does not exist anymore, that goal is already complete
 	if !orgMgr.Exists(globalid) {
-		writeErrorResponse(w, http.StatusNotFound, "organization_not_found")
-		return
+		return nil
 	}
-	err := orgMgr.Remove(globalid)
-	if handleServerError(w, "removing organization", err) {
-		return
+	if err := orgMgr.Remove(globalid); err != nil {
+		return err
 	}
 	// Remove the organizations as a member/ an owner of other organizations
 	organizations, err := orgMgr.AllByOrg(globalid)
-	if handleServerError(w, "fetching organizations where this org is an owner/a member", err) {
-		return
+	if err != nil {
+		return err
 	}
 	for _, org := range organizations {
-		err = orgMgr.RemoveOrganization(org.Globalid, globalid)
-		if handleServerError(w, "removing organizations as a member / an owner of another organization", err) {
-			return
+		if err = orgMgr.RemoveOrganization(org.Globalid, globalid); err != nil {
+			return err
 		}
 	}
 	if logoMgr.Exists(globalid) {
-		err = logoMgr.Remove(globalid)
-		if handleServerError(w, "removing organization logo", err) {
-			return
+		if err = logoMgr.Remove(globalid); err != nil {
+			return err
 		}
 	}
 	orgReqMgr := invitations.NewInvitationManager(r)
-	err = orgReqMgr.RemoveAll(globalid)
-	if handleServerError(w, "removing organization invitations", err) {
-		return
+	if err = orgReqMgr.RemoveAll(globalid); err != nil {
+		return err
 	}
 
 	oauthMgr := oauthservice.NewManager(r)
-	err = oauthMgr.RemoveTokensByGlobalID(globalid)
-	if handleServerError(w, "removing organization oauth accesstokens", err) {
-		return
+	if err = oauthMgr.RemoveTokensByGlobalID(globalid); err != nil {
+		return err
 	}
-	err = oauthMgr.DeleteAllForOrganization(globalid)
-	if handleServerError(w, "removing client secrets", err) {
-		return
+	if err = oauthMgr.DeleteAllForOrganization(globalid); err != nil {
+		return err
 	}
-	err = oauthMgr.RemoveClientsByID(globalid)
-	if handleServerError(w, "removing organization oauth clients", err) {
-		return
+	if err = oauthMgr.RemoveClientsByID(globalid); err != nil {
+		return err
 	}
 	userMgr := user.NewManager(r)
-	err = userMgr.DeleteAllAuthorizations(globalid)
-	if handleServerError(w, "removing all authorizations", err) {
-		return
+	if err = userMgr.DeleteAllAuthorizations(globalid); err != nil {
+		return err
 	}
-	err = oauthMgr.RemoveClientsByID(globalid)
-	if handleServerError(w, "removing organization oauth clients", err) {
-		return
+	if err = oauthMgr.RemoveClientsByID(globalid); err != nil {
+		return err
 	}
 	l2faMgr := organization.NewLast2FAManager(r)
-	err = l2faMgr.RemoveByOrganization(globalid)
-	if handleServerError(w, "removing organization 2FA history", err) {
-		return
+	if err = l2faMgr.RemoveByOrganization(globalid); err != nil {
+		return err
 	}
 	descriptionMgr := organization.NewDescriptionManager(r)
-	err = descriptionMgr.Remove(globalid)
-	if err != nil {
-		if err != mgo.ErrNotFound {
-			handleServerError(w, "removing organization description", err)
-			return
+	if err = descriptionMgr.Remove(globalid); err != nil {
+		if !db.IsNotFound(err) {
+			return err
 		}
 	}
-	w.WriteHeader(http.StatusNoContent)
+	return nil
 }
 
 // ListOrganizationRegistry is the handler for GET /organizations/{globalid}/registry
