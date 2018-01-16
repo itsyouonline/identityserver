@@ -1123,6 +1123,12 @@ func (api OrganizationsAPI) actualOrganizationDeletion(r *http.Request, globalid
 			return err
 		}
 	}
+	if iyoid.NewManager(r).DeleteForClient(globalid); err != nil && !db.IsNotFound(err) {
+		return err
+	}
+	if grants.NewManager(r).DeleteOrgGrants(globalid); err != nil && !db.IsNotFound(err) {
+		return err
+	}
 	return nil
 }
 

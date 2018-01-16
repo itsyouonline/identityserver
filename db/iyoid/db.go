@@ -110,3 +110,9 @@ func (m *Manager) UpsertIdentifier(username, azp, iyoid string) error {
 	_, err = m.getIdentifierCollection().Upsert(bson.M{"username": username, "azp": azp}, bson.M{"$push": bson.M{"iyoids": iyoid}})
 	return err
 }
+
+// DeleteForClient deletes all iyoids for a client id
+func (m *Manager) DeleteForClient(azp string) error {
+	_, err := m.getIdentifierCollection().RemoveAll(bson.M{"azp": azp})
+	return err
+}

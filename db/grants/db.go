@@ -120,3 +120,9 @@ func (m *Manager) DeleteUserGrant(username, globalID string, grant Grant) error 
 func (m *Manager) DeleteUserGrants(username, globalID string) error {
 	return m.collection.Remove(bson.M{"username": username, "globalid": globalID})
 }
+
+// DeleteOrgGrants remooves all grants given by an organization
+func (m *Manager) DeleteOrgGrants(globalID string) error {
+	_, err := m.collection.RemoveAll(bson.M{"globalid": globalID})
+	return err
+}
