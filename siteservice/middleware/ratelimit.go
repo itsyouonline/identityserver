@@ -15,6 +15,13 @@ type RateLimiter struct {
 	*stdlib.Middleware
 }
 
+const (
+	// DefaultRateLimitPeriod is the default time window to track calls
+	DefaultRateLimitPeriod = time.Minute * 10
+	// DefaultRateLimit is the default amount of allowed calls to the protected api in the time window
+	DefaultRateLimit = 5
+)
+
 // RateLimit creates a new rate limiting middleware with in memory store
 // the amount of maximum requests can be set as wel as the duration in which this limit
 // applies

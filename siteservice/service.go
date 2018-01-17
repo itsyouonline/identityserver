@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -79,7 +78,7 @@ func (service *Service) AddRoutes(router *mux.Router) {
 	router.Methods("GET").Path("/register/emailconfirmed").HandlerFunc(service.CheckRegistrationEmailConfirmation)
 	router.Methods("POST").Path("/register/smsconfirmation").HandlerFunc(service.ProcessPhonenumberConfirmationForm)
 	router.Methods("POST").Path("/register/validation").HandlerFunc(service.ValidateInfo)
-	router.Handle("/register/resendvalidation", alice.New(middleware.RateLimit(time.Minute*10, 3).Handler).Then(http.HandlerFunc(service.ResendValidationInfo))).Methods("POST")
+	router.Handle("/register/resendvalidation", alice.New(middleware.RateLimit(middleware.DefaultRateLimitPeriod, middleware.DefaultRateLimit).Handler).Then(http.HandlerFunc(service.ResendValidationInfo))).Methods("POST")
 	//Enable us to "forget" users in case we are not in production
 	router.Methods("GET").Path("/register/delete").HandlerFunc(service.ServeForgetAccountPage)
 	router.Methods("POST").Path("/register/delete").HandlerFunc(service.ForgetAccountHandler)
@@ -88,9 +87,9 @@ func (service *Service) AddRoutes(router *mux.Router) {
 	router.Methods("POST").Path("/login").HandlerFunc(service.ProcessLoginForm)
 	router.Methods("GET").Path("/login/twofamethods").HandlerFunc(service.GetTwoFactorAuthenticationMethods)
 	router.Methods("POST").Path("/login/totpconfirmation").HandlerFunc(service.ProcessTOTPConfirmation)
-	router.Handle("/login/smscode/{phoneLabel}", alice.New(middleware.RateLimit(time.Minute*10, 3).Handler).Then(http.HandlerFunc(service.GetSmsCode))).Methods("POST")
+	router.Handle("/login/smscode/{phoneLabel}", alice.New(middleware.RateLimit(middleware.DefaultRateLimitPeriod, middleware.DefaultRateLimit).Handler).Then(http.HandlerFunc(service.GetSmsCode))).Methods("POST")
 	router.Methods("POST").Path("/login/smsconfirmation").HandlerFunc(service.Process2FASMSConfirmation)
-	router.Handle("/login/resendsms", alice.New(middleware.RateLimit(time.Minute*10, 3).Handler).Then(http.HandlerFunc(service.LoginResendPhonenumberConfirmation))).Methods("POST")
+	router.Handle("/login/resendsms", alice.New(middleware.RateLimit(middleware.DefaultRateLimitPeriod, middleware.DefaultRateLimit).Handler).Then(http.HandlerFunc(service.LoginResendPhonenumberConfirmation))).Methods("POST")
 	router.Methods("GET").Path("/sc").HandlerFunc(service.MobileSMSConfirmation)
 	router.Methods("GET").Path("/login/smsconfirmed").HandlerFunc(service.Check2FASMSConfirmation)
 	router.Methods("POST").Path("/login/validateemail").HandlerFunc(service.ValidateEmail)

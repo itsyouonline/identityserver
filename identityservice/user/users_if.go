@@ -5,7 +5,6 @@ package user
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/itsyouonline/identityserver/siteservice/middleware"
@@ -214,7 +213,7 @@ func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
 	r.Handle("/users/{username}/phonenumbers/{label}", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin", "user:phone:{label}", "user:phone:{label}:write"}).Handler).Then(http.HandlerFunc(i.GetUserPhonenumberByLabel))).Methods("GET")
 	r.Handle("/users/{username}/phonenumbers/{label}", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin", "user:phone:{label}:write"}).Handler).Then(http.HandlerFunc(i.UpdatePhonenumber))).Methods("PUT")
 	r.Handle("/users/{username}/phonenumbers/{label}", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin", "user:phone:{label}:write"}).Handler).Then(http.HandlerFunc(i.DeletePhonenumber))).Methods("DELETE")
-	r.Handle("/users/{username}/phonenumbers/{label}/validate", alice.New(middleware.RateLimit(time.Minute*10, 3).Handler, NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.ValidatePhoneNumber))).Methods("POST")
+	r.Handle("/users/{username}/phonenumbers/{label}/validate", alice.New(middleware.RateLimit(middleware.DefaultRateLimitPeriod, middleware.DefaultRateLimit).Handler, NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.ValidatePhoneNumber))).Methods("POST")
 	r.Handle("/users/{username}/phonenumbers/{label}/validate", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.VerifyPhoneNumber))).Methods("PUT")
 	r.Handle("/users/{username}/banks", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.GetUserBankAccounts))).Methods("GET")
 	r.Handle("/users/{username}/banks", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.CreateUserBankAccount))).Methods("POST")
