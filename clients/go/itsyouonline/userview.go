@@ -14,6 +14,7 @@ type userview struct {
 	Firstname               string                `json:"firstname" validate:"nonzero"`
 	Github                  GithubAccount         `json:"github,omitempty"`
 	Lastname                string                `json:"lastname" validate:"nonzero"`
+	Organizations           []string              `json:"organizations" validate:"nonzero"`
 	Ownerof                 Ownerof               `json:"ownerof" validate:"nonzero"`
 	Phonenumbers            []Phonenumber         `json:"phonenumbers" validate:"nonzero"`
 	PublicKeys              []PublicKey           `json:"publicKeys,omitempty"`

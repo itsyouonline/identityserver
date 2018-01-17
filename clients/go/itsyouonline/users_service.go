@@ -22,11 +22,24 @@ func (s *UsersService) GetAvatarImage(hash string, headers, queryParams map[stri
 	return resp, err
 }
 
+// Lookup the username for an iyo id
+func (s *UsersService) LookupIyoID(identifier string, headers, queryParams map[string]interface{}) (*http.Response, error) {
+	var err error
+
+	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/identifiers/"+identifier, headers, queryParams)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	return resp, err
+}
+
 // Removes an address
 func (s *UsersService) DeleteUserAddress(label, username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/addresses/"+label, headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/addresses/"+label, headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +128,7 @@ func (s *UsersService) RegisterNewUserAddress(username string, body Address, hea
 func (s *UsersService) DeleteAPIkey(label, username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/apikeys/"+label, headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/apikeys/"+label, headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +217,7 @@ func (s *UsersService) AddApiKey(username string, body UsersUsernameApikeysPostR
 func (s *UsersService) DeleteAuthorization(grantedTo, username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/authorizations/"+grantedTo, headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/authorizations/"+grantedTo, headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -320,7 +333,7 @@ func (s *UsersService) UpdateAvatarFile(newlabel, label, username string, header
 func (s *UsersService) DeleteAvatar(label, username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/avatar/"+label, headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/avatar/"+label, headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -402,7 +415,7 @@ func (s *UsersService) CreateAvatarFromLink(username string, body Avatar, header
 func (s *UsersService) DeleteUserBankAccount(username, label string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/banks/"+label, headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/banks/"+label, headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -475,9 +488,9 @@ func (s *UsersService) GetUserBankAccounts(username string, headers, queryParams
 }
 
 // Create new bank account
-func (s *UsersService) CreateUserBankAccount(username string, body UsersUsernameBanksPostReqBody, headers, queryParams map[string]interface{}) (UsersUsernameBanksPostRespBody, *http.Response, error) {
+func (s *UsersService) CreateUserBankAccount(username string, body BankAccount, headers, queryParams map[string]interface{}) (BankAccount, *http.Response, error) {
 	var err error
-	var respBody201 UsersUsernameBanksPostRespBody
+	var respBody201 BankAccount
 
 	resp, err := s.client.doReqWithBody("POST", s.client.BaseURI+"/users/"+username+"/banks", &body, headers, queryParams)
 	if err != nil {
@@ -541,7 +554,7 @@ func (s *UsersService) CreateUserContract(username string, body Contract, header
 func (s *UsersService) DeleteDigitalAssetAddress(label, username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/digitalwallet/"+label, headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/digitalwallet/"+label, headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -643,7 +656,7 @@ func (s *UsersService) ValidateEmailAddress(label, username string, headers, que
 func (s *UsersService) DeleteEmailAddress(label, username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/emailaddresses/"+label, headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/emailaddresses/"+label, headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -711,7 +724,7 @@ func (s *UsersService) RegisterNewEmailAddress(username string, body EmailAddres
 func (s *UsersService) DeleteFacebookAccount(username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/facebook", headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/facebook", headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -724,13 +737,55 @@ func (s *UsersService) DeleteFacebookAccount(username string, headers, queryPara
 func (s *UsersService) DeleteGithubAccount(username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/github", headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/github", headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	return resp, err
+}
+
+// List all generated iyo ids generated for a user by a party
+func (s *UsersService) ListIyoIds(username string, headers, queryParams map[string]interface{}) (IyoID, *http.Response, error) {
+	var err error
+	var respBody200 IyoID
+
+	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/identifiers", headers, queryParams)
+	if err != nil {
+		return respBody200, nil, err
+	}
+	defer resp.Body.Close()
+
+	switch resp.StatusCode {
+	case 200:
+		err = json.NewDecoder(resp.Body).Decode(&respBody200)
+	default:
+		err = goraml.NewAPIError(resp, nil)
+	}
+
+	return respBody200, resp, err
+}
+
+// Generate a new iyo id for this user
+func (s *UsersService) GenerateIyoID(username string, headers, queryParams map[string]interface{}) (IyoID, *http.Response, error) {
+	var err error
+	var respBody201 IyoID
+
+	resp, err := s.client.doReqWithBody("POST", s.client.BaseURI+"/users/"+username+"/identifiers", nil, headers, queryParams)
+	if err != nil {
+		return respBody201, nil, err
+	}
+	defer resp.Body.Close()
+
+	switch resp.StatusCode {
+	case 201:
+		err = json.NewDecoder(resp.Body).Decode(&respBody201)
+	default:
+		err = goraml.NewAPIError(resp, nil)
+	}
+
+	return respBody201, resp, err
 }
 
 // Get all of the user his information. This will be limited to the scopes that the user has authorized. See https://gig.gitbooks.io/itsyouonline/content/oauth2/scopes.html and https://gig.gitbooks.io/itsyouonline/content/oauth2/availableScopes.html for more information.
@@ -831,9 +886,9 @@ func (s *UsersService) UpdateUserName(username string, body UsersUsernameNamePut
 }
 
 // Get the list of notifications, these are pending invitations or approvals or other requests.
-func (s *UsersService) GetNotifications(username string, headers, queryParams map[string]interface{}) (UsersUsernameNotificationsGetRespBody, *http.Response, error) {
+func (s *UsersService) GetNotifications(username string, headers, queryParams map[string]interface{}) (Notification, *http.Response, error) {
 	var err error
-	var respBody200 UsersUsernameNotificationsGetRespBody
+	var respBody200 Notification
 
 	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/notifications", headers, queryParams)
 	if err != nil {
@@ -855,7 +910,7 @@ func (s *UsersService) GetNotifications(username string, headers, queryParams ma
 func (s *UsersService) LeaveOrganization(globalid, username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/organizations/"+globalid+"/leave", headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/organizations/"+globalid+"/leave", headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -876,7 +931,7 @@ func (s *UsersService) LeaveOrganization(globalid, username string, headers, que
 func (s *UsersService) RejectMembership(globalid, role, username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/organizations/"+globalid+"/roles/"+role, headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/organizations/"+globalid+"/roles/"+role, headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -907,9 +962,9 @@ func (s *UsersService) AcceptMembership(globalid, role, username string, body Jo
 }
 
 // Get the list organizations a user is owner or member of
-func (s *UsersService) GetUserOrganizations(username string, headers, queryParams map[string]interface{}) (UsersUsernameOrganizationsGetRespBody, *http.Response, error) {
+func (s *UsersService) GetUserOrganizations(username string, headers, queryParams map[string]interface{}) (UserOrganizations, *http.Response, error) {
 	var err error
-	var respBody200 UsersUsernameOrganizationsGetRespBody
+	var respBody200 UserOrganizations
 
 	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/organizations", headers, queryParams)
 	if err != nil {
@@ -949,9 +1004,9 @@ func (s *UsersService) UpdatePassword(username string, body UsersUsernamePasswor
 }
 
 // Sends a validation text message to the phone number.
-func (s *UsersService) ValidatePhonenumber(label, username string, headers, queryParams map[string]interface{}) (UsersUsernamePhonenumbersLabelValidatePostRespBody, *http.Response, error) {
+func (s *UsersService) ValidatePhonenumber(label, username string, headers, queryParams map[string]interface{}) (PhoneNumberValidation, *http.Response, error) {
 	var err error
-	var respBody200 UsersUsernamePhonenumbersLabelValidatePostRespBody
+	var respBody200 PhoneNumberValidation
 
 	resp, err := s.client.doReqWithBody("POST", s.client.BaseURI+"/users/"+username+"/phonenumbers/"+label+"/validate", nil, headers, queryParams)
 	if err != nil {
@@ -994,7 +1049,7 @@ func (s *UsersService) VerifyPhoneNumber(label, username string, body UsersUsern
 func (s *UsersService) DeleteUserPhonenumber(label, username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/phonenumbers/"+label, headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/phonenumbers/"+label, headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -1083,7 +1138,7 @@ func (s *UsersService) RegisterNewUserPhonenumber(username string, body Phonenum
 func (s *UsersService) DeletePublicKey(label, username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/publickeys/"+label, headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/publickeys/"+label, headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -1180,7 +1235,7 @@ func (s *UsersService) AddPublicKey(username string, body PublicKey, headers, qu
 func (s *UsersService) DeleteUserRegistryEntry(key, username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/registry/"+key, headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/registry/"+key, headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -1361,7 +1416,7 @@ func (s *UsersService) CreateSeeObject(username string, body SeeView, headers, q
 func (s *UsersService) RemoveTOTP(username string, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
-	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/totp", headers, queryParams)
+	resp, err := s.client.doReqNoBody("DELETE", s.client.BaseURI+"/users/"+username+"/totp", headers, queryParams)
 	if err != nil {
 		return nil, err
 	}
@@ -1371,9 +1426,9 @@ func (s *UsersService) RemoveTOTP(username string, headers, queryParams map[stri
 }
 
 // Get a TOTP secret and issuer that can be used for setting up two-factor authentication.
-func (s *UsersService) GetTOTPSecret(username string, headers, queryParams map[string]interface{}) (UsersUsernameTotpGetRespBody, *http.Response, error) {
+func (s *UsersService) GetTOTPSecret(username string, headers, queryParams map[string]interface{}) (TOTPSecret, *http.Response, error) {
 	var err error
-	var respBody200 UsersUsernameTotpGetRespBody
+	var respBody200 TOTPSecret
 
 	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/totp", headers, queryParams)
 	if err != nil {
@@ -1392,7 +1447,7 @@ func (s *UsersService) GetTOTPSecret(username string, headers, queryParams map[s
 }
 
 // Enable two-factor authentication using TOTP.
-func (s *UsersService) SetupTOTP(username string, body UsersUsernameTotpPostReqBody, headers, queryParams map[string]interface{}) (*http.Response, error) {
+func (s *UsersService) SetupTOTP(username string, body TOTPSecret, headers, queryParams map[string]interface{}) (*http.Response, error) {
 	var err error
 
 	resp, err := s.client.doReqWithBody("POST", s.client.BaseURI+"/users/"+username+"/totp", &body, headers, queryParams)
@@ -1405,9 +1460,9 @@ func (s *UsersService) SetupTOTP(username string, body UsersUsernameTotpPostReqB
 }
 
 // Get the possible two-factor authentication methods"
-func (s *UsersService) GetTwoFAMethods(username string, headers, queryParams map[string]interface{}) (UsersUsernameTwofamethodsGetRespBody, *http.Response, error) {
+func (s *UsersService) GetTwoFAMethods(username string, headers, queryParams map[string]interface{}) (TwoFAMethods, *http.Response, error) {
 	var err error
-	var respBody200 UsersUsernameTwofamethodsGetRespBody
+	var respBody200 TwoFAMethods
 
 	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/"+username+"/twofamethods", headers, queryParams)
 	if err != nil {
