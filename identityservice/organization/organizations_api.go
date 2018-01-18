@@ -2233,6 +2233,17 @@ func (api OrganizationsAPI) GetUserGrants(w http.ResponseWriter, r *http.Request
 		json.NewEncoder(w).Encode([]string{})
 	}
 
+	hasAuth, err := hasAuthorization(r, userObj.Username, globalID)
+	if handleServerError(w, "checking if user has an authorization for the organization", err) {
+		return
+	}
+	if !hasAuth {
+		log.Debug("Refusing to list grants for user without authorization")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("User does not have an authorization for this organzation"))
+		return
+	}
+
 	grantMgr := grants.NewManager(r)
 	grantObj, err := grantMgr.GetGrantsForUser(userObj.Username, globalID)
 	if err != nil && !db.IsNotFound(err) {
@@ -2270,6 +2281,17 @@ func (api OrganizationsAPI) DeleteUserGrant(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	hasAuth, err := hasAuthorization(r, userObj.Username, globalid)
+	if handleServerError(w, "checking if user has an authorization for the organization", err) {
+		return
+	}
+	if !hasAuth {
+		log.Debug("Refusing to delete grant for user without authorization")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("User does not have an authorization for this organzation"))
+		return
+	}
+
 	grantMgr := grants.NewManager(r)
 	err = grantMgr.DeleteUserGrant(userObj.Username, globalid, grant)
 	if err != nil && !db.IsNotFound(err) {
@@ -2296,6 +2318,17 @@ func (api OrganizationsAPI) DeleteAllUserGrants(w http.ResponseWriter, r *http.R
 		// No user found for this identifier, since the user thus no longer has the grant requested
 		// for removal, we can also return a 204 here
 		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	hasAuth, err := hasAuthorization(r, userObj.Username, globalid)
+	if handleServerError(w, "checking if user has an authorization for the organization", err) {
+		return
+	}
+	if !hasAuth {
+		log.Debug("Refusing to delete all grants for user without authorization")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("User does not have an authorization for this organzation"))
 		return
 	}
 
@@ -2339,6 +2372,17 @@ func (api OrganizationsAPI) CreateUserGrant(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		// We can't give a grant to a user that doesn't exist
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	hasAuth, err := hasAuthorization(r, userObj.Username, globalid)
+	if handleServerError(w, "checking if user has an authorization for the organization", err) {
+		return
+	}
+	if !hasAuth {
+		log.Debug("Refusing to give a grant to a user without authorization")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("User does not have an authorization for this organzation"))
 		return
 	}
 
@@ -2403,6 +2447,17 @@ func (api OrganizationsAPI) UpdateUserGrant(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		// We can't give a grant to a user that doesn't exist
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	hasAuth, err := hasAuthorization(r, userObj.Username, globalid)
+	if handleServerError(w, "checking if user has an authorization for the organization", err) {
+		return
+	}
+	if !hasAuth {
+		log.Debug("Refusing to update grant for user without authorization")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("User does not have an authorization for this organzation"))
 		return
 	}
 
@@ -2476,6 +2531,12 @@ func (api OrganizationsAPI) ListUsersWithGrant(w http.ResponseWriter, r *http.Re
 		usernames = append(usernames, grantObj.Username)
 	}
 
+	log.Debug("filtering users to those with an open authorization")
+	usernames, err = user.NewManager(r).FilterUsersWithAuthorizations(usernames, globalID)
+	if handleServerError(w, "filtering out users without authorization", err) {
+		return
+	}
+
 	userIdentifiers, err := organization.ConvertUsernamesToIdentifiers(usernames, validationdb.NewManager(r))
 	if err != nil {
 		log.Error("Failed to convert usernames to identifiers: ", err)
@@ -2495,6 +2556,20 @@ func writeErrorResponse(responseWriter http.ResponseWriter, httpStatusCode int, 
 	}{Error: message}
 	responseWriter.WriteHeader(httpStatusCode)
 	json.NewEncoder(responseWriter).Encode(&errorResponse)
+}
+
+// hasAuthorization checks if a user has an open authorization for an organization
+func hasAuthorization(r *http.Request, username string, globalid string) (bool, error) {
+	userMgr := user.NewManager(r)
+
+	authorization, err := userMgr.GetAuthorization(username, globalid)
+	if err != nil && !db.IsNotFound(err) {
+		return false, err
+	}
+	if authorization == nil || db.IsNotFound(err) {
+		return false, nil
+	}
+	return true, nil
 }
 
 func handleServerError(responseWriter http.ResponseWriter, actionText string, err error) bool {
