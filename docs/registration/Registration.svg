@@ -1,386 +1,58 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   version="1.1"
-   id="svg2"
-   viewBox="0 0 744.09448819 1052.3622047"
-   height="297mm"
-   width="210mm">
-  <defs
-     id="defs4">
-    <marker
-       style="overflow:visible;"
-       id="marker5415"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path5417" />
-    </marker>
-    <marker
-       orient="auto"
-       refY="0.0"
-       refX="0.0"
-       id="marker5351"
-       style="overflow:visible;">
-      <path
-         id="path5353"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         transform="scale(0.8) rotate(180) translate(12.5,0)" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="marker5289"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path5291" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="marker5160"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path5162" />
-    </marker>
-    <marker
-       orient="auto"
-       refY="0.0"
-       refX="0.0"
-       id="marker5114"
-       style="overflow:visible;">
-      <path
-         id="path5116"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         transform="scale(0.8) rotate(180) translate(12.5,0)" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="marker5004"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path5006" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="marker4838"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path4840" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="Arrow1Lend"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path4161" />
-    </marker>
-    <filter
-       height="1.1805695"
-       y="-0.090284759"
-       width="1.0898828"
-       x="-0.044941404"
-       id="filter4704"
-       style="color-interpolation-filters:sRGB">
-      <feGaussianBlur
-         id="feGaussianBlur4706"
-         stdDeviation="3.540389" />
-    </filter>
-  </defs>
-  <metadata
-     id="metadata7">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <g
-     id="layer1">
-    <circle
-       r="15.152288"
-       cy="72.514236"
-       cx="81.82238"
-       id="path3336"
-       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-    <path
-       id="path4152"
-       d="M 96.974444,72.550804 255.46409,72.933293"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)" />
-    <text
-       id="text4712"
-       y="65.443169"
-       x="141.42136"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       xml:space="preserve"><tspan
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
-         y="65.443169"
-         x="141.42136"
-         id="tspan4714">Register</tspan></text>
-    <g
-       id="g5094">
-      <g
-         id="g5054"
-         transform="translate(-1.0101525,0.0406102)">
-        <rect
-           transform="matrix(1.0095527,0,0,1.0084574,18.043081,-113.11182)"
-           style="fill:#060606;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.83200002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4704)"
-           id="rect4454"
-           width="189.06694"
-           height="94.112602"
-           x="237.32196"
-           y="141.12038"
-           ry="24.263405" />
-        <rect
-           ry="24.263405"
-           y="26.064524"
-           x="256.47424"
-           height="94.112602"
-           width="189.06694"
-           id="rect4140"
-           style="fill:#fff1c7;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-      </g>
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         x="351.51279"
-         y="63.402557"
-         id="text4722"><tspan
-           id="tspan4724"
-           x="351.51279"
-           y="63.402557"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:25px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;writing-mode:lr-tb;text-anchor:middle">Registration</tspan><tspan
-           x="351.51279"
-           y="94.652557"
-           id="tspan4726"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:25px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;writing-mode:lr-tb;text-anchor:middle">Form</tspan></text>
-    </g>
-    <g
-       transform="translate(-11.111678,-109.87317)"
-       id="g4822">
-      <g
-         transform="translate(32.324882,217.28433)"
-         id="g4738">
-        <rect
-           ry="24.263405"
-           y="141.12038"
-           x="237.32196"
-           height="94.112602"
-           width="189.06694"
-           id="rect4740"
-           style="fill:#060606;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.83200002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4704)"
-           transform="matrix(1.0095527,0,0,1.0084574,-2.1599704,-2.0965688)" />
-        <rect
-           style="fill:#fff1c7;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-           id="rect4742"
-           width="189.06694"
-           height="94.112602"
-           x="236.27119"
-           y="137.07977"
-           ry="24.263405" />
-      </g>
-      <text
-         id="text4744"
-         y="391.70215"
-         x="363.63461"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:25px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           x="363.63461"
-           y="391.70215"
-           id="tspan4816">Waiting for</tspan><tspan
-           x="363.63461"
-           y="422.95215"
-           id="tspan4820">confirmation</tspan></text>
-    </g>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="481.07626"
-       y="66.453323"
-       id="text4802"><tspan
-         y="66.453323"
-         x="481.07626"
-         id="tspan4806">With totp secret</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="317.20819"
-       y="185.65132"
-       id="text4872"><tspan
-         id="tspan4874"
-         x="317.20819"
-         y="185.65132"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start">With SMS</tspan></text>
-    <path
-       transform="matrix(0.40732486,0.7352434,-0.66900164,0.44765648,327.57298,-57.975258)"
-       d="m 296.73919,288.71808 c -10.22215,18.81502 -35.7294,20.80389 -52.32566,9.70508 -24.05202,-16.08489 -26.02442,-50.23019 -9.57327,-72.42135 10.80288,-14.57215 28.10655,-23.31318 46.11864,-24.35039"
-       id="path4996"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker5004)" />
-    <path
-       id="path5102"
-       d="m 447.48534,77.082168 182.00109,0.734693"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker5114)" />
-    <path
-       id="path5106"
-       d="m 352.49749,124.15157 1.11326,120.33936"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker5160)" />
-    <text
-       id="text5206"
-       y="221.00665"
-       x="214.17264"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       xml:space="preserve"><tspan
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;writing-mode:lr-tb;text-anchor:middle"
-         y="221.00665"
-         x="214.17264"
-         id="tspan5208">Resend</tspan><tspan
-         id="tspan5210"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;writing-mode:lr-tb;text-anchor:middle"
-         y="239.75665"
-         x="214.17264">(new phonenumber)</tspan></text>
-    <g
-       id="g5230">
-      <g
-         id="g4754"
-         transform="translate(0,6)">
-        <circle
-           style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           id="circle4750"
-           cx="651.56873"
-           cy="71.504082"
-           r="15.152288" />
-        <circle
-           r="22.486418"
-           cy="71.907631"
-           cx="651.97229"
-           id="circle4752"
-           style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.48402786px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      </g>
-      <text
-         xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         x="615.42651"
-         y="117.9711"
-         id="text5212"><tspan
-           y="117.9711"
-           x="615.42651"
-           id="tspan5214">Registered</tspan></text>
-    </g>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="61.862919"
-       y="106.85943"
-       id="text5226"><tspan
-         y="106.85943"
-         x="61.862919"
-         id="tspan5228">Initial</tspan></text>
-    <g
-       id="g5275">
-      <g
-         transform="translate(-299.04576,378.74629)"
-         id="g5239">
-        <circle
-           r="15.152288"
-           cy="71.504082"
-           cx="651.56873"
-           id="circle5241"
-           style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-        <circle
-           style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.48402786px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           id="circle5243"
-           cx="651.97229"
-           cy="71.907631"
-           r="22.486418" />
-      </g>
-      <text
-         id="text5245"
-         y="490.71738"
-         x="356.38077"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         xml:space="preserve"><tspan
-           id="tspan5247"
-           x="356.38077"
-           y="490.71738">Removed temporary</tspan><tspan
-           x="356.38077"
-           y="509.46738"
-           id="tspan5273">registration</tspan></text>
-    </g>
-    <path
-       id="path5266"
-       d="m 353.18025,337.68601 0.34112,88.74028"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.90084368px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker5289)" />
-    <path
-       id="path5341"
-       d="M 427.02784,244.94977 641.29613,97.697581"
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker5351)" />
-    <path
-       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.14674795px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker5415)"
-       d="M 449.37478,320.62519 638.27681,97.72422"
-       id="path5343" />
-    <text
-       id="text5489"
-       y="233.12849"
-       x="502.35037"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       xml:space="preserve"><tspan
-         id="tspan5491"
-         x="502.35037"
-         y="233.12849">Follow link in SMS</tspan></text>
-    <text
-       id="text5493"
-       y="175.50919"
-       x="454.75137"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       xml:space="preserve"><tspan
-         id="tspan5495"
-         x="454.75137"
-         y="175.50919">Code in SMS</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="326.34018"
-       y="384.61078"
-       id="text6134"><tspan
-         y="384.61078"
-         x="326.34018"
-         id="tspan6136">Timeout</tspan></text>
-  </g>
-</svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="850px" preserveAspectRatio="none" style="width:526px;height:850px;" version="1.1" viewBox="0 0 526 850" width="526px" zoomAndPan="magnify"><defs><filter height="300%" id="f1orox0y0p4qsw" width="300%" x="-1" y="-1"><feGaussianBlur result="blurOut" stdDeviation="2.0"/><feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/><feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/><feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/></filter></defs><g><ellipse cx="161.5" cy="18" fill="#000000" filter="url(#f1orox0y0p4qsw)" rx="10" ry="10" style="stroke: none; stroke-width: 1.0;"/><rect fill="#FEFECE" filter="url(#f1orox0y0p4qsw)" height="50.2656" rx="12.5" ry="12.5" style="stroke: #A80036; stroke-width: 1.5;" width="309" x="7" y="89"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="7" x2="316" y1="115.2969" y2="115.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="118" x="102.5" y="106.9951">Basic Info screen</text><text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacingAndGlyphs" textLength="289" x="12" y="131.4355">Creates temporary user in separate collection</text><rect fill="#FEFECE" filter="url(#f1orox0y0p4qsw)" height="50" rx="12.5" ry="12.5" style="stroke: #A80036; stroke-width: 1.5;" width="180" x="71.5" y="216"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="71.5" x2="251.5" y1="242.2969" y2="242.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="160" x="81.5" y="233.9951">Confirm phone number</text><rect fill="#FEFECE" filter="url(#f1orox0y0p4qsw)" height="50" rx="12.5" ry="12.5" style="stroke: #A80036; stroke-width: 1.5;" width="195" x="6" y="597"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="6" x2="201" y1="623.2969" y2="623.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="175" x="16" y="614.9951">Removed temporary user</text><rect fill="#FEFECE" filter="url(#f1orox0y0p4qsw)" height="50" rx="12.5" ry="12.5" style="stroke: #A80036; stroke-width: 1.5;" width="138" x="171.5" y="343"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="171.5" x2="309.5" y1="369.2969" y2="369.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="118" x="181.5" y="360.9951">Phone confirmed</text><rect fill="#FEFECE" filter="url(#f1orox0y0p4qsw)" height="50" rx="12.5" ry="12.5" style="stroke: #A80036; stroke-width: 1.5;" width="113" x="184" y="470"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="184" x2="297" y1="496.2969" y2="496.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="93" x="194" y="487.9951">Confirm email</text><rect fill="#FEFECE" filter="url(#f1orox0y0p4qsw)" height="50" rx="12.5" ry="12.5" style="stroke: #A80036; stroke-width: 1.5;" width="129" x="256" y="597"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="256" x2="385" y1="623.2969" y2="623.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="109" x="266" y="614.9951">Email confirmed</text><rect fill="#FEFECE" filter="url(#f1orox0y0p4qsw)" height="50" rx="12.5" ry="12.5" style="stroke: #A80036; stroke-width: 1.5;" width="368" x="146.5" y="708"/><line style="stroke: #A80036; stroke-width: 1.5;" x1="146.5" x2="514.5" y1="734.2969" y2="734.2969"/><text fill="#000000" font-family="sans-serif" font-size="14" lengthAdjust="spacingAndGlyphs" textLength="348" x="156.5" y="725.9951">Create real user from temporary registration object</text><ellipse cx="162.5" cy="829" fill="none" filter="url(#f1orox0y0p4qsw)" rx="10" ry="10" style="stroke: #000000; stroke-width: 1.0;"/><ellipse cx="163" cy="829.5" fill="#000000" rx="6" ry="6" style="stroke: none; stroke-width: 1.0;"/><!--link *start to BasicInfo--><path d="M161.5,28.013 C161.5,40.698 161.5,64.409 161.5,83.57 " fill="none" id="*start-BasicInfo" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="161.5,88.84,165.5,79.84,161.5,83.84,157.5,79.84,161.5,88.84" style="stroke: #A80036; stroke-width: 1.0;"/><!--link BasicInfo to ConfirmPhone--><path d="M161.5,139.101 C161.5,159.593 161.5,189.076 161.5,210.884 " fill="none" id="BasicInfo-ConfirmPhone" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="161.5,215.973,165.5,206.973,161.5,210.973,157.5,206.973,161.5,215.973" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="148" x="162.5" y="182.0669">Send confirmation sms</text><!--link ConfirmPhone to ConfirmPhone--><path d="M251.672,229.673 C271.805,230.716 286.5,234.491 286.5,241 C286.5,246.949 274.223,250.615 256.736,251.998 " fill="none" id="ConfirmPhone-ConfirmPhone" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="251.672,252.327,260.9125,255.7349,256.6615,252.0027,260.3937,247.7518,251.672,252.327" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="112" x="292.5" y="245.5669">Resend validation</text><!--link ConfirmPhone to Timeout--><path d="M153.418,266.251 C150.579,275.48 147.583,286.146 145.5,296 C122.763,403.578 110.419,533.956 105.7342,591.395 " fill="none" id="ConfirmPhone-Timeout" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="105.3047,596.723,110.0144,588.0732,105.7061,591.7391,102.0402,587.4309,105.3047,596.723" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="52" x="125.5" y="436.0669">Timeout</text><!--link ConfirmPhone to PhoneConfirmed--><path d="M154.569,266.076 C151.799,280.514 150.834,298.772 158.5,313 C164.231,323.636 173.073,332.521 182.866,339.81 " fill="none" id="ConfirmPhone-PhoneConfirmed" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="187.114,342.837,182.1041,334.3576,183.0415,339.9362,177.4628,340.8736,187.114,342.837" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="94" x="159.5" y="309.0669">Follow sms link</text><!--link ConfirmPhone to PhoneConfirmed--><path d="M227.416,266.122 C239.816,273.743 251.175,283.538 258.5,296 C265.961,308.693 262.991,324.427 257.5,337.856 " fill="none" id="ConfirmPhone-PhoneConfirmed" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="255.377,342.689,262.6599,336.0588,257.3886,338.1115,255.3359,332.8402,255.377,342.689" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="79" x="264.5" y="309.0669">Code in sms</text><!--link PhoneConfirmed to ConfirmEmail--><path d="M240.5,393.101 C240.5,413.593 240.5,443.076 240.5,464.884 " fill="none" id="PhoneConfirmed-ConfirmEmail" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="240.5,469.973,244.5,460.973,240.5,464.973,236.5,460.973,240.5,469.973" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="154" x="241.5" y="436.0669">Email confirmation send</text><!--link ConfirmEmail to ConfirmEmail--><path d="M297.24,483.376 C316.511,483.315 332,487.189 332,495 C332,502.078 319.279,505.924 302.551,506.538 " fill="none" id="ConfirmEmail-ConfirmEmail" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="297.24,506.624,306.304,510.4769,302.2393,506.5426,306.1737,502.4779,297.24,506.624" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="114" x="338" y="499.5669">Resend Validation</text><!--link ConfirmEmail to Timeout--><path d="M214.085,520.101 C191.057,541.112 157.67,571.575 133.612,593.526 " fill="none" id="ConfirmEmail-Timeout" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="129.834,596.973,139.1782,593.8609,133.5273,593.6026,133.7856,587.9516,129.834,596.973" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="52" x="181.5" y="563.0669">Timeout</text><!--link ConfirmEmail to EmailConfirmed--><path d="M255.925,520.101 C269.206,540.853 288.388,570.824 302.394,592.709 " fill="none" id="ConfirmEmail-EmailConfirmed" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="305.123,596.973,303.6399,587.2364,302.4274,592.7618,296.9021,591.5493,305.123,596.973" style="stroke: #A80036; stroke-width: 1.0;"/><text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacingAndGlyphs" textLength="60" x="286.5" y="563.0669">Email link</text><!--link EmailConfirmed to CreateUser--><path d="M322.719,647.191 C324.221,663.56 326.214,685.279 327.806,702.64 " fill="none" id="EmailConfirmed-CreateUser" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="328.287,707.877,331.4476,698.549,327.8299,702.8979,323.481,699.2803,328.287,707.877" style="stroke: #A80036; stroke-width: 1.0;"/><!--link CreateUser to *end--><path d="M287.236,758.2073 C250.204,778.9277 199.234,807.4463 175.561,820.6918 " fill="none" id="CreateUser-*end" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="170.939,823.2781,180.7463,822.3743,175.3024,820.8367,176.84,815.3928,170.939,823.2781" style="stroke: #A80036; stroke-width: 1.0;"/><!--link Timeout to *end--><path d="M106.015,647.387 C109.299,674.807 116.142,720.412 128.5,758 C135.415,779.0328 147.409,801.8221 155.146,815.5004 " fill="none" id="Timeout-*end" style="stroke: #A80036; stroke-width: 1.0;"/><polygon fill="#A80036" points="157.787,820.1074,156.7824,810.3099,155.3008,815.7693,149.8415,814.2878,157.787,820.1074" style="stroke: #A80036; stroke-width: 1.0;"/><!--
+@startuml current_registration_flow
+
+
+
+   
+
+
+    
+
+
+
+
+
+
+
+
+
+[*] - -> BasicInfo
+state "Basic Info screen" as BasicInfo: Creates temporary user in separate collection
+
+BasicInfo - -> ConfirmPhone: Send confirmation sms
+state "Confirm phone number" as ConfirmPhone
+
+ConfirmPhone -> ConfirmPhone: Resend validation
+ConfirmPhone - -> Timeout: Timeout
+ConfirmPhone - -> PhoneConfirmed: Follow sms link
+ConfirmPhone - -> PhoneConfirmed: Code in sms
+
+state "Phone confirmed" as PhoneConfirmed
+PhoneConfirmed - -> ConfirmEmail: Email confirmation send
+
+state "Confirm email" as ConfirmEmail
+ConfirmEmail -> ConfirmEmail: Resend Validation
+ConfirmEmail - -> Timeout: Timeout
+ConfirmEmail - -> EmailConfirmed: Email link
+
+state "Email confirmed" as EmailConfirmed
+EmailConfirmed - -> CreateUser
+
+state "Create real user from temporary registration object" as CreateUser
+CreateUser - -> [*]
+
+state "Removed temporary user" as Timeout
+Timeout - -> [*]
+@enduml
+
+PlantUML version 1.2017.20(Mon Dec 11 17:57:05 CET 2017)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Java Version: 1.8.0_151-8u151-b12-0ubuntu0.16.04.2-b12
+Operating System: Linux
+OS Version: 4.13.8-041308-generic
+Default Encoding: UTF-8
+Language: en
+Country: US
+--></g></svg>
