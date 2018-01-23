@@ -24,7 +24,7 @@ before_script:
 
 script:
 # Use last go raml version which still supports go 1.7
-  - cd $GOPATH/src/github.com/Jumpscale/go-raml && git checkout 54440d5ac34a75d8991c7c0aee05b11adaefda3c ./build.sh && cd -
+  - cd $GOPATH/src/github.com/Jumpscale/go-raml && git checkout 54440d5ac34a75d8991c7c0aee05b11adaefda3c && ./build.sh && cd -
   - go generate
   - go test -v ./...
   - npm test
