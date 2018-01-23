@@ -29,7 +29,7 @@
         UserDialogService.init(vm);
         vm.showAvatarDialog = addAvatar;
         vm.showEmailDialog = addEmail;
-        vm.showPhonenumberDialog = addPhone;      
+        vm.showPhoneNumberDialog = addPhone;      
         vm.showAddressDialog = addAddress;
         vm.showBankAccountDialog = bank;
         vm.showPublicKeyDialog = addPublicKey;
