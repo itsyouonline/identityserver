@@ -310,8 +310,8 @@
                 function(response) {
                     if (response.data.confirmed) {
                         vm.phoneConfirmed = response.data.confirmed;
-                        // trigger the email verification
-                        resendValidation();
+                        // Don't trigger the email verification. It will be triggered by the next return of 
+                        // checkPhoneConfirmation
                     } 
                 },
                 function(failure) {
