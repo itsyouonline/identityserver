@@ -20,6 +20,7 @@ func TestGrantValidation(t *testing.T) {
 		{"grant:test", false},
 		{"grant_with_underscore", true},
 		{"grant-with-dash", true},
+		{"grant.with.doth", true},
 		{"grant with space", false},
 		{"g", false},
 		{"g/adfe5", false},
@@ -29,6 +30,6 @@ func TestGrantValidation(t *testing.T) {
 	}
 
 	for i, test := range testCases {
-		assert.Equal(t, test.rawGrant.Validate() == nil, test.valid, fmt.Sprintf("Testcase %d failed (%v)", i+1, test.rawGrant))
+		assert.Equal(t, test.valid, test.rawGrant.Validate() == nil, fmt.Sprintf("Testcase %d failed (%v)", i+1, test.rawGrant))
 	}
 }

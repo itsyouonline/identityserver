@@ -3,6 +3,7 @@ package grants
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -11,11 +12,18 @@ const (
 	grantPrefix = "grant:"
 	// grantMaxLen is the maximum length of a grant, in bytes.
 	grantMaxLen = 100
+	// grantMinLen is the minimum length of a grant, in bytes.
+	grantMinLen = 2
 )
 
 var (
 	// ErrGrantTooLarge indicates that the size of the grant in bytes is larger than grantMaxLen
 	ErrGrantTooLarge = fmt.Errorf("Grant size too large, max %d bytes", grantMaxLen)
+	// ErrGrantTooSmall indicates that the size of the grant in bytes is less than grantMinLen
+	ErrGrantTooSmall = fmt.Errorf("Grant size too small, max %d bytes", grantMinLen)
+	// ErrInvalidGrantCharacter indicates that a grant contains an invalid character
+	ErrInvalidGrantCharacter = errors.New("Invalid character in grant")
+	grantRegex               = regexp.MustCompile(`^[a-zA-Z0-9\-_\.]+$`)
 )
 
 // Grant is a custom, application defined tag.
@@ -34,30 +42,14 @@ func (grant *Grant) Validate() error {
 	if len(g) > grantMaxLen {
 		return ErrGrantTooLarge
 	}
-	if len(g) < 2 {
-		return errors.New("grants must have a minimum size of 2 bytes")
+	if len(g) < grantMinLen {
+		return ErrGrantTooSmall
 	}
-	for i := 0; i < len(g); i++ {
-		// First Check if a byte represents an ascii number
-		if g[i] >= 48 && g[i] <= 57 {
-			continue
-		}
-		// Now check lowercase letters
-		if g[i] >= 97 && g[i] <= 122 {
-			continue
-		}
-		// And uppercase letters
-		if g[i] >= 65 && g[i] <= 90 {
-			continue
-		}
-		// Also allow dashes and underscores
-		if g[i] == "_"[0] || g[i] == "-"[0] {
-			continue
-		}
-		return errors.New("invalid character in grant")
+
+	if grantRegex.MatchString(g) {
+		return nil
 	}
-	// Seems we are all good
-	return nil
+	return ErrInvalidGrantCharacter
 }
 
 // FullName ensures that a grant starts with the grantPrefix

@@ -10,7 +10,7 @@ Grants aim to solve this problem by allowing oranizations to add custom defined 
 
 Grants on access tokens and JWT are added as `grant:...`.
 
-When adding grants, only characters alphanumerical characters, dashes and underscores are accepted (`a-Z, -, _, 0-9`).
+When adding grants, only characters alphanumerical characters, dashes and underscores are accepted (`a-Z, -, _, ., 0-9`).
 
 ## Remarks
 
@@ -33,7 +33,7 @@ Since authorization and authentication is provided by Itsyou.Online, it makes se
 
 Currently, per user, an organization can only add a max of 50 grants. Also, each grant can only have a length of 100 bytes (characters) maximum .
 
-As mentioned previously, only the characters `a-z`, `-`, `_` and `0-9` are allowed at the moment when creating a grant.
+As mentioned previously, only the characters `a-z`, `-`, `_`, `.` and `0-9` are allowed at the moment when creating a grant.
 
 
 ## API Endpoints
