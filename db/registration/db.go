@@ -24,14 +24,14 @@ func InitModels() {
 
 	index = mgo.Index{
 		Key:    []string{"emailvalidationkey"},
-		Unique: true,
+		Unique: false, // Uniqueness is enforced in the respective ongoing validation collection
 	}
 
 	db.EnsureIndex(mongoRegistrationsInProgressCollectionName, index)
 
 	index = mgo.Index{
 		Key:    []string{"phonevalidationkey"},
-		Unique: true,
+		Unique: false, // Uniqueness is enforced in the respective ongoing validation collection
 	}
 
 	db.EnsureIndex(mongoRegistrationsInProgressCollectionName, index)
