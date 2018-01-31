@@ -29,8 +29,7 @@ func InitModels() {
 	db.EnsureIndex(grantCollectionName, index)
 
 	index = mgo.Index{
-		Key:    []string{"grants"},
-		Unique: true,
+		Key: []string{"grants"},
 	}
 
 	db.EnsureIndex(grantCollectionName, index)
