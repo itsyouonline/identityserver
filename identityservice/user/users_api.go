@@ -491,11 +491,15 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Create an administrator authorization
-	if authorization == nil && isAdmin {
+	// TODO: rework for non admin scope in client credentials
+	// if authorization is nil we are already assured that this is client credentials due to the middleware
+	authorizedScopes := oauth2.SplitScopeString(availableScopes)
+	if authorization == nil {
 		authorization = &user.Authorization{
-			Name:                    true,
-			Github:                  true,
-			Facebook:                true,
+			// TODO: check bool values
+			Name:                    false,
+			Github:                  false,
+			Facebook:                false,
 			Addresses:               []user.AuthorizationMap{},
 			BankAccounts:            []user.AuthorizationMap{},
 			DigitalWallet:           []user.DigitalWalletAuthorization{},
@@ -507,40 +511,143 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 			Avatars:                 []user.AuthorizationMap{},
 			Organizations:           []string{},
 		}
+		_, all := filterAuthorizedInfo(authorizedScopes, "user:name")
+		if isAdmin || all {
+			authorization.Name = true
+		}
+		_, all = filterAuthorizedInfo(authorizedScopes, "user:github")
+		if isAdmin || all {
+			authorization.Github = true
+		}
+		_, all = filterAuthorizedInfo(authorizedScopes, "user:facebook")
+		if isAdmin || all {
+			authorization.Facebook = true
+		}
 		for _, address := range userobj.Addresses {
-			authorization.Addresses = append(authorization.Addresses, user.AuthorizationMap{RequestedLabel: address.Label, RealLabel: address.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:address")
+			if all || isAdmin {
+				authorization.Addresses = append(authorization.Addresses, user.AuthorizationMap{RequestedLabel: address.Label, RealLabel: address.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == address.Label {
+					authorization.Addresses = append(authorization.Addresses, user.AuthorizationMap{RequestedLabel: address.Label, RealLabel: address.Label})
+				}
+			}
 		}
 		for _, a := range userobj.BankAccounts {
-			authorization.BankAccounts = append(authorization.BankAccounts, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:bankaccount")
+			if all || isAdmin {
+				authorization.BankAccounts = append(authorization.BankAccounts, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.BankAccounts = append(authorization.BankAccounts, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
 		}
 		for _, a := range userobj.DigitalWallet {
-			authorization.DigitalWallet = append(authorization.DigitalWallet, user.DigitalWalletAuthorization{Currency: a.CurrencySymbol, AuthorizationMap: user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label}})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:digitalwalletaddress")
+			if all || isAdmin {
+				authorization.DigitalWallet = append(authorization.DigitalWallet, user.DigitalWalletAuthorization{Currency: a.CurrencySymbol, AuthorizationMap: user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label}})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.DigitalWallet = append(authorization.DigitalWallet, user.DigitalWalletAuthorization{Currency: a.CurrencySymbol, AuthorizationMap: user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label}})
+				}
+			}
 		}
 		for _, a := range userobj.EmailAddresses {
-			authorization.EmailAddresses = append(authorization.EmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:email")
+			if all || isAdmin {
+				authorization.EmailAddresses = append(authorization.EmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.EmailAddresses = append(authorization.EmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
 		}
 		for _, a := range userobj.EmailAddresses {
-			authorization.ValidatedEmailAddresses = append(authorization.ValidatedEmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:validated:email")
+			if all || isAdmin {
+				authorization.ValidatedEmailAddresses = append(authorization.ValidatedEmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.ValidatedEmailAddresses = append(authorization.ValidatedEmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
 		}
 		for _, a := range userobj.Phonenumbers {
-			authorization.Phonenumbers = append(authorization.Phonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:phone")
+			if all || isAdmin {
+				authorization.Phonenumbers = append(authorization.Phonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.Phonenumbers = append(authorization.Phonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
 		}
 		for _, a := range userobj.Phonenumbers {
-
-			authorization.ValidatedPhonenumbers = append(authorization.ValidatedPhonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:validated:phone")
+			if all || isAdmin {
+				authorization.ValidatedPhonenumbers = append(authorization.ValidatedPhonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.ValidatedPhonenumbers = append(authorization.ValidatedPhonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
 		}
 		for _, a := range userobj.PublicKeys {
-			authorization.PublicKeys = append(authorization.PublicKeys, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:publickey")
+			if all || isAdmin {
+				authorization.PublicKeys = append(authorization.PublicKeys, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.PublicKeys = append(authorization.PublicKeys, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
 		}
 		for _, a := range userobj.Avatars {
-			authorization.Avatars = append(authorization.Avatars, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:avatar")
+			if all || isAdmin {
+				authorization.Avatars = append(authorization.Avatars, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.Avatars = append(authorization.Avatars, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
 		}
-		userOrgs, err := organizationDb.NewManager(r).AllByUserChain(username)
-		if handleServerError(w, "Getting user organizations", err) {
-			return
-		}
-		for _, a := range userOrgs {
-			authorization.Organizations = append(authorization.Organizations, a)
+		labels, _ := filterAuthorizedInfo(authorizedScopes, "user:memberof")
+		if len(labels) > 0 || isAdmin {
+			userOrgs, err := organizationDb.NewManager(r).AllByUserChain(username)
+			if handleServerError(w, "Getting user organizations", err) {
+				return
+			}
+			for _, a := range userOrgs {
+				if isAdmin {
+					authorization.Organizations = append(authorization.Organizations, a)
+					continue
+				}
+				for _, l := range labels {
+					if l == a {
+						authorization.Organizations = append(authorization.Organizations, a)
+					}
+				}
+			}
 		}
 
 	}
@@ -735,6 +842,22 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(respBody)
+}
+
+// filterAuthorizedInfo filters out the labels of a specific scope. If no label is added, we assume all of them are authorized
+func filterAuthorizedInfo(authorizedScopes []string, baseScope string) ([]string, bool) {
+	all := false
+	labels := []string{}
+	for _, scope := range authorizedScopes {
+		if scope == baseScope {
+			all = true
+			continue
+		}
+		if strings.HasPrefix(scope, baseScope) {
+			labels = append(labels, strings.TrimPrefix(scope, baseScope+":"))
+		}
+	}
+	return labels, all
 }
 
 // RegisterNewPhonenumber is the handler for POST /users/{username}/phonenumbers

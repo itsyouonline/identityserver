@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/itsyouonline/identityserver/credentials/oauth2"
 	"github.com/itsyouonline/identityserver/db/user"
+	"github.com/itsyouonline/identityserver/db/user/apikey"
 	"github.com/itsyouonline/identityserver/identityservice/security"
 	"github.com/itsyouonline/identityserver/oauthservice"
 )
@@ -111,11 +112,22 @@ func (om *Oauth2oauth_2_0Middleware) Handler(next http.Handler) http.Handler {
 				return
 			}
 			if authorization == nil {
-				log.Debugf("Authorization for client id %s not found for user %s", clientID, protectedUsername)
-				http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
-				return
+				// Check if this is client credentials
+				keyFound, err := apikey.NewManager(r).Exists(protectedUsername, clientID)
+				if err != nil {
+					log.Error("Failed tocheck if user api key exists: ", err)
+					http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+					return
+				}
+				// If there are no matching appIds, the permission has been revoked
+				if !keyFound {
+					log.Debugf("Authorization for client id %s not found for user %s", clientID, protectedUsername)
+					http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+					return
+				}
+			} else {
+				authorizedScopes = authorization.FilterAuthorizedScopes(authorizedScopes)
 			}
-			authorizedScopes = authorization.FilterAuthorizedScopes(authorizedScopes)
 		}
 
 		if protectedUsername == username && clientID == "itsyouonline" && atscopestring == "admin" {
