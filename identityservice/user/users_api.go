@@ -1583,7 +1583,18 @@ func (api UsersAPI) GetNotifications(w http.ResponseWriter, r *http.Request) {
 		if handleServerError(w, "getting invitations by user for email", err) {
 			return
 		}
-		userOrgRequests = append(userOrgRequests, emailRequests...)
+		for _, emailRequest := range emailRequests {
+			alreadyFound := false
+			for _, inv := range userOrgRequests {
+				if inv.Organization == emailRequest.Organization {
+					alreadyFound = true
+					break
+				}
+			}
+			if !alreadyFound {
+				userOrgRequests = append(userOrgRequests, emailRequest)
+			}
+		}
 	}
 
 	// Add the invites for the organizations where this user is an owner
@@ -1603,7 +1614,6 @@ func (api UsersAPI) GetNotifications(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	//var orgInvites []invitations.JoinOrganizationInvitation
 	orgInvites := make([]invitations.JoinOrganizationInvitation, 0)
 
 	for _, org := range ownedOrgs {
