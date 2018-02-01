@@ -1230,17 +1230,13 @@ securedBy: [ oauth_2_0 ]
       delete:
         displayName: DeleteUserPhonenumber
         description: Removes a phonenumber
-        queryParameters:
-          force?:
-            type: string
-            description: Set to `true` to remove this phone number even if its the last verified one, but only if totp has been set up
         responses:
           204:
             description: Phone number removed.
           404:
             description: Phone number not found
           409:
-            description: Phone number not removed because it is the last verified one and the force query parameter hasn't been set
+            description: Phone number not removed because it is the last verified one
       /validate:
         post:
           displayName: ValidatePhonenumber

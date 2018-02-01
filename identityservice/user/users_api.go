@@ -384,6 +384,18 @@ func (api UsersAPI) DeleteEmailAddress(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	addresses, err := valMgr.GetByUsernameValidatedEmailAddress(username)
+	if err != nil {
+		log.Error("Failed to get users validated email addresses: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if len(addresses) == 1 && addresses[0].EmailAddress == email.EmailAddress {
+		log.Debug("Can't remove last validated email address")
+		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+		return
+	}
+
 	if err = userMgr.RemoveEmail(username, label); err != nil {
 		log.Error(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -1138,7 +1150,6 @@ func (api UsersAPI) DeletePhonenumber(w http.ResponseWriter, r *http.Request) {
 	label := mux.Vars(r)["label"]
 	userMgr := user.NewManager(r)
 	valMgr := validationdb.NewManager(r)
-	force := r.URL.Query().Get("force") == "true"
 
 	usr, err := userMgr.GetByName(username)
 	if err != nil {
@@ -1160,18 +1171,9 @@ func (api UsersAPI) DeletePhonenumber(w http.ResponseWriter, r *http.Request) {
 
 	}
 	if last {
-		hasTOTP := false
-		if !force {
-			writeErrorResponse(w, http.StatusConflict, "warning_delete_last_verified_phone_number")
-			return
-		} else {
-			totpMgr := totp.NewManager(r)
-			hasTOTP, err = totpMgr.HasTOTP(username)
-		}
-		if !hasTOTP {
-			writeErrorResponse(w, http.StatusConflict, "cannot_delete_last_verified_phone_number")
-			return
-		}
+		// Even with totp enforce a validated phone number
+		writeErrorResponse(w, http.StatusConflict, "cannot_delete_last_verified_phone_number")
+		return
 	}
 
 	// check if the phonenumber is unique or if there are duplicates

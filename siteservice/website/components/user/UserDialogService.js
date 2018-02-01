@@ -96,35 +96,17 @@
                             .then(resolve, function (response) {
                                 if (response.status === 409) {
                                     var errorMsg, dialog;
-                                    if (response.data.error === 'warning_delete_last_verified_phone_number') {
-                                        errorMsg = 'Are you sure you want to delete this phone number? <br />' +
-                                            'It is your last verified phone number, which means you will <br />' +
-                                            'no longer be able to login using sms confirmations.';
+                                    if (response.data.error === 'cannot_delete_last_verified_phone_number') {
+                                        errorMsg = 'You cannot delete your last verified phone number. <br />' +
+                                            'Please change your 2 factor authentication method or add another verified phone number.';
                                         dialog = $mdDialog.confirm()
-                                            .title('Confirm deletion')
-                                            .ok('Confirm')
-                                            .cancel('Cancel');
+                                            .title("Can't delete last verified phone")
+                                            .ok('Confirm');
                                     }
                                     dialog = dialog.htmlContent(errorMsg)
                                         .ariaLabel('Delete phone number')
                                         .targetEvent(ev);
-                                    $mdDialog.show(dialog)
-                                        .then(function () {
-                                            UserService
-                                                .deletePhonenumber(username, label, true)
-                                                .then(function () {
-                                                    // Manually remove phone number since the dialog which executes the updatePhoneNumber promise callback had been closed before
-                                                    vm.user.phonenumbers.splice(vm.user.phonenumbers.indexOf(phone), 1);
-                                                }, function (response) {
-                                                    if (response.data.error === 'cannot_delete_last_verified_phone_number') {
-                                                        errorMsg = 'You cannot delete your last verified phone number. <br />' +
-                                                            'Please change your 2 factor authentication method or add another verified phone number.';
-                                                    } else {
-                                                        errorMsg = 'Could not delete phone number. Please try again later.';
-                                                    }
-                                                    showSimpleDialog(errorMsg, 'Error', 'Ok', ev);
-                                                });
-                                        });
+                                    $mdDialog.show(dialog);
                                 } else {
                                     reject();
                                     errorMsg = 'Could not delete phone number. Please try again later.';
