@@ -1081,7 +1081,19 @@ func (api UsersAPI) UpdatePhonenumber(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	valMgr := validationdb.NewManager(r)
 	if oldnumber.Phonenumber != body.Phonenumber {
+		validatedPhone, err := valMgr.GetByPhoneNumber(oldnumber.Phonenumber)
+		if err != nil && !db.IsNotFound(err) {
+			log.Error("ERROR while updating phone number - ", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		if validatedPhone.Username == username {
+			log.Debug("Try to modify validated phone number")
+			http.Error(w, "cannot_modify_validated_phone", http.StatusConflict)
+			return
+		}
 		last, err := isLastVerifiedPhoneNumber(u, oldnumber.Phonenumber, oldlabel, r)
 		if err != nil {
 			log.Error("ERROR while verifying last verified number - ", err)
@@ -1108,7 +1120,6 @@ func (api UsersAPI) UpdatePhonenumber(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	valMgr := validationdb.NewManager(r)
 	if oldnumber.Phonenumber != body.Phonenumber && isUniquePhonenumber(u, oldnumber.Phonenumber, oldlabel) {
 		valMgr.RemoveValidatedPhonenumber(username, oldnumber.Phonenumber)
 	}
