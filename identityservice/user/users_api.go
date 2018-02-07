@@ -1103,7 +1103,7 @@ func (api UsersAPI) UpdatePhonenumber(w http.ResponseWriter, r *http.Request) {
 		}
 		if validatedPhone.Username == username {
 			log.Debug("Try to modify validated phone number")
-			http.Error(w, "cannot_modify_validated_phone", http.StatusConflict)
+			http.Error(w, "cannot_modify_validated_phone", http.StatusPreconditionFailed)
 			return
 		}
 		last, err := isLastVerifiedPhoneNumber(u, oldnumber.Phonenumber, oldlabel, r)

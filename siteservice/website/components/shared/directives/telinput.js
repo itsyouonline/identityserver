@@ -16,7 +16,6 @@
                     scope.country = {};
                     scope.sms = "";
                     scope.prefCountry = "";
-                    // scope.validationerrors = {};
 
                     scope.updateSMS = updateSMS;
                     scope.isNumeric = isNumeric;
@@ -59,17 +58,18 @@
                     }
 
                     function updateSMS() {
-                      scope.validationerrors.pattern = false;
-                      scope.validationerrors['phone_already_used'] = false;
-                      scope.validationerrors['invalid_phonenumber'] = false;
-                      var phone = scope.sms;
-                      if (phone.startsWith("0")) {
-                          phone = phone.substring(1);
-                      }
-                      scope.number = scope.country.dial_code + phone;
-                      if (!isNumeric(scope.number)) {
-                          scope.validationerrors.pattern = true;
-                      }
+                        scope.validationerrors.pattern = false;
+                        scope.validationerrors['phone_already_used'] = false;
+                        scope.validationerrors['invalid_phonenumber'] = false;
+                        scope.validationerrors['illegalactionforcurrentstate'] = false;
+                        var phone = scope.sms;
+                        if (phone.startsWith("0")) {
+                            phone = phone.substring(1);
+                        }
+                        scope.number = scope.country.dial_code + phone;
+                        if (!isNumeric(scope.number)) {
+                            scope.validationerrors.pattern = true;
+                        }
                     }
 
                     function isNumeric(n) {

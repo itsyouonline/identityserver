@@ -613,5 +613,6 @@
     "account_exists_phone": "Volgens onze database is dit telefoonnummer al gekoppeld aan een ItsYou.Online account.",
     "go_to_login": "<u>Klik hier</u> om in te loggen.",
     "go_to_forgot_password": "Als je je wachtwoord bent vergeten, <u>klik dan hier</u>.",
-    "resend_email": "Herstuur e-mail"
+    "resend_email": "Herstuur e-mail",
+    "change_verified_phone": "Je kan een gevalideerd telefoonnummer niet wijzigen"
 }

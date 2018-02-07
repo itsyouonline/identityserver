@@ -1226,7 +1226,9 @@ securedBy: [ oauth_2_0 ]
           201:
               description: Updated
           409:
-              description: The new label is already used, or the number is validated
+              description: The new label is already used
+          412:
+              description: The phonenumber is validated and can't be changed
       delete:
         displayName: DeleteUserPhonenumber
         description: Removes a phonenumber
