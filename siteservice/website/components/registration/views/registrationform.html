@@ -165,7 +165,7 @@
                                 </h5>
                             </div>
                         </div>
-                        <div layout="row" flex="100" layout-align-gt-sm="space-between center" ng-if="!vm.mobileView">
+                        <div layout="row" flex="100" layout-align="space-between center" ng-if="!vm.mobileView">
                             <md-button class="md-secondary md-raised"
                                 ng-click="vm.goToPreviousTab()">
                                 <i class="fa fa-chevron-left"></i>&nbsp;<span translate="previous">Previous</span>
@@ -176,7 +176,7 @@
                                 <span translate="next">Next</span>&nbsp;<i class="fa fa-chevron-right"></i>
                             </md-button>
                         </div>
-                        <div layout="column" flex="100" layout-align-gt-sm="space-between center" ng-if="vm.mobileView">
+                        <div layout="column" flex="100" ng-if="vm.mobileView">
                                 <md-button class="md-raised" ng-click="vm.resendValidation()" translate='registration.views.registrationsmsform.resend'>Resend...</md-button>                            
                                 <md-button class="md-secondary md-raised"
                                     ng-click="vm.goToPreviousTab()">
@@ -217,7 +217,7 @@
                                 </h5>
                             </div>
                         </div>
-                        <div layout="column" layout-gt-sm="row" flex="100" layout-align-gt-sm="space-between center" ng-if="!vm.mobileView">
+                        <div layout="row" flex="100" layout-align="space-between center" ng-if="!vm.mobileView">
                             <md-button class="md-secondary md-raised"
                                 ng-click="vm.goToPreviousTab()">
                                 <i class="fa fa-chevron-left"></i>&nbsp;<span translate="previous">Previous</span>
@@ -228,7 +228,7 @@
                                 <span translate="login_btn">Login</span>&nbsp;<i class="fa fa-chevron-right"></i>
                             </md-button>
                         </div>
-                        <div layout="column" layout-gt-sm="row" flex="100" layout-align-gt-sm="space-between center" ng-if="vm.mobileView">
+                        <div layout="column" flex="100" ng-if="vm.mobileView">
                             <md-button class="md-raised" ng-click="vm.resendValidation()" translate='resend_email'>Resend email</md-button>
                             <md-button class="md-secondary md-raised"
                                 ng-click="vm.goToPreviousTab()">

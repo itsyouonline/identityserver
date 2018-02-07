@@ -7,16 +7,23 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"errors"
+	"time"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/itsyouonline/identityserver/credentials/password/keyderivation"
 	"github.com/itsyouonline/identityserver/db"
 	"github.com/itsyouonline/identityserver/tools"
-	"time"
+)
+
+var (
+	// ErrInvalidPassword is returned when an invalid password is passed
+	ErrInvalidPassword = errors.New("Invalid password")
 )
 
 const (
 	mongoCollectionName           = "password"
 	mongoCollectionNameResetToken = "passwordresetoken"
+	passwordMinLength             = 6
 )
 
 type userPass struct {
@@ -103,7 +110,7 @@ func (pwm *Manager) Save(username, password string) error {
 		log.Debug("ERROR hashing password: ", err)
 		return errors.New("internal_error")
 	}
-	if len(password) < 6 {
+	if len(password) < passwordMinLength {
 		return errors.New("invalid_password")
 	}
 	storedPassword := userPass{Username: username, Password: passwordHash}
@@ -111,6 +118,19 @@ func (pwm *Manager) Save(username, password string) error {
 	_, err = pwm.collection.Upsert(bson.M{"username": username}, storedPassword)
 
 	return err
+}
+
+// Check to see if a password is valid for a user.
+func Check(password string) error {
+	if len(password) < passwordMinLength {
+		return ErrInvalidPassword
+	}
+	_, err := keyderivation.Hash(password)
+	if err != nil {
+		log.Debug("Failed to hash password: ", err)
+		return err
+	}
+	return nil
 }
 
 // NewResetToken get new reset token

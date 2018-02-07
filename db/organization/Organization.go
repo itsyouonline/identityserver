@@ -10,6 +10,7 @@ import (
 	"gopkg.in/validator.v2"
 )
 
+// Organization represents an ItsYou.online organization
 type Organization struct {
 	DNS              []string        `json:"dns"`
 	Globalid         string          `json:"globalid"`
@@ -29,11 +30,13 @@ func (org *Organization) IsValid() bool {
 	return validator.Validate(org) == nil && regex.MatchString(org.Globalid)
 }
 
+// IsValidSubOrganization checks if the organization is a suborganization
 func (org *Organization) IsValidSubOrganization() bool {
 	regex, _ := regexp.Compile(`^[a-z\d\-_\s\.]{3,150}$`)
 	return validator.Validate(org) == nil && regex.MatchString(org.Globalid)
 }
 
+// ConvertToView converts an organization from the DB to a view served by the API
 func (org *Organization) ConvertToView(usrMgr *user.Manager, valMgr *validation.Manager) (*OrganizationView, error) {
 	view := &OrganizationView{}
 	view.DNS = org.DNS
@@ -55,6 +58,7 @@ func (org *Organization) ConvertToView(usrMgr *user.Manager, valMgr *validation.
 	return view, err
 }
 
+// ConvertUsernamesToIdentifiers converts a list of usernames to a list of user identifiers
 func ConvertUsernamesToIdentifiers(usernames []string, valMgr *validation.Manager) ([]string, error) {
 	identifiers := []string{}
 	checkedUsers := map[string]bool{}
@@ -110,6 +114,8 @@ func MapUsernamesToIdentifiers(usernames []string, valMgr *validation.Manager) (
 	return identifiers, nil
 }
 
+// ConvertUsernameToIdentifier converts a username into an identifier. It tries validated email addresses first. If
+// there are none, attempt to use validated phone numbers. If the user also doesn't have any of those, keep the username
 func ConvertUsernameToIdentifier(username string, usrMgr *user.Manager, valMgr *validation.Manager) (string, error) {
 	userIdentifier := username
 	usr, err := usrMgr.GetByName(username)
@@ -139,6 +145,8 @@ func ConvertUsernameToIdentifier(username string, usrMgr *user.Manager, valMgr *
 	// No verified email or phone number. Fallback to username
 	return userIdentifier, err
 }
+
+// ConvertIdentifierToUsername converts an identifier to a username.
 func ConvertIdentifierToUsername(identifier string, valMgr *validation.Manager) (string, error) {
 	email, err := valMgr.GetByEmailAddress(identifier)
 	if err == nil {
@@ -147,13 +155,14 @@ func ConvertIdentifierToUsername(identifier string, valMgr *validation.Manager) 
 		phone, err := valMgr.GetByPhoneNumber(identifier)
 		if err == nil || db.IsNotFound(err) {
 			return phone.Username, nil
-		} else {
-			return identifier, err
 		}
+		return identifier, err
+
 	}
 	return identifier, err
 }
 
+// OrganizationView represents an overview of an organization
 type OrganizationView struct {
 	DNS              []string        `json:"dns"`
 	Globalid         string          `json:"globalid"`

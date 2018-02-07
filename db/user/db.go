@@ -313,6 +313,20 @@ func (m *Manager) GetAuthorization(username, organization string) (authorization
 	return
 }
 
+// FilterUsersWithAuthorizations returns the authorizations granted to an organization
+func (m *Manager) FilterUsersWithAuthorizations(usernames []string, organization string) ([]string, error) {
+	var auths []Authorization
+	err := m.getAuthorizationCollection().Find(bson.M{"username": bson.M{"$in": usernames}, "grantedto": organization}).Select(bson.M{"username": 1}).All(&auths)
+	if err != nil {
+		return nil, err
+	}
+	result := []string{}
+	for _, auth := range auths {
+		result = append(result, auth.Username)
+	}
+	return result, nil
+}
+
 //UpdateAuthorization inserts or updates an authorization
 func (m *Manager) UpdateAuthorization(authorization *Authorization) (err error) {
 	_, err = m.getAuthorizationCollection().Upsert(bson.M{"username": authorization.Username, "grantedto": authorization.GrantedTo}, authorization)

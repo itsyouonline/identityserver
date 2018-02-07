@@ -1,8 +1,6 @@
 package validation
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -36,25 +34,23 @@ func (service *IYOPhonenumberValidationService) RequestValidation(request *http.
 		return
 	}
 
-	translationFile, err := tools.LoadTranslations(langKey)
+	translationValues := tools.TranslationValues{
+		"smsconfirmation": struct {
+			Code string
+			Link string
+		}{
+			Code: info.SMSCode,
+			Link: fmt.Sprintf("%s?c=%s&k=%s&l=%s", confirmationurl, info.SMSCode, url.QueryEscape(info.Key), langKey),
+		},
+	}
+
+	translations, err := tools.ParseTranslations(langKey, translationValues)
 	if err != nil {
-		log.Error("Error while loading translations: ", err)
+		log.Error("Failed to parse translations: ", err)
 		return
 	}
 
-	translations := struct {
-		Smsconfirmation string
-	}{}
-
-	r := bytes.NewReader(translationFile)
-	if err = json.NewDecoder(r).Decode(&translations); err != nil {
-		log.Error("Error while decoding translations: ", err)
-		return
-	}
-
-	smsmessage := fmt.Sprintf(translations.Smsconfirmation, info.SMSCode)
-
-	go service.SMSService.Send(phonenumber.Phonenumber, smsmessage)
+	go service.SMSService.Send(phonenumber.Phonenumber, translations["smsconfirmation"])
 	key = info.Key
 	return
 }
@@ -119,9 +115,27 @@ func (service *IYOPhonenumberValidationService) ConfirmValidation(request *http.
 	return
 }
 
+// ConfirmRegistrationValidation confirms a validation in the registartion flow. It does not add an entry in the validated
+// phone numbers collection
+func (service *IYOPhonenumberValidationService) ConfirmRegistrationValidation(r *http.Request, key, code string) (err error) {
+	info, err := service.getPhonenumberValidationInformation(r, key)
+	if err != nil {
+		return
+	}
+	if info == nil {
+		err = ErrInvalidOrExpiredKey
+		return
+	}
+	if info.SMSCode != code {
+		err = ErrInvalidCode
+		return
+	}
+	return validation.NewManager(r).UpdatePhonenumberValidationInformation(key, true)
+}
+
 //SendOrganizationInviteSms Sends an organization invite SMS
 func (service *IYOPhonenumberValidationService) SendOrganizationInviteSms(request *http.Request, invite *invitations.JoinOrganizationInvitation) (err error) {
-	link := fmt.Sprintf(invitations.InviteUrl, request.Host, url.QueryEscape(invite.Code))
+	link := fmt.Sprintf(invitations.InviteURL, request.Host, url.QueryEscape(invite.Code))
 	// todo: perhaps this should be shorter but that might be confusing for the end user
 	message := fmt.Sprintf("You have been invited to the %s organization on It's You Online. Click the following link to accept it. %s", invite.Organization, link)
 	go service.SMSService.Send(invite.PhoneNumber, message)

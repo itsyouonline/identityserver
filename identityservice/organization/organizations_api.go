@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/itsyouonline/identityserver/db/grants"
+	"github.com/itsyouonline/identityserver/db/iyoid"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 
@@ -326,6 +329,22 @@ func (api OrganizationsAPI) inviteUser(w http.ResponseWriter, r *http.Request, r
 				return
 			}
 		}
+		// if the user was invited based on email address, then set this email address in the message
+		if isEmailAddress {
+			emailAddress = searchString
+		} else { // else try and get a validated email address to send the invite to
+			valMgr := validationdb.NewManager(r)
+			validatedEmails, err := valMgr.GetByUsernameValidatedEmailAddress(u.Username)
+			// No need to check for a not found error since we already established that the user exists
+			if err != nil {
+				log.Error("Failed to get validated email for user: ", err)
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+			if len(validatedEmails) > 0 {
+				emailAddress = validatedEmails[0].EmailAddress
+			}
+		}
 	}
 	// Create JoinRequest
 	invitationMgr := invitations.NewInvitationManager(r)
@@ -354,14 +373,13 @@ func (api OrganizationsAPI) inviteUser(w http.ResponseWriter, r *http.Request, r
 		IsOrganization: false,
 	}
 
-	autoAccepted, err := api.autoAcceptThreefoldInviteIfPossible(orgReq, orgMgr)
+	autoAccepted, err := api.autoAcceptSubOrgInvite(orgReq, orgMgr)
 	if err != nil {
-		log.Error("Failure while trying to auto accept organization invite: ", err)
-		log.Warnf("OrgId: %s, role: %s")
 		if db.IsNotFound(err) {
 			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 			return
 		}
+		log.Error("Failure while trying to auto accept organization invite: ", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
@@ -391,24 +409,42 @@ func (api OrganizationsAPI) inviteUser(w http.ResponseWriter, r *http.Request, r
 	json.NewEncoder(w).Encode(reqView)
 }
 
-// FIXME: NUKE ASAP
-func (api OrganizationsAPI) autoAcceptThreefoldInviteIfPossible(invite *invitations.JoinOrganizationInvitation, mgr *organization.Manager) (bool, error) {
+// autoAcceptSubOrgInvite tries to auto accept an invitation if a user is already a member or owner in a parent organization
+func (api OrganizationsAPI) autoAcceptSubOrgInvite(invite *invitations.JoinOrganizationInvitation, mgr *organization.Manager) (bool, error) {
 	globalid := invite.Organization
 
-	// we can't just check that the prefix is "threefold" as this would include unrelated
-	// organizations such as threefoldwithsomethingbehindit
-	if !(globalid == "threefold" || strings.HasPrefix(globalid, "threefold.")) {
+	// If this is an invite for a root organization we obviously aren't a member of a parent yet
+	if !strings.Contains(globalid, ".") {
 		return false, nil
 	}
 
-	// Check for username so we only auto invite already registered users
+	// Check for username so we only auto accept already registered users
+	// Not sure if this is needed but it doesn't hurt to check
 	username := invite.User
 	if username == "" {
 		log.Debug("can't auto accept the invite because the username is not known")
 		return false, nil
 	}
+
+	// Check if we happen to be a member or owner of a parent org
+	orgs, err := mgr.AllByUser(username)
+	if err != nil {
+		return false, err
+	}
+	inParent := false
+	for _, org := range orgs {
+		// adding the  "." is required here.
+		if strings.HasPrefix(globalid, org.Globalid+".") {
+			inParent = true
+			break
+		}
+	}
+
+	if !inParent {
+		return false, nil
+	}
+
 	// add the user
-	log.Debug("Try auto adding user to organization ", invite.Organization)
 	org, err := mgr.GetByName(invite.Organization)
 	if err != nil {
 		return false, err
@@ -424,9 +460,9 @@ func (api OrganizationsAPI) autoAcceptThreefoldInviteIfPossible(invite *invitati
 			return false, err
 		}
 	}
-	log.Debug("Auto added user ", username, " to the ", globalid, " organization")
 	// set the invite to status accpeted
 	invite.Status = invitations.RequestAccepted
+	log.Debug("Invitation auto accepted because the user is already an owner or member of a parent organization")
 	return true, nil
 }
 
@@ -622,12 +658,12 @@ func (api OrganizationsAPI) AddOrganizationOwner(w http.ResponseWriter, r *http.
 }
 
 func (api OrganizationsAPI) sendInvite(r *http.Request, organizationRequest *invitations.JoinOrganizationInvitation) error {
-	switch organizationRequest.Method {
-	case invitations.MethodWebsite:
-		return nil
-	case invitations.MethodEmail:
+	// If there is an email address send an email
+	if organizationRequest.EmailAddress != "" {
 		return api.EmailAddressValidationService.SendOrganizationInviteEmail(r, organizationRequest)
-	case invitations.MethodPhone:
+	}
+	// Send an sms if the phone number is filled in and no email is used
+	if organizationRequest.PhoneNumber != "" {
 		return api.PhonenumberValidationService.SendOrganizationInviteSms(r, organizationRequest)
 	}
 	return nil
@@ -1016,82 +1052,84 @@ func (api OrganizationsAPI) DeleteOrganization(w http.ResponseWriter, r *http.Re
 		return
 	}
 	for _, org := range suborganizations {
-		api.actualOrganizationDeletion(w, r, org.Globalid)
+		if err = api.actualOrganizationDeletion(r, org.Globalid); err != nil {
+			handleServerError(w, "deleting organization", err)
+			return
+		}
 	}
-	api.actualOrganizationDeletion(w, r, globalid)
+	if err = api.actualOrganizationDeletion(r, globalid); err != nil {
+		handleServerError(w, "deleting organization", err)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // Delete organization with globalid.
-func (api OrganizationsAPI) actualOrganizationDeletion(w http.ResponseWriter, r *http.Request, globalid string) {
+func (api OrganizationsAPI) actualOrganizationDeletion(r *http.Request, globalid string) error {
 	orgMgr := organization.NewManager(r)
 	logoMgr := organization.NewLogoManager(r)
+	// If the organization does not exist then it should be completely cleaned up already.
+	// Since the goal of this method is to make sure it does not exist anymore, that goal is already complete
 	if !orgMgr.Exists(globalid) {
-		writeErrorResponse(w, http.StatusNotFound, "organization_not_found")
-		return
+		return nil
 	}
-	err := orgMgr.Remove(globalid)
-	if handleServerError(w, "removing organization", err) {
-		return
+	if err := orgMgr.Remove(globalid); err != nil {
+		return err
 	}
 	// Remove the organizations as a member/ an owner of other organizations
 	organizations, err := orgMgr.AllByOrg(globalid)
-	if handleServerError(w, "fetching organizations where this org is an owner/a member", err) {
-		return
+	if err != nil {
+		return err
 	}
 	for _, org := range organizations {
-		err = orgMgr.RemoveOrganization(org.Globalid, globalid)
-		if handleServerError(w, "removing organizations as a member / an owner of another organization", err) {
-			return
+		if err = orgMgr.RemoveOrganization(org.Globalid, globalid); err != nil {
+			return err
 		}
 	}
 	if logoMgr.Exists(globalid) {
-		err = logoMgr.Remove(globalid)
-		if handleServerError(w, "removing organization logo", err) {
-			return
+		if err = logoMgr.Remove(globalid); err != nil {
+			return err
 		}
 	}
 	orgReqMgr := invitations.NewInvitationManager(r)
-	err = orgReqMgr.RemoveAll(globalid)
-	if handleServerError(w, "removing organization invitations", err) {
-		return
+	if err = orgReqMgr.RemoveAll(globalid); err != nil {
+		return err
 	}
 
 	oauthMgr := oauthservice.NewManager(r)
-	err = oauthMgr.RemoveTokensByGlobalID(globalid)
-	if handleServerError(w, "removing organization oauth accesstokens", err) {
-		return
+	if err = oauthMgr.RemoveTokensByGlobalID(globalid); err != nil {
+		return err
 	}
-	err = oauthMgr.DeleteAllForOrganization(globalid)
-	if handleServerError(w, "removing client secrets", err) {
-		return
+	if err = oauthMgr.DeleteAllForOrganization(globalid); err != nil {
+		return err
 	}
-	err = oauthMgr.RemoveClientsByID(globalid)
-	if handleServerError(w, "removing organization oauth clients", err) {
-		return
+	if err = oauthMgr.RemoveClientsByID(globalid); err != nil {
+		return err
 	}
 	userMgr := user.NewManager(r)
-	err = userMgr.DeleteAllAuthorizations(globalid)
-	if handleServerError(w, "removing all authorizations", err) {
-		return
+	if err = userMgr.DeleteAllAuthorizations(globalid); err != nil {
+		return err
 	}
-	err = oauthMgr.RemoveClientsByID(globalid)
-	if handleServerError(w, "removing organization oauth clients", err) {
-		return
+	if err = oauthMgr.RemoveClientsByID(globalid); err != nil {
+		return err
 	}
 	l2faMgr := organization.NewLast2FAManager(r)
-	err = l2faMgr.RemoveByOrganization(globalid)
-	if handleServerError(w, "removing organization 2FA history", err) {
-		return
+	if err = l2faMgr.RemoveByOrganization(globalid); err != nil {
+		return err
 	}
 	descriptionMgr := organization.NewDescriptionManager(r)
-	err = descriptionMgr.Remove(globalid)
-	if err != nil {
-		if err != mgo.ErrNotFound {
-			handleServerError(w, "removing organization description", err)
-			return
+	if err = descriptionMgr.Remove(globalid); err != nil {
+		if !db.IsNotFound(err) {
+			return err
 		}
 	}
-	w.WriteHeader(http.StatusNoContent)
+	if iyoid.NewManager(r).DeleteForClient(globalid); err != nil && !db.IsNotFound(err) {
+		return err
+	}
+	if grants.NewManager(r).DeleteOrgGrants(globalid); err != nil && !db.IsNotFound(err) {
+		return err
+	}
+	return nil
 }
 
 // ListOrganizationRegistry is the handler for GET /organizations/{globalid}/registry
@@ -2152,7 +2190,7 @@ func (api OrganizationsAPI) UserIsMember(w http.ResponseWriter, r *http.Request)
 	var isMember bool
 
 	user, err := SearchUser(r, username)
-	if err == mgo.ErrNotFound {
+	if db.IsNotFound(err) {
 		user = nil
 	} else if handleServerError(w, "getting user from database", err) {
 		return
@@ -2160,17 +2198,11 @@ func (api OrganizationsAPI) UserIsMember(w http.ResponseWriter, r *http.Request)
 
 	if user != nil {
 		orgMgr := organization.NewManager(r)
-		isMember, err = orgMgr.IsMember(globalID, username)
-		if handleServerError(w, "checking if user is a member of the organization", err) {
+		inOrgs, err := orgMgr.IsInOrgs(username, globalID)
+		if handleServerError(w, "checking if user is in organization", err) {
 			return
 		}
-
-		if !isMember {
-			isMember, err = orgMgr.IsOwner(globalID, username)
-			if handleServerError(w, "checking if user is an owner of the organization", err) {
-				return
-			}
-		}
+		isMember = len(inOrgs) > 0 && inOrgs[0] == globalID
 	}
 
 	response := struct {
@@ -2183,6 +2215,340 @@ func (api OrganizationsAPI) UserIsMember(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(&response)
 }
 
+// GetUserGrants lists all grants for a user
+func (api OrganizationsAPI) GetUserGrants(w http.ResponseWriter, r *http.Request) {
+	globalID := mux.Vars(r)["globalid"]
+	userIdentifier := mux.Vars(r)["username"]
+
+	userObj, err := SearchUser(r, userIdentifier)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up user identifier: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if err != nil {
+		// No user found for this identifier, return an empty list of grants
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode([]string{})
+	}
+
+	hasAuth, err := hasAuthorization(r, userObj.Username, globalID)
+	if handleServerError(w, "checking if user has an authorization for the organization", err) {
+		return
+	}
+	if !hasAuth {
+		log.Debug("Refusing to list grants for user without authorization")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("User does not have an authorization for this organzation"))
+		return
+	}
+
+	grantMgr := grants.NewManager(r)
+	grantObj, err := grantMgr.GetGrantsForUser(userObj.Username, globalID)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up user grants: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if db.IsNotFound(err) {
+		grantObj = &grants.SavedGrants{Grants: []grants.Grant{}}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(grantObj.Grants)
+}
+
+// DeleteUserGrant removes a single named grant for the user
+func (api OrganizationsAPI) DeleteUserGrant(w http.ResponseWriter, r *http.Request) {
+	globalid := mux.Vars(r)["globalid"]
+	userIdentifier := mux.Vars(r)["username"]
+	grantString := mux.Vars(r)["grant"]
+
+	grant := grants.Grant(grantString)
+
+	userObj, err := SearchUser(r, userIdentifier)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up user identifier: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if err != nil {
+		// No user found for this identifier, since the user thus no longer has the grant requested
+		// for removal, we can also return a 204 here
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	hasAuth, err := hasAuthorization(r, userObj.Username, globalid)
+	if handleServerError(w, "checking if user has an authorization for the organization", err) {
+		return
+	}
+	if !hasAuth {
+		log.Debug("Refusing to delete grant for user without authorization")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("User does not have an authorization for this organzation"))
+		return
+	}
+
+	grantMgr := grants.NewManager(r)
+	err = grantMgr.DeleteUserGrant(userObj.Username, globalid, grant)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to delete user grant: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// DeleteAllUserGrants removes all grants for a user given by an organization
+func (api OrganizationsAPI) DeleteAllUserGrants(w http.ResponseWriter, r *http.Request) {
+	globalid := mux.Vars(r)["globalid"]
+	userIdentifier := mux.Vars(r)["username"]
+
+	userObj, err := SearchUser(r, userIdentifier)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up user identifier: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if err != nil {
+		// No user found for this identifier, since the user thus no longer has the grant requested
+		// for removal, we can also return a 204 here
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	hasAuth, err := hasAuthorization(r, userObj.Username, globalid)
+	if handleServerError(w, "checking if user has an authorization for the organization", err) {
+		return
+	}
+	if !hasAuth {
+		log.Debug("Refusing to delete all grants for user without authorization")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("User does not have an authorization for this organzation"))
+		return
+	}
+
+	grantMgr := grants.NewManager(r)
+	err = grantMgr.DeleteUserGrants(userObj.Username, globalid)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to delete user grants: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+// CreateUserGrant gives a new grant to a user
+func (api OrganizationsAPI) CreateUserGrant(w http.ResponseWriter, r *http.Request) {
+	globalid := mux.Vars(r)["globalid"]
+
+	body := struct {
+		Username string       `json:"username"`
+		Grant    grants.Grant `json:"grant"`
+	}{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		log.Debug("Error decoding create grant body:", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	if err := body.Grant.Validate(); err != nil {
+		log.Debug("Invalid grant: ", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	userObj, err := SearchUser(r, body.Username)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up user identifier: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if err != nil {
+		// We can't give a grant to a user that doesn't exist
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	hasAuth, err := hasAuthorization(r, userObj.Username, globalid)
+	if handleServerError(w, "checking if user has an authorization for the organization", err) {
+		return
+	}
+	if !hasAuth {
+		log.Debug("Refusing to give a grant to a user without authorization")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("User does not have an authorization for this organzation"))
+		return
+	}
+
+	grantMgr := grants.NewManager(r)
+	err = grantMgr.UpserGrant(userObj.Username, globalid, body.Grant)
+	if err != nil && err != grants.ErrGrantLimitReached {
+		log.Error("Failed to create user grant: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	if err != nil {
+		log.Debug("Max amount of grants reached")
+		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+	}
+
+	grantObj, err := grantMgr.GetGrantsForUser(userObj.Username, globalid)
+	if err != nil {
+		log.Error("Failed to look up user grants: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(grantObj.Grants)
+}
+
+// UpdateUserGrant changes an existing grant to a new one
+func (api OrganizationsAPI) UpdateUserGrant(w http.ResponseWriter, r *http.Request) {
+	globalid := mux.Vars(r)["globalid"]
+
+	body := struct {
+		Username string       `json:"username"`
+		OldGrant grants.Grant `json:"oldgrant"`
+		NewGrant grants.Grant `json:"newgrant"`
+	}{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		log.Debug("Error decoding create grant body:", err)
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	if err := body.OldGrant.Validate(); err != nil {
+		log.Debug("Invalid grant: ", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := body.NewGrant.Validate(); err != nil {
+		log.Debug("Invalid grant: ", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	userObj, err := SearchUser(r, body.Username)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up user identifier: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if err != nil {
+		// We can't give a grant to a user that doesn't exist
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	hasAuth, err := hasAuthorization(r, userObj.Username, globalid)
+	if handleServerError(w, "checking if user has an authorization for the organization", err) {
+		return
+	}
+	if !hasAuth {
+		log.Debug("Refusing to update grant for user without authorization")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte("User does not have an authorization for this organzation"))
+		return
+	}
+
+	grantMgr := grants.NewManager(r)
+	savedGrants, err := grantMgr.GetGrantsForUser(userObj.Username, globalid)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to get user grants: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if db.IsNotFound(err) {
+		log.Debug("Can't update grants if user doesn't have any")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	found := false
+	for _, grant := range savedGrants.Grants {
+		if grant == body.OldGrant {
+			found = true
+			break
+		}
+	}
+
+	if !found {
+		log.Debug("Can't update grant if user doesn't have it")
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	err = grantMgr.UpdateGrant(userObj.Username, globalid, body.OldGrant, body.NewGrant)
+	if err != nil {
+		log.Error("Failed to update user grant: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	grantObj, err := grantMgr.GetGrantsForUser(userObj.Username, globalid)
+	if err != nil {
+		log.Error("Failed to look up user grants: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(grantObj.Grants)
+}
+
+// ListUsersWithGrant lists all users with a given grant
+func (api OrganizationsAPI) ListUsersWithGrant(w http.ResponseWriter, r *http.Request) {
+	globalID := mux.Vars(r)["globalid"]
+	grantString := mux.Vars(r)["grant"]
+
+	grant := grants.Grant(grantString)
+	if err := grant.Validate(); err != nil {
+		log.Debug("Invalid grant: ", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	grantMgr := grants.NewManager(r)
+	grantObjs, err := grantMgr.GetByGrant(grant, globalID)
+	if err != nil && !db.IsNotFound(err) {
+		log.Error("Failed to look up users with grant: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	usernames := []string{}
+	for _, grantObj := range grantObjs {
+		usernames = append(usernames, grantObj.Username)
+	}
+
+	log.Debug("filtering users to those with an open authorization")
+	usernames, err = user.NewManager(r).FilterUsersWithAuthorizations(usernames, globalID)
+	if handleServerError(w, "filtering out users without authorization", err) {
+		return
+	}
+
+	userIdentifiers, err := organization.ConvertUsernamesToIdentifiers(usernames, validationdb.NewManager(r))
+	if err != nil {
+		log.Error("Failed to convert usernames to identifiers: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(userIdentifiers)
+}
+
 func writeErrorResponse(responseWriter http.ResponseWriter, httpStatusCode int, message string) {
 	log.Debug(httpStatusCode, message)
 	errorResponse := struct {
@@ -2190,6 +2556,20 @@ func writeErrorResponse(responseWriter http.ResponseWriter, httpStatusCode int, 
 	}{Error: message}
 	responseWriter.WriteHeader(httpStatusCode)
 	json.NewEncoder(responseWriter).Encode(&errorResponse)
+}
+
+// hasAuthorization checks if a user has an open authorization for an organization
+func hasAuthorization(r *http.Request, username string, globalid string) (bool, error) {
+	userMgr := user.NewManager(r)
+
+	authorization, err := userMgr.GetAuthorization(username, globalid)
+	if err != nil && !db.IsNotFound(err) {
+		return false, err
+	}
+	if authorization == nil || db.IsNotFound(err) {
+		return false, nil
+	}
+	return true, nil
 }
 
 func handleServerError(responseWriter http.ResponseWriter, actionText string, err error) bool {
@@ -2201,22 +2581,38 @@ func handleServerError(responseWriter http.ResponseWriter, actionText string, er
 	return false
 }
 
-func SearchUser(r *http.Request, searchString string) (usr *user.User, err1 error) {
+// SearchUser identifies a user based on a valid user identifier
+func SearchUser(r *http.Request, searchString string) (*user.User, error) {
 	userMgr := user.NewManager(r)
-	usr, err1 = userMgr.GetByName(searchString)
-	if err1 == mgo.ErrNotFound {
-		valMgr := validationdb.NewManager(r)
-		validatedPhonenumber, err2 := valMgr.GetByPhoneNumber(searchString)
-		if err2 == mgo.ErrNotFound {
-			validatedEmailAddress, err3 := valMgr.GetByEmailAddress(searchString)
-			if err3 != nil {
-				return nil, err3
-			}
-			return userMgr.GetByName(validatedEmailAddress.Username)
-		}
+	usr, err := userMgr.GetByName(searchString)
+	if err == nil {
+		return usr, err
+	}
+	if !db.IsNotFound(err) {
+		return nil, err
+	}
+	valMgr := validationdb.NewManager(r)
+	validatedPhonenumber, err := valMgr.GetByPhoneNumber(searchString)
+	if err != nil && !db.IsNotFound(err) {
+		return nil, err
+	}
+	if !db.IsNotFound(err) {
 		return userMgr.GetByName(validatedPhonenumber.Username)
 	}
-	return usr, err1
+	validatedEmailAddress, err := valMgr.GetByEmailAddress(searchString)
+	if err != nil && !db.IsNotFound(err) {
+		return nil, err
+	}
+	if !db.IsNotFound(err) {
+		return userMgr.GetByName(validatedEmailAddress.Username)
+	}
+	idMgr := iyoid.NewManager(r)
+	clientID, _ := context.Get(r, "client_id").(string)
+	idObj, err := idMgr.GetByIDAndAZP(searchString, clientID)
+	if err != nil {
+		return nil, err
+	}
+	return userMgr.GetByName(idObj.Username)
 }
 
 // parseLangKey return the first 2 characters of a string in lowercase. If the string is empty or has only 1 character, and empty string is returned

@@ -73,10 +73,10 @@
             "forgotpassword": {
                 "forgotpassword": "Wachtwoord vergeten",
                 "recoverymailsend": "Een herstel email is gestuurd.",
-                "user": "Gebruikersnaam of email",
+                "user": "Gebruikersnaam, e-mail of telefoonnummer",
                 "userminlength": "Er zijn minstens 2 tekens nodig",
-                "userinvalid": "Een gebruiker met deze gebruikersnaam of email is niet gevonden",
-                "novalidatedemail": "Een gebruiker met deze gebruikersnaam heeft geen gevalideerd email adres",
+                "userinvalid": "Een gebruiker met deze gebruikersnaam, e-mailadres of telefoonnummer kon niet gevonden worden",
+                "novalidatedemail": "Een gebruiker met deze gebruikersnaam of telefoonnummer heeft geen gevalideerd e-mailadres",
                 "sendrecoverymail": "Stuur herstel email",
                 "back": "Terug naar inloggen"
             },
@@ -613,5 +613,6 @@
     "account_exists_phone": "Volgens onze database is dit telefoonnummer al gekoppeld aan een ItsYou.Online account.",
     "go_to_login": "<u>Klik hier</u> om in te loggen.",
     "go_to_forgot_password": "Als je je wachtwoord bent vergeten, <u>klik dan hier</u>.",
-    "resend_email": "Herstuur e-mail"
+    "resend_email": "Herstuur e-mail",
+    "change_verified_phone": "Je kan een gevalideerd telefoonnummer niet wijzigen"
 }

@@ -73,10 +73,10 @@
             "forgotpassword": {
                 "forgotpassword": "Forgot password",
                 "recoverymailsend": "A recovery email has been sent.",
-                "user": "Username or email",
+                "user": "Username, email or phonenumber",
                 "userminlength": "At least 2 characters are required",
-                "userinvalid": "A user with this username or email address could not be found",
-                "novalidatedemail": "A user with this username has no validated email address",
+                "userinvalid": "A user with this username, email address or phonenumber could not be found",
+                "novalidatedemail": "A user with this username or phonenumber has no validated email address",
                 "sendrecoverymail": "Send recovery email",
                 "back": "Back to login"
             },
@@ -612,5 +612,6 @@
     "account_exists_phone": "According to our database this phone number is already linked to an ItsYou.Online account.",
     "go_to_login": "Please <u>click here</u> to login.",
     "go_to_forgot_password": "If you forgot your password please <u>click here</u>.",
-    "resend_email": "Resend email"
+    "resend_email": "Resend email",
+    "change_verified_phone": "You can't change a verified phone number"
 }

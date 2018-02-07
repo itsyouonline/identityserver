@@ -122,6 +122,10 @@ module.exports = function(config) {
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
         browsers: ['ChromeHeadless', 'Firefox'],
 
+        // Fix inactivity timeout build failures,
+        // see: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Karma-and-Firefox-inactivity-timeouts
+        browserNoActivityTimeout: 30000,
+
 
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits

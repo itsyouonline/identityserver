@@ -53,6 +53,13 @@ func (m *Manager) GetByUsernameAndLabel(username string, label string) (apikey *
 	return
 }
 
+// Exists checks if an api key for a user exists
+func (m *Manager) Exists(username string, applicationid string) (bool, error) {
+	count, err := m.getCollection().Find(bson.M{"username": username, "applicationid": applicationid}).Count()
+
+	return count == 1, err
+}
+
 func (m *Manager) GetByApplicationAndSecret(applicationid string, secret string) (apikey *APIKey, err error) {
 	apikey = &APIKey{}
 	err = m.getCollection().Find(bson.M{"applicationid": applicationid, "apikey": secret}).One(apikey)

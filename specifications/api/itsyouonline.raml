@@ -129,7 +129,7 @@ types:
   FacebookAccount:
     properties:
       id:
-        type: integer
+        type: string
       name:
         type: string
       picture:
@@ -229,7 +229,7 @@ types:
         validatedphonenumbers: Phonenumber[]
         addresses: Address[]
         bankaccounts: BankAccount[]
-        digitalwallet: DigitalAssetAddress
+        digitalwallet: DigitalAssetAddress[]
         facebook?:
             type: FacebookAccount
         github?:
@@ -575,6 +575,13 @@ types:
         keystore_label: string
         signature: string
 
+  IyoID:
+    description: Mapping between an Iyo ID, username and azp
+    properties:
+      username: string
+      iyoids: string[]
+      azp: string
+
   IsMember:
     properties:
       IsMember: boolean
@@ -618,6 +625,38 @@ types:
     properties:
       owner: string[]
       member: string[]
+
+  Grant:
+    type: string
+    minLength: 2
+    maxLength: 100
+    pattern: ^[a-zA-Z0-9\-_]{2,100}$
+
+  UserGrants:
+    type: Grant[]
+    description: All the grants a user has
+
+  CreateGrantBody:
+    properties: 
+      username:
+        type: string
+        description: User identifier of the user for whom to add the grant
+      grant:
+        type: Grant
+        description: The grant to add for the user
+
+  UpdateGrantBody:
+    properties: 
+      username:
+        type: string
+        description: User identifier of the user for whom to add the grant
+      oldgrant:
+        type: Grant
+        description: The old grant, to be replaced
+      newgrant:
+        type: Grant
+        description: The new grant which will replace the old grant
+  
 
 securedBy: [ oauth_2_0 ]
 /users:
@@ -1188,20 +1227,18 @@ securedBy: [ oauth_2_0 ]
               description: Updated
           409:
               description: The new label is already used
+          412:
+              description: The phonenumber is validated and can't be changed
       delete:
         displayName: DeleteUserPhonenumber
         description: Removes a phonenumber
-        queryParameters:
-          force?:
-            type: string
-            description: Set to `true` to remove this phone number even if its the last verified one, but only if totp has been set up
         responses:
           204:
             description: Phone number removed.
           404:
             description: Phone number not found
           409:
-            description: Phone number not removed because it is the last verified one and the force query parameter hasn't been set
+            description: Phone number not removed because it is the last verified one
       /validate:
         post:
           displayName: ValidatePhonenumber
@@ -1590,6 +1627,40 @@ securedBy: [ oauth_2_0 ]
             404:
               description: Not found
 
+  /{username}/identifiers:
+    get:
+      displayName: ListIyoIds
+      description: List all generated iyo ids generated for a user by a party
+      responses: 
+        200:
+          body:
+            application/json:
+              type: IyoID
+
+    post:
+      displayName: GenerateIyoID
+      description: Generate a new iyo id for this user
+      responses: 
+        201:
+          body:
+            application/json:
+              type: IyoID
+        409:
+          description: Max amount of iyo ids reached for this user - azp relation
+
+  /identifiers/{identifier}:
+    get:
+      displayName: LookupIyoID
+      description: Lookup the username for an iyo id
+      repsonses: 
+        200:
+          body:
+            application/json:
+              type: IyoID
+        404:
+          descripton: The iyo id is not found, or this azp does not have access to look it up
+
+
 /organizations:
   post:
     displayName: CreateNewOrganization
@@ -1643,6 +1714,79 @@ securedBy: [ oauth_2_0 ]
       responses:
         204:
           description: Organization and all child organizations deleted
+
+    /grants:
+      post:
+        securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
+        displayName: CreateUserGrant
+        description: Create a new grant for a user
+        body:
+          application/json:
+            type: CreateGrantBody
+        responses: 
+          201:
+            body:
+              application/json:
+                type: UserGrants
+          404:
+            description: User not found
+          409:
+            description: Max amount of grants reached for this user
+
+      put:
+        securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
+        displayName: UpdateUserGrant
+        description: Update an existing grant for a user
+        body:
+          application/json:
+            type: UpdateGrantBody
+        responses:
+          200:
+            body:
+              application/json:
+                type: UserGrants
+          404:
+            description: User not found or the specified grant to update does not exist
+          
+      /{username}:
+        get:
+          securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
+          displayName: GetUserGrants
+          description: Get all grants for a user
+          responses:
+            200:
+              body:
+                application/json:
+                  type: UserGrants
+
+        delete:
+          securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
+          displayName: DeleteAllUserGrants
+          description: Delete all grants for this user
+          responses:
+            204:
+              description: Grants successfully removed
+      
+        /{grant}:
+          delete:
+            securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
+            displayName: DeleteUserGrant
+            description: Delete a specified grant for this user
+            responses:
+              204:
+                description: Grant successfully removed    
+
+      /havegrant/{grant}:
+        get:
+          securedBy: [oauth_2_0: { scopes: [ "organization:owner" ] } ]
+          displayName: ListUsersWithGrant
+          description: Delete a specified grant for this user
+          responses: 
+            200:
+              body:
+                application/json:
+                  type: string[]
+                  description: a list off user identifiers of users who have the specified grant
 
     /description:
       post:

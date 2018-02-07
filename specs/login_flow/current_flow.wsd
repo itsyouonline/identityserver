@@ -1,0 +1,231 @@
+@startuml Current_login_flow
+
+[*] --> LoginScreen
+
+state LoginScreen {
+
+    [*] --> LoginForm
+    LoginForm: UserIdentifier
+    LoginForm: Password
+    
+    LoginForm --> ProcessLoginForm: Login button
+    state ProcessLoginForm {
+        [*] --> DecodeRequestBody
+        DecodeRequestBody: Login: string
+        DecodeRequestBody: Password: string
+
+        DecodeRequestBody --> SearchUser: Convert "Login" to lowercase
+
+        SearchUser: Returns user object if found
+        SearchUser --> LoginForm: User not found
+        SearchUser --> ValidatePassword: Set userexists to true
+
+        ValidatePassword: validpassword: bool
+        ValidatePassword: doesn't return immediatly
+
+        ValidatePassword --> GetClientId
+
+        GetClientId: Retrieve the value of the "client_id" queryparameter
+        GetClientId: client: string
+
+        GetClientId --> ValidCredentials
+        ValidCredentials: userexists && validpassword
+        note left of ValidCredentials: Since the flow returns immediatly\nif the user does not exist,\nthis check can be replaced by if validpassword
+
+        ValidCredentials --> RemoveLast2FA: false
+
+        RemoveLast2FA: Check if a username - clientid entry exists
+        RemoveLast2FA: Remove entry if found
+        RemoveLast2FA --> LoginForm
+
+        ValidCredentials --> GetLoginSession
+        GetLoginSession: Store username from userobject in "username"
+        GetLoginSession --> CheckIfInOauthFlow
+
+        CheckIfInOauthFlow: Check if "client" isn't an empty string
+        CheckIfInOauthFlow --> HandleOAuthFlow: client isn't an empty string
+        CheckIfInOauthFlow --> SaveLoginSession: client is empty string
+
+        SaveLoginSession --> [*]
+
+        state HandleOAuthFlow {
+            [*] --> GetRequestedScopes
+
+            GetRequestedScopes: Split the scopes from the "scope" queryparameter
+            GetRequestedScopes --> FilterPossibleScopes
+
+            FilterPossibleScopes --> VerifyExistingAuthorization
+
+            VerifyExistingAuthorization: validAuthorization: bool
+            VerifyExistingAuthorization: Loads an existing authorization, if any
+            VerifyExistingAuthorization: Check if all requested scopes are authorized
+
+            VerifyExistingAuthorization --> HasValidAuthorization
+
+            HasValidAuthorization --> SaveLoginSession: false
+            HasValidAuthorization --> HasLast2FAlogin: true
+
+            HasLast2FAlogin: Check if a last2FA entry exists
+            HasLast2FAlogin: For this user - client_id combination
+
+            HasLast2FAlogin --> SaveLoginSession: false
+            HasLast2FAlogin --> CheckIfLast2FAloginIsValid
+
+            CheckIfLast2FAloginIsValid: Get timestamp from last2FA entry
+            CheckIfLast2FAloginIsValid: Get organization validity period
+            CheckIfLast2FAloginIsValid: Valid if current timestamp < l2fatimestamp + validity
+            CheckIfLast2FAloginIsValid --> SaveLoginSession: expired
+            CheckIfLast2FAloginIsValid --> LoginOauthUser: still valid
+            
+            LoginOauthUser: Set "oauthsession" cookie with username
+            LoginOauthUser --> Login
+        }
+    }
+
+    ProcessLoginForm --> Load2FAMethods
+
+    Load2FAMethods: Dropdown with available 2FA methods
+    Load2FAMethods: All validated phone numbers
+    Load2FAMethods: Authenticator app if set up in the settings
+    Load2FAMethods --> ResendSMSForm: 0 2FA methods available
+    Load2FAMethods --> 2FAMethodSelectForm: 2 or more 2FA methods available
+    Load2FAMethods --> 2FACodeForm: 1 2FA method
+
+    ResendSMSForm: Phonenumber
+    ResendSMSForm --> ResendPhoneNumberConfirmation
+    state ResendPhoneNumberConfirmation {
+        [*] --> DecodeResendRequestBody
+        DecodeResendRequestBody: Phonenumber: string
+        DecodeResendRequestBody: LangKey: string
+
+        DecodeResendRequestBody --> GetLoginSessionInResendFlow
+        
+        state "GetLoginSession" as GetLoginSessionInResendFlow
+
+        GetLoginSessionInResendFlow --> LoginSessionIsNew
+
+        LoginSessionIsNew --> LoginForm: Loggin session expired
+        LoginSessionIsNew --> GetUsernameFromLoginSession
+
+        GetUsernameFromLoginSession: Get the username from the login session
+        GetUsernameFromLoginSession --> CreateNewPhonenumberObject: Get validationkey from session\nExpire validation
+
+        CreateNewPhonenumberObject: Label: "main"
+        CreateNewPhonenumberObject: Phonenumber:phonenumber from form
+        CreateNewPhonenumberObject --> ValidatePhonenumber
+
+        ValidatePhonenumber --> ResendSMSForm: Phonenumber invalid
+        ValidatePhonenumber --> SavePhonenumberOnUserObject: Phonenumber valid
+
+        SavePhonenumberOnUserObject: Overwrite existing phonenumber with "main" label
+        SavePhonenumberOnUserObject --> CreatePhonenumberValidationInfo
+
+        CreatePhonenumberValidationInfo --> SavePhonenumberValidationInfo
+
+        SavePhonenumberValidationInfo --> SavePhonenumberValidationKeyInSession
+        SavePhonenumberValidationKeyInSession: phonenumbervalidationkey: string
+        
+        SavePhonenumberValidationKeyInSession --> CreateSessionInfo
+
+        CreateSessionInfo: Confirmed: bool
+        CreateSessionInfo: CreatedAt: time.Time
+        CreateSessionInfo: SessionKey: string
+        CreateSessionInfo: SMSCode: string
+        
+        CreateSessionInfo --> SaveSessionKeyInLoginSession
+
+        SaveSessionKeyInLoginSession --> SaveSessionInfoInDatabase
+
+        SaveSessionInfoInDatabase: save in login collection
+        SaveSessionInfoInDatabase --> LoadTranslation
+
+        LoadTranslation --> SendValidationSMS
+
+        SendValidationSMS: with translated message, code filled in, async
+        SendValidationSMS --> SaveLoginSessionInResendFlow
+
+        state "SaveLoginSession" as SaveLoginSessionInResendFlow
+        SaveLoginSessionInResendFlow --> [*]
+
+    }
+
+    ResendPhoneNumberConfirmation --> SMSConfirmationForm
+
+
+    state 2FACodeForm {
+
+    }
+
+    state 2FAMethodSelectForm {
+
+    }
+
+    2FAMethodSelectForm: Uses localstorage to default to the last used option
+    2FAMethodSelectForm --> 2FACodeForm: authenticator app selected
+    2FAMethodSelectForm --> GetSMSCode: phone number selected
+
+    state GetSMSCode {
+        [*] --> GetLabelFromRequestURL
+
+        GetLabelFromRequestURL --> DecodeSMSCodeRequestBody
+        
+        DecodeSMSCodeRequestBody: langKey: string
+        DecodeSMSCodeRequestBody --> GetLoginSessionInSMSCodeFlow
+
+        state "GetLoginSession" as GetLoginSessionInSMSCodeFlow
+        GetLoginSessionInSMSCodeFlow --> NewLoginSessionInformation
+
+        NewLoginSessionInformation: CreatedAt: time.Time
+        NewLoginSessionInformation: SessionKey: string
+        NewLoginSessionInformation: numbercode: int (6 digits)
+        NewLoginSessionInformation: SMSCode: string (string representation of numbercode)
+        NewLoginSessionInformation --> GetUsernameFromLoginSessionInSMSCodeFlow
+
+        state "GetUsernameFromLoginSession" as GetUsernameFromLoginSessionInSMSCodeFlow
+        GetUsernameFromLoginSessionInSMSCodeFlow: Get the "username" key from the login session values
+        GetUsernameFromLoginSessionInSMSCodeFlow: Type assert that "username" is a string
+        GetUsernameFromLoginSessionInSMSCodeFlow --> LoginForm: Username is empty string or type assertion failed
+        GetUsernameFromLoginSessionInSMSCodeFlow --> GetUserFromDB
+
+        GetUserFromDB: with username from loginsession
+        GetUserFromDB --> GetPhonenumberByLabel
+
+        GetPhonenumberByLabel: label from request url
+        GetPhonenumberByLabel --> SaveSessionKeyInLoginSessionInSMSCodeFlow
+
+        state "SaveSessionKeyInLoginSession" as SaveSessionKeyInLoginSessionInSMSCodeFlow
+        SaveSessionKeyInLoginSessionInSMSCodeFlow --> GetAuthenticatingOrganizationFromLoginSession 
+
+        GetAuthenticatingOrganizationFromLoginSession: Get the "auth_client_id" key from the login session values
+        GetAuthenticatingOrganizationFromLoginSession: Create the authenticatingOrganization string variable
+        GetAuthenticatingOrganizationFromLoginSession: If the value of "auth_client_id" is not nil,
+        GetAuthenticatingOrganizationFromLoginSession: store it in authenticatingOrganization with an unchecked type assertion
+        GetAuthenticatingOrganizationFromLoginSession --> SaveSessionInfoInDatabaseInSMSCodeFlow
+
+        state "SaveSessionInfoInDatabase" as SaveSessionInfoInDatabaseInSMSCodeFlow
+        SaveSessionInfoInDatabaseInSMSCodeFlow: Save in login collection
+        SaveSessionInfoInDatabaseInSMSCodeFlow --> LoadTranslationsInSMSCodeFlow
+
+        state "LoadTranslations" as LoadTranslationsInSMSCodeFlow
+        LoadTranslationsInSMSCodeFlow: If the authenticatingOrganization is not an empty string,
+        LoadTranslationsInSMSCodeFlow: load the authorizeorganizations translation, else use signinsms translation
+        LoadTranslationsInSMSCodeFlow: Also fill in the variables
+
+        LoadTranslationsInSMSCodeFlow --> SaveLoginSessionInSMSCodeFlow
+
+        state "SaveLoginSession" as SaveLoginSessionInSMSCodeFlow
+        SaveLoginSessionInSMSCodeFlow --> SendSMSWithCode
+
+        SendSMSWithCode: Use the right translatioon
+        SendSMSWithCode --> [*]
+    }
+
+    GetSMSCode --> 2FACodeForm
+
+    state Login {
+
+    }
+
+}
+
+@enduml

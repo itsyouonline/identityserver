@@ -158,6 +158,24 @@ type OrganizationsInterface interface { // CreateNewOrganization is the handler 
 	// UserIsMember is the handler for GET /organization/{globalid}/users/ismember/{username}
 	// Checks if the user has membership rights on the organization
 	UserIsMember(w http.ResponseWriter, r *http.Request)
+	// GetUserGrants is the handler for GET /organization/{globalid}/grants/{user}
+	// Lists all grants for a user
+	GetUserGrants(w http.ResponseWriter, r *http.Request)
+	// DeleteUserGrant is the handler for DELETE /organization/{globalid}/grants/{user}/{grant}
+	// Removes a single named grant for the user
+	DeleteUserGrant(w http.ResponseWriter, r *http.Request)
+	// DeleteAllUserGrants is the handler for DELETE /organization/{globalid}/grants/{user}
+	// Removes all grants for a user given by an organization
+	DeleteAllUserGrants(w http.ResponseWriter, r *http.Request)
+	// CreateUserGrant is the handler for POST /organization/{globalid}/grants
+	// Gives a new grant to a user
+	CreateUserGrant(w http.ResponseWriter, r *http.Request)
+	// UpdateUserGrant is the handler for PUT /organization/{globalid}/grants
+	// Changes an existing grant to a new one
+	UpdateUserGrant(w http.ResponseWriter, r *http.Request)
+	// ListUsersWithGrant is the handler for GET /organization/{globalid}/grants/havegrant/{grant}
+	// Lists all users with a given grant
+	ListUsersWithGrant(w http.ResponseWriter, r *http.Request)
 }
 
 // OrganizationsInterfaceRoutes is routing for /organizations root endpoint
@@ -214,4 +232,10 @@ func OrganizationsInterfaceRoutes(r *mux.Router, i OrganizationsInterface) {
 	r.Handle("/organizations/{globalid}/orgmembers/includesuborgs", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.AddIncludeSubOrgsOf))).Methods("POST")
 	r.Handle("/organizations/{globalid}/orgmembers/includesuborgs/{orgmember}", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.RemoveIncludeSubOrgsOf))).Methods("DELETE")
 	r.Handle("/organizations/{globalid}/users/ismember/{username}", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.UserIsMember))).Methods("GET")
+	r.Handle("/organizations/{globalid}/grants/{username}", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.GetUserGrants))).Methods("GET")
+	r.Handle("/organizations/{globalid}/grants/{username}", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.DeleteAllUserGrants))).Methods("DELETE")
+	r.Handle("/organizations/{globalid}/grants/{username}/{grant}", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.DeleteUserGrant))).Methods("DELETE")
+	r.Handle("/organizations/{globalid}/grants", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.CreateUserGrant))).Methods("POST")
+	r.Handle("/organizations/{globalid}/grants", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.UpdateUserGrant))).Methods("PUT")
+	r.Handle("/organizations/{globalid}/grants/havegrant/{grant}", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.ListUsersWithGrant))).Methods("GET")
 }

@@ -23,7 +23,7 @@
                     <div ng-messages="dataform.labelinput.$error">
                         <div ng-message="required" translate='required_field'>This field is required</div>
                     </div>
-                </md-input-container>
+                </md-input-container>              
                 <div layout="column" layout-gt-sm="row">
                     <md-input-container flex>
                         <label translate='user.views.addressdialog.street'>Street</label>
@@ -77,10 +77,10 @@
             <md-button ng-click="cancel()" translate='cancel'>
                 Cancel
             </md-button>
-            <md-button class="md-primary" ng-click="create(data)" ng-if="::!originalLabel" translate='add' ng-disabled="!dataform.$valid">
+            <md-button class="md-primary" ng-click="create(data)" ng-if="::!originalLabel" translate='add' type='submit'>
                 Add
             </md-button>
-            <md-button class="md-primary" ng-click="update(originalLabel, data)" ng-if="::originalLabel" translate='save' ng-disabled="!dataform.$valid">
+            <md-button class="md-primary" ng-click="update(originalLabel, data)" ng-if="::originalLabel" translate='save' type='submit'>
                 Save
             </md-button>
         </md-dialog-actions>

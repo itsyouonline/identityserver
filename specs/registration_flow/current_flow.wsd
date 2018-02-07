@@ -1,0 +1,59 @@
+@startuml current_registration_flow
+
+[*] --> RegisterScreen
+state RegisterScreen {
+    [*] --> BasicInfoScreen
+    BasicInfoScreen: Firstname Lastname\nphonenumber\nemailaddress\npassword\nconfirmpassword
+    BasicInfoScreen --> BasicInfoValid
+    BasicInfoValid: Check:\n\tFirstname\n\tLastname\n\tphonenumber\n\temailaddress
+    BasicInfoValid -up--> BasicInfoScreen: Basic info not valid
+
+    BasicInfoValid -d--> GetRegistrationSession: Basic info valid\nGenerate username
+    GetRegistrationSession: Creates new if it does not exist
+
+    GetRegistrationSession --> LoadUserFromDb
+    LoadUserFromDb: Use username from registrationsession
+   
+    LoadUserFromDb --> CreateNewUserObject: user not found
+    LoadUserFromDb --> UpdateUserObject: user exists
+
+    CreateNewUserObject --> UpsertUsernamePassword
+    UpdateUserObject --> UpsertUsernamePassword
+
+    UpsertUsernamePassword --> BasicInfoScreen: Password invalid
+    
+    UpsertUsernamePassword --> CheckValidatingPhone
+    CheckValidatingPhone: Start phone validation if number from\nbasic info screen does not match number\nfrom registration session cookie and\nset cookie value to new number
+
+    CheckValidatingPhone --> CheckValidatingEmail
+    CheckValidatingEmail: Start email validation if email from\nbasic info screen does not match email\nfrom registration session cookie and\nset cookie value to new number
+
+    CheckValidatingEmail --> ValidateInfoScreen: Save registration session cookie
+    ValidateInfoScreen: phone code\nemail verification status
+
+    ValidateInfoScreen --> BasicInfoScreen: Basic info button
+
+    ValidateInfoScreen --> GetRegistrationSessionCookie: Register button
+
+    GetRegistrationSessionCookie --> BasicInfoScreen: Registration session expired
+
+    GetRegistrationSessionCookie --> CheckIfPhoneIsValidated: Load saved values from cookie
+
+    CheckIfPhoneIsValidated --> CheckSMSCode: phone not validated yet
+    CheckSMSCode: From the validate info form
+    CheckSMSCode --> ValidateInfoScreen: No code or invalid code
+    CheckSMSCode --> BasicInfoScreen: Validation key expired
+    CheckSMSCode --> CheckIfValidatedEmailIsRequired: SMSCode is valid\nNumber is confirmed
+    CheckIfValidatedEmailIsRequired: No clientid query param\nuser:validated:email scope requested\nrequirevalidatedemail queryparam set with non empty value
+    CheckIfValidatedEmailIsRequired --> CheckIfEmailIsValidated: Validated email required 
+    CheckIfEmailIsValidated: Must be validated by\npressing the button in the email
+    CheckIfEmailIsValidated -right--> ValidateInfoScreen: Email not validated yet
+    CheckIfValidatedEmailIsRequired --> DeleteRegistrationSessionValues: Validated email not required
+    CheckIfEmailIsValidated --> DeleteRegistrationSessionValues: Email is validated
+    DeleteRegistrationSessionValues --> [*]: Set redirectparams value in registration session\nSave registration session cookie
+}
+
+RegisterScreen --> UserIsLoggedIn
+UserIsLoggedIn --> [*]
+
+@enduml

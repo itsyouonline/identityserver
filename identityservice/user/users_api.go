@@ -19,6 +19,7 @@ import (
 	"github.com/itsyouonline/identityserver/credentials/totp"
 	"github.com/itsyouonline/identityserver/db"
 	contractdb "github.com/itsyouonline/identityserver/db/contract"
+	"github.com/itsyouonline/identityserver/db/iyoid"
 	"github.com/itsyouonline/identityserver/db/keystore"
 	organizationDb "github.com/itsyouonline/identityserver/db/organization"
 	"github.com/itsyouonline/identityserver/db/registry"
@@ -39,9 +40,12 @@ import (
 // label constants containing the reserved labels for avatars
 var reservedAvatarLabels = []string{"facebook", "github"}
 
-const maxAvatarFileSize = 100 << 10 // 100kb
-const maxAvatarAmount = 5
-const avatarLink = "https://%v/api/users/avatar/img/%v"
+const (
+	maxAvatarFileSize       = 100 << 10 // 100kb
+	maxAvatarAmount         = 5
+	avatarLink              = "https://%v/api/users/avatar/img/%v"
+	maxIDGenerationAttempts = 5
+)
 
 //UsersAPI is the actual implementation of the /users api
 type UsersAPI struct {
@@ -380,6 +384,18 @@ func (api UsersAPI) DeleteEmailAddress(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	addresses, err := valMgr.GetByUsernameValidatedEmailAddress(username)
+	if err != nil {
+		log.Error("Failed to get users validated email addresses: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if len(addresses) == 1 && addresses[0].EmailAddress == email.EmailAddress {
+		log.Debug("Can't remove last validated email address")
+		http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+		return
+	}
+
 	if err = userMgr.RemoveEmail(username, label); err != nil {
 		log.Error(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -487,11 +503,15 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Create an administrator authorization
-	if authorization == nil && isAdmin {
+	// TODO: rework for non admin scope in client credentials
+	// if authorization is nil we are already assured that this is client credentials due to the middleware
+	authorizedScopes := oauth2.SplitScopeString(availableScopes)
+	if authorization == nil {
 		authorization = &user.Authorization{
-			Name:                    true,
-			Github:                  true,
-			Facebook:                true,
+			// TODO: check bool values
+			Name:                    false,
+			Github:                  false,
+			Facebook:                false,
 			Addresses:               []user.AuthorizationMap{},
 			BankAccounts:            []user.AuthorizationMap{},
 			DigitalWallet:           []user.DigitalWalletAuthorization{},
@@ -501,34 +521,145 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 			ValidatedPhonenumbers:   []user.AuthorizationMap{},
 			PublicKeys:              []user.AuthorizationMap{},
 			Avatars:                 []user.AuthorizationMap{},
+			Organizations:           []string{},
+		}
+		_, all := filterAuthorizedInfo(authorizedScopes, "user:name")
+		if isAdmin || all {
+			authorization.Name = true
+		}
+		_, all = filterAuthorizedInfo(authorizedScopes, "user:github")
+		if isAdmin || all {
+			authorization.Github = true
+		}
+		_, all = filterAuthorizedInfo(authorizedScopes, "user:facebook")
+		if isAdmin || all {
+			authorization.Facebook = true
 		}
 		for _, address := range userobj.Addresses {
-			authorization.Addresses = append(authorization.Addresses, user.AuthorizationMap{RequestedLabel: address.Label, RealLabel: address.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:address")
+			if all || isAdmin {
+				authorization.Addresses = append(authorization.Addresses, user.AuthorizationMap{RequestedLabel: address.Label, RealLabel: address.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == address.Label {
+					authorization.Addresses = append(authorization.Addresses, user.AuthorizationMap{RequestedLabel: address.Label, RealLabel: address.Label})
+				}
+			}
 		}
 		for _, a := range userobj.BankAccounts {
-			authorization.BankAccounts = append(authorization.BankAccounts, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:bankaccount")
+			if all || isAdmin {
+				authorization.BankAccounts = append(authorization.BankAccounts, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.BankAccounts = append(authorization.BankAccounts, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
 		}
 		for _, a := range userobj.DigitalWallet {
-			authorization.DigitalWallet = append(authorization.DigitalWallet, user.DigitalWalletAuthorization{Currency: a.CurrencySymbol, AuthorizationMap: user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label}})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:digitalwalletaddress")
+			if all || isAdmin {
+				authorization.DigitalWallet = append(authorization.DigitalWallet, user.DigitalWalletAuthorization{Currency: a.CurrencySymbol, AuthorizationMap: user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label}})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.DigitalWallet = append(authorization.DigitalWallet, user.DigitalWalletAuthorization{Currency: a.CurrencySymbol, AuthorizationMap: user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label}})
+				}
+			}
 		}
 		for _, a := range userobj.EmailAddresses {
-			authorization.EmailAddresses = append(authorization.EmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:email")
+			if all || isAdmin {
+				authorization.EmailAddresses = append(authorization.EmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.EmailAddresses = append(authorization.EmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
 		}
 		for _, a := range userobj.EmailAddresses {
-			authorization.ValidatedEmailAddresses = append(authorization.ValidatedEmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:validated:email")
+			if all || isAdmin {
+				authorization.ValidatedEmailAddresses = append(authorization.ValidatedEmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.ValidatedEmailAddresses = append(authorization.ValidatedEmailAddresses, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
 		}
 		for _, a := range userobj.Phonenumbers {
-			authorization.Phonenumbers = append(authorization.Phonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:phone")
+			if all || isAdmin {
+				authorization.Phonenumbers = append(authorization.Phonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.Phonenumbers = append(authorization.Phonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
 		}
 		for _, a := range userobj.Phonenumbers {
-
-			authorization.ValidatedPhonenumbers = append(authorization.ValidatedPhonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:validated:phone")
+			if all || isAdmin {
+				authorization.ValidatedPhonenumbers = append(authorization.ValidatedPhonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.ValidatedPhonenumbers = append(authorization.ValidatedPhonenumbers, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
 		}
 		for _, a := range userobj.PublicKeys {
-			authorization.PublicKeys = append(authorization.PublicKeys, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:publickey")
+			if all || isAdmin {
+				authorization.PublicKeys = append(authorization.PublicKeys, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.PublicKeys = append(authorization.PublicKeys, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
 		}
 		for _, a := range userobj.Avatars {
-			authorization.Avatars = append(authorization.Avatars, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+			labels, all := filterAuthorizedInfo(authorizedScopes, "user:avatar")
+			if all || isAdmin {
+				authorization.Avatars = append(authorization.Avatars, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				continue
+			}
+			for _, label := range labels {
+				if label == a.Label {
+					authorization.Avatars = append(authorization.Avatars, user.AuthorizationMap{RequestedLabel: a.Label, RealLabel: a.Label})
+				}
+			}
+		}
+		labels, _ := filterAuthorizedInfo(authorizedScopes, "user:memberof")
+		if len(labels) > 0 || isAdmin {
+			userOrgs, err := organizationDb.NewManager(r).AllByUserChain(username)
+			if handleServerError(w, "Getting user organizations", err) {
+				return
+			}
+			for _, a := range userOrgs {
+				if isAdmin {
+					authorization.Organizations = append(authorization.Organizations, a)
+					continue
+				}
+				for _, l := range labels {
+					if l == a {
+						authorization.Organizations = append(authorization.Organizations, a)
+					}
+				}
+			}
 		}
 
 	}
@@ -551,8 +682,9 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 		OwnerOf: user.OwnerOf{
 			EmailAddresses: []string{},
 		},
-		PublicKeys: []user.PublicKey{},
-		Avatars:    []user.Avatar{},
+		PublicKeys:    []user.PublicKey{},
+		Avatars:       []user.Avatar{},
+		Organizations: []string{},
 	}
 
 	if authorization.Name {
@@ -671,6 +803,10 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if authorization.Organizations != nil {
+		respBody.Organizations = authorization.Organizations
+	}
+
 	valMgr := validationdb.NewManager(r)
 	if authorization.ValidatedEmailAddresses != nil {
 		for _, validatedEmailMap := range authorization.ValidatedEmailAddresses {
@@ -718,6 +854,22 @@ func (api UsersAPI) GetUserInformation(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(respBody)
+}
+
+// filterAuthorizedInfo filters out the labels of a specific scope. If no label is added, we assume all of them are authorized
+func filterAuthorizedInfo(authorizedScopes []string, baseScope string) ([]string, bool) {
+	all := false
+	labels := []string{}
+	for _, scope := range authorizedScopes {
+		if scope == baseScope {
+			all = true
+			continue
+		}
+		if strings.HasPrefix(scope, baseScope) {
+			labels = append(labels, strings.TrimPrefix(scope, baseScope+":"))
+		}
+	}
+	return labels, all
 }
 
 // RegisterNewPhonenumber is the handler for POST /users/{username}/phonenumbers
@@ -941,7 +1093,19 @@ func (api UsersAPI) UpdatePhonenumber(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	valMgr := validationdb.NewManager(r)
 	if oldnumber.Phonenumber != body.Phonenumber {
+		validatedPhone, err := valMgr.GetByPhoneNumber(oldnumber.Phonenumber)
+		if err != nil && !db.IsNotFound(err) {
+			log.Error("ERROR while updating phone number - ", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		if validatedPhone.Username == username {
+			log.Debug("Try to modify validated phone number")
+			http.Error(w, "cannot_modify_validated_phone", http.StatusPreconditionFailed)
+			return
+		}
 		last, err := isLastVerifiedPhoneNumber(u, oldnumber.Phonenumber, oldlabel, r)
 		if err != nil {
 			log.Error("ERROR while verifying last verified number - ", err)
@@ -968,7 +1132,6 @@ func (api UsersAPI) UpdatePhonenumber(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	valMgr := validationdb.NewManager(r)
 	if oldnumber.Phonenumber != body.Phonenumber && isUniquePhonenumber(u, oldnumber.Phonenumber, oldlabel) {
 		valMgr.RemoveValidatedPhonenumber(username, oldnumber.Phonenumber)
 	}
@@ -987,7 +1150,6 @@ func (api UsersAPI) DeletePhonenumber(w http.ResponseWriter, r *http.Request) {
 	label := mux.Vars(r)["label"]
 	userMgr := user.NewManager(r)
 	valMgr := validationdb.NewManager(r)
-	force := r.URL.Query().Get("force") == "true"
 
 	usr, err := userMgr.GetByName(username)
 	if err != nil {
@@ -1009,18 +1171,9 @@ func (api UsersAPI) DeletePhonenumber(w http.ResponseWriter, r *http.Request) {
 
 	}
 	if last {
-		hasTOTP := false
-		if !force {
-			writeErrorResponse(w, http.StatusConflict, "warning_delete_last_verified_phone_number")
-			return
-		} else {
-			totpMgr := totp.NewManager(r)
-			hasTOTP, err = totpMgr.HasTOTP(username)
-		}
-		if !hasTOTP {
-			writeErrorResponse(w, http.StatusConflict, "cannot_delete_last_verified_phone_number")
-			return
-		}
+		// Even with totp enforce a validated phone number
+		writeErrorResponse(w, http.StatusConflict, "cannot_delete_last_verified_phone_number")
+		return
 	}
 
 	// check if the phonenumber is unique or if there are duplicates
@@ -1443,7 +1596,18 @@ func (api UsersAPI) GetNotifications(w http.ResponseWriter, r *http.Request) {
 		if handleServerError(w, "getting invitations by user for email", err) {
 			return
 		}
-		userOrgRequests = append(userOrgRequests, emailRequests...)
+		for _, emailRequest := range emailRequests {
+			alreadyFound := false
+			for _, inv := range userOrgRequests {
+				if inv.Organization == emailRequest.Organization {
+					alreadyFound = true
+					break
+				}
+			}
+			if !alreadyFound {
+				userOrgRequests = append(userOrgRequests, emailRequest)
+			}
+		}
 	}
 
 	// Add the invites for the organizations where this user is an owner
@@ -1463,7 +1627,6 @@ func (api UsersAPI) GetNotifications(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	//var orgInvites []invitations.JoinOrganizationInvitation
 	orgInvites := make([]invitations.JoinOrganizationInvitation, 0)
 
 	for _, org := range ownedOrgs {
@@ -2950,6 +3113,131 @@ func (api UsersAPI) UpdateAvatarLink(w http.ResponseWriter, r *http.Request) {
 
 	replaceAvatar(w, r, oldAvatar, newAvatar, username, userMgr)
 
+}
+
+// ListIyoIDs is the handler for GET /users/{username}/identifiers
+// Lists the iyo ids a party has generated for a user
+func (api UsersAPI) ListIyoIDs(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	azp, _ := context.Get(r, "client_id").(string)
+
+	mgr := iyoid.NewManager(r)
+	idObj, err := mgr.GetByUsernameAndAZP(username, azp)
+	if err != nil && !db.IsNotFound(err) {
+		handleServerError(w, "listing user iyoids", err)
+		return
+	}
+	// If nothing is found we have no iyoids yet. So just create and return a template
+	// with an empty iyo ids list
+	if idObj == nil {
+		idObj = &iyoid.Identifier{
+			Username: username,
+			Azp:      azp,
+			IyoIDs:   []string{},
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(idObj)
+}
+
+// GenerateIyoID is the handler for POST /users/{username}/identifiers
+// Generate a new iyo id for a user and authorized party
+func (api UsersAPI) GenerateIyoID(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	azp, _ := context.Get(r, "client_id").(string)
+
+	mgr := iyoid.NewManager(r)
+
+	// might have an id collision, retry at most maxIDGenerationAttempts time
+	var err error
+	var id string
+	for attempts := 0; attempts < maxIDGenerationAttempts; attempts++ {
+		// Generate id
+		id, err = tools.GenerateRandomString()
+		if handleServerError(w, "generating iyoid", err) {
+			return
+		}
+		err = mgr.UpsertIdentifier(username, azp, id)
+		if err != nil && err != iyoid.ErrIDLimitReached && !db.IsDup(err) {
+			handleServerError(w, "saving iyoid", err)
+			return
+		}
+		// If the user has too many iyoids report it
+		if err == iyoid.ErrIDLimitReached {
+			// Max amount of iyoids reached
+			log.Debugf("Max iyoid treshold reached for %s - %s", username, azp)
+			http.Error(w, http.StatusText(http.StatusConflict), http.StatusConflict)
+			return
+		}
+
+		// If we got ourselves a dup lets retry
+		if db.IsDup(err) {
+			continue
+		}
+
+		break
+	}
+
+	// If there is still an error, we have issues
+	if handleServerError(w, "saving new id after multiple tries", err) {
+		return
+	}
+
+	// If we manage to get here, all is good an the new id has been saved
+
+	// Load ids again
+	idObj, err := mgr.GetByUsernameAndAZP(username, azp)
+	if err != nil && !db.IsNotFound(err) {
+		handleServerError(w, "listing user iyo-ids", err)
+		return
+	}
+
+	// Only keep the latest id generated
+	idObj.IyoIDs = idObj.IyoIDs[len(idObj.IyoIDs)-1 : len(idObj.IyoIDs)]
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(idObj)
+}
+
+// LookupIyoID is the handler for GET /users/identifiers/{identifier}
+// Lookup the username behind an iyo id
+func (api UsersAPI) LookupIyoID(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["identifier"]
+	azp, _ := context.Get(r, "client_id").(string)
+
+	mgr := iyoid.NewManager(r)
+	// Get the identifier object for the id and azp
+	idObj, err := mgr.GetByIDAndAZP(id, azp)
+	if err != nil && !db.IsNotFound(err) {
+		handleServerError(w, "listing user iyoids", err)
+		return
+	}
+
+	// Report if we didn't find anything
+	if db.IsNotFound(err) {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	// If the identifier belongs to another azp report that we didn't find something for this user either
+	if idObj.Azp != azp {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	// Only reveal this id in the response object
+	for i, sid := range idObj.IyoIDs {
+		if sid == id {
+			idObj.IyoIDs = idObj.IyoIDs[i : i+1]
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(idObj)
 }
 
 // validateAvatarUpdateLabels validates old and new avatar labels and returns a

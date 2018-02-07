@@ -1,10 +1,7 @@
 {
 	"ImportPath": "github.com/itsyouonline/identityserver",
 	"GoVersion": "go1.7",
-	"GodepVersion": "v75",
-	"Packages": [
-		"./..."
-	],
+	"GodepVersion": "v79",
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
@@ -59,6 +56,11 @@
 			"Rev": "29a850317649fc021f42f80ec29552f9a3156ee9"
 		},
 		{
+			"ImportPath": "github.com/pkg/errors",
+			"Comment": "v0.8.0-7-gf15c970",
+			"Rev": "f15c970de5b76fac0b59abb32d62c17cc7bed265"
+		},
+		{
 			"ImportPath": "github.com/pmezard/go-difflib/difflib",
 			"Rev": "792786c7400a136282c1664665ae0a8db921c6c2"
 		},
@@ -68,8 +70,29 @@
 			"Rev": "d77da356e56a7428ad25149ca77381849a6a5232"
 		},
 		{
-			"ImportPath": "gopkg.in/alexcesaro/quotedprintable.v3",
-			"Rev": "2caba252f4dc53eaf6b553000885530023f54623"
+			"ImportPath": "github.com/stretchr/testify/require",
+			"Comment": "v1.1.3-19-gd77da35",
+			"Rev": "d77da356e56a7428ad25149ca77381849a6a5232"
+		},
+		{
+			"ImportPath": "github.com/ulule/limiter",
+			"Comment": "v2.1.0",
+			"Rev": "0d25c13867d07314999d01525f9d69d40c6bf235"
+		},
+		{
+			"ImportPath": "github.com/ulule/limiter/drivers/middleware/stdlib",
+			"Comment": "v2.1.0",
+			"Rev": "0d25c13867d07314999d01525f9d69d40c6bf235"
+		},
+		{
+			"ImportPath": "github.com/ulule/limiter/drivers/store/common",
+			"Comment": "v2.1.0",
+			"Rev": "0d25c13867d07314999d01525f9d69d40c6bf235"
+		},
+		{
+			"ImportPath": "github.com/ulule/limiter/drivers/store/memory",
+			"Comment": "v2.1.0",
+			"Rev": "0d25c13867d07314999d01525f9d69d40c6bf235"
 		},
 		{
 			"ImportPath": "gopkg.in/mgo.v2",

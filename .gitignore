@@ -27,6 +27,7 @@ identityserver
 node_modules
 siteservice/apiconsole/dist
 .idea
+.vscode
 docs/examples/python/token/env
 siteservice/website/packaged
 templates/packaged

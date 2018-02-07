@@ -10,7 +10,7 @@ package main
 
 // ## API clients
 //go:generate go-raml client -l go --dir clients/go/itsyouonline --ramlfile specifications/api/itsyouonline.raml --package itsyouonline
-//go:generate go-raml client -l python --dir clients/python/itsyouonline --ramlfile specifications/api/itsyouonline.raml --package itsyouonline
+//go:generate go-raml client -l python --dir clients/python/itsyouonline --ramlfile specifications/api/itsyouonline.raml --package itsyouonline --python-unmarshall-response
 
 // ## Website ##
 //package the assets

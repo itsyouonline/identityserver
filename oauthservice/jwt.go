@@ -12,6 +12,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/itsyouonline/identityserver/credentials/oauth2"
 	"github.com/itsyouonline/identityserver/db"
+	"github.com/itsyouonline/identityserver/db/grants"
 	"github.com/itsyouonline/identityserver/db/organization"
 	"github.com/itsyouonline/identityserver/db/user"
 	"github.com/itsyouonline/identityserver/db/validation"
@@ -149,6 +150,17 @@ func (service *Service) RefreshJWTHandler(w http.ResponseWriter, r *http.Request
 	}
 	originalToken.Claims["scope"] = strings.Split(scope, ",")
 
+	// Add grants
+	if r.FormValue("add_grants") == "true" && isUser {
+		grantList, err := getGrants(username, clientID, r)
+		if err != nil {
+			log.Error("Failed to add grants in jwt refresh: ", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		originalToken.Claims["scope"] = append(strings.Split(scope, ","), grantList...)
+	}
+
 	// Set a new expiration time
 	validity := parseValidity(r)
 
@@ -280,6 +292,15 @@ func (service *Service) convertAccessTokenToJWT(r *http.Request, at *AccessToken
 	}
 	token.Claims["scope"] = strings.Split(scope, ",")
 
+	// Add grants
+	if r.FormValue("add_grants") == "true" && at.Username != "" {
+		grantList, err := getGrants(at.Username, at.ClientID, r)
+		if err != nil {
+			return "", err
+		}
+		token.Claims["scope"] = append(strings.Split(scope, ","), grantList...)
+	}
+
 	tokenString, err = token.SignedString(service.jwtSigningKey)
 	return
 }
@@ -337,6 +358,15 @@ func (service *Service) createNewJWTFromParent(r *http.Request, parentToken *jwt
 	}
 	token.Claims["scope"] = grantedScopes
 
+	clientID, _ := parentToken.Claims["azp"].(string)
+	if r.FormValue("add_grants") == "true" && username != "" {
+		grantList, err := getGrants(username, clientID, r)
+		if err != nil {
+			return "", err
+		}
+		token.Claims["scope"] = append(grantedScopes, grantList...)
+	}
+
 	// process the audience string and make sure we don't set an empty slice if no
 	// audience is set explicitly
 	var audiencesArr []string
@@ -360,6 +390,17 @@ func (service *Service) createNewJWTFromParent(r *http.Request, parentToken *jwt
 	} else {
 		token.Claims["exp"] = parentToken.Claims["exp"]
 	}
+	validity := parseValidity(r)
+	expiration := token.Claims["exp"].(int64)
+	requestedExpiration := expiration
+	if validity > 0 {
+		requestedExpiration = time.Now().Unix() + validity
+		if requestedExpiration < expiration {
+			expiration = requestedExpiration
+		}
+	}
+	token.Claims["exp"] = expiration
+
 	token.Claims["iss"] = issuer
 
 	if offlineAccessRequested {
@@ -579,4 +620,26 @@ func getRealLabel(requestedLabel string, t string, authorization *user.Authoriza
 		break
 	}
 	return ""
+}
+
+// getGrants returns a list of all the grants for a user
+func getGrants(username, clientID string, r *http.Request) ([]string, error) {
+
+	// Add grants
+	grantMgr := grants.NewManager(r)
+	rawGrants, err := grantMgr.GetGrantsForUser(username, clientID)
+	if err != nil && !db.IsNotFound(err) {
+		return nil, err
+	}
+	if err != nil {
+		rawGrants = &grants.SavedGrants{Grants: []grants.Grant{}}
+	}
+
+	fullGrants := make([]string, len(rawGrants.Grants))
+	for i, g := range rawGrants.Grants {
+		fullGrants[i] = grants.FullName(g)
+	}
+
+	log.Debug("Found ", len(fullGrants), " grant(s)")
+	return fullGrants, nil
 }

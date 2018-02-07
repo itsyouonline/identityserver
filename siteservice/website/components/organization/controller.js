@@ -58,6 +58,7 @@
         vm.getScopeTranslation = getScopeTranslation;
         vm.removeInvitation = removeInvitation;
         vm.includeChanged = includeChanged;
+        vm.trackinvite = trackinvite;
 
         activate();
 
@@ -579,6 +580,10 @@
             }
             OrganizationService.removeInclude(vm.organization.globalid, org);
 
+        }
+
+        function trackinvite(invite) {
+            return invite.user + invite.role;
         }
     }
 

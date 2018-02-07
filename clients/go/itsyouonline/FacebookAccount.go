@@ -5,7 +5,7 @@ import (
 )
 
 type FacebookAccount struct {
-	Id      int    `json:"id" validate:"nonzero"`
+	Id      string `json:"id" validate:"nonzero"`
 	Link    string `json:"link" validate:"nonzero"`
 	Name    string `json:"name" validate:"nonzero"`
 	Picture string `json:"picture" validate:"nonzero"`

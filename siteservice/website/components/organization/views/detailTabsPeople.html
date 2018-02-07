@@ -29,20 +29,19 @@
             <div class="md-list-item-text">
                 <p ng-bind="::orgowner"></p>
             </div>
-            <span ng-if="::vm.canEditRole(orgowner)">
-                    <div class="md-secondary md-primary">
-                        <md-switch ng-model="vm.includemap[orgowner]"
-                                   ng-change="vm.includeChanged(orgowner)"></md-switch>
-                        <md-tooltip>
-                            <span translate='organization_include_orgowner_suborgs'>Include suborganizations of this organization in the owner list</span>
-                        </md-tooltip>
-                    </div>
+            <div ng-if="::vm.canEditRole(orgowner)" class="md-secondary md-primary">
+                    <md-switch ng-model="vm.includemap[orgowner]"
+                                ng-change="vm.includeChanged(orgowner)"></md-switch>
+                    <md-tooltip>
+                        <span translate='organization_include_orgowner_suborgs'>Include suborganizations of this organization in the owner list</span>
+                    </md-tooltip>
+            </div>
                     <md-icon md-font-icon="fa-pencil" class="fa md-secondary md-primary"
                              aria-label="Edit organization owner"
                              translate-attr="{ 'aria-label': 'organization.views.detail.editorganizationowner' }"
-                             ng-click="vm.editOrgMember($event, orgowner)">
+                             ng-click="vm.editOrgMember($event, orgowner)"
+                             ng-if="::vm.canEditRole(orgowner)" ng-click="vm.editOrgMember($event, orgmember)">
                     <md-icon>
-                </span>
         </md-list-item>
     </md-list>
     <md-list class="md-dense" ng-if="vm.organization.members.length > 0">
@@ -96,7 +95,7 @@
             <md-progress-circular md-mode="indeterminate"
                                   md-diameter="50"></md-progress-circular>
         </div>
-        <md-list-item class="md-3-line" ng-repeat="invite in vm.invitations track by $index"
+        <md-list-item class="md-3-line" ng-repeat="invite in vm.invitations track by vm.trackinvite(invite)"
                       aria-label="Invite" ng-if="!vm.loading.invitations">
             <div class="md-list-item-text">
                 <h3 class="text_align_center"

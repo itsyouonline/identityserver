@@ -1,8 +1,6 @@
 package validation
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -39,15 +37,6 @@ type IYOEmailAddressValidationService struct {
 	EmailService EmailService
 }
 
-type translations struct {
-	Title      string
-	Text       string
-	Buttontext string
-	Reason     string
-	Subject    string
-	Urlcaption string
-}
-
 //RequestValidation validates the email address by sending an email
 func (service *IYOEmailAddressValidationService) RequestValidation(request *http.Request, username string, email string, confirmationurl string, langKey string) (key string, err error) {
 	valMngr := validation.NewManager(request)
@@ -62,31 +51,30 @@ func (service *IYOEmailAddressValidationService) RequestValidation(request *http
 		return
 	}
 
-	translationFile, err := tools.LoadTranslations(langKey)
-	if err != nil {
-		log.Error("Error while loading translations: ", err)
-		return
+	translationValues := tools.TranslationValues{
+		"emailvalidation_title":      nil,
+		"emailvalidation_text":       struct{ Email string }{Email: email},
+		"emailvalidation_buttontext": nil,
+		"emailvalidation_reason":     nil,
+		"emailvalidation_subject":    nil,
+		"emailvalidation_urlcaption": nil,
 	}
 
-	translations := struct {
-		Emailvalidation translations
-	}{}
-
-	r := bytes.NewReader(translationFile)
-	if err = json.NewDecoder(r).Decode(&translations); err != nil {
-		log.Error("Error while decoding translations: ", err)
+	translations, err := tools.ParseTranslations(langKey, translationValues)
+	if err != nil {
+		log.Error("Failed to parse translations: ", err)
 		return
 	}
 
 	validationurl := fmt.Sprintf("%s?c=%s&k=%s&l=%s", confirmationurl, url.QueryEscape(info.Secret), url.QueryEscape(info.Key), langKey)
 	templateParameters := EmailWithButtonTemplateParams{
-		UrlCaption: translations.Emailvalidation.Urlcaption,
+		UrlCaption: translations["emailvalidation_urlcaption"],
 		Url:        validationurl,
 		Username:   username,
-		Title:      translations.Emailvalidation.Title,
-		Text:       fmt.Sprintf(translations.Emailvalidation.Text, email),
-		ButtonText: translations.Emailvalidation.Buttontext,
-		Reason:     translations.Emailvalidation.Reason,
+		Title:      translations["emailvalidation_title"],
+		Text:       translations["emailvalidation_text"],
+		ButtonText: translations["emailvalidation_buttontext"],
+		Reason:     translations["emailvalidation_reason"],
 		LogoUrl:    fmt.Sprintf("https://%s/assets/img/its-you-online.png", request.Host),
 	}
 	message, err := tools.RenderTemplate(emailWithButtonTemplateName, templateParameters)
@@ -94,7 +82,7 @@ func (service *IYOEmailAddressValidationService) RequestValidation(request *http
 		return
 	}
 
-	go service.EmailService.Send([]string{email}, translations.Emailvalidation.Subject, message)
+	go service.EmailService.Send([]string{email}, translations["emailvalidation_subject"], message)
 	key = info.Key
 	return
 }
@@ -110,47 +98,46 @@ func (service *IYOEmailAddressValidationService) RequestPasswordReset(request *h
 		return
 	}
 
-	translationFile, err := tools.LoadTranslations(langKey)
-	if err != nil {
-		log.Error("Error while loading translations: ", err)
-		return
+	translationValues := tools.TranslationValues{
+		"passwordreset_title":      nil,
+		"passwordreset_text":       nil,
+		"passwordreset_buttontext": nil,
+		"passwordreset_reason":     nil,
+		"passwordreset_subject":    nil,
+		"passwordreset_urlcaption": nil,
 	}
 
-	translations := struct {
-		Passwordreset translations
-	}{}
-
-	r := bytes.NewReader(translationFile)
-	if err = json.NewDecoder(r).Decode(&translations); err != nil {
-		log.Error("Error while decoding translations: ", err)
+	translations, err := tools.ParseTranslations(langKey, translationValues)
+	if err != nil {
+		log.Error("Failed to parse translations: ", err)
 		return
 	}
 
 	passwordreseturl := fmt.Sprintf("https://%s/login?lang=%s#/resetpassword/%s", request.Host, langKey, url.QueryEscape(token.Token))
 	templateParameters := EmailWithButtonTemplateParams{
-		UrlCaption: translations.Passwordreset.Urlcaption,
+		UrlCaption: translations["passwordreset_urlcaption"],
 		Url:        passwordreseturl,
 		Username:   username,
-		Title:      translations.Passwordreset.Title,
-		Text:       translations.Passwordreset.Text,
-		ButtonText: translations.Passwordreset.Buttontext,
-		Reason:     translations.Passwordreset.Reason,
+		Title:      translations["passwordreset_title"],
+		Text:       translations["passwordreset_text"],
+		ButtonText: translations["passwordreset_buttontext"],
+		Reason:     translations["passwordreset_reason"],
 		LogoUrl:    fmt.Sprintf("https://%s/assets/img/its-you-online.png", request.Host),
 	}
 	message, err := tools.RenderTemplate(emailWithButtonTemplateName, templateParameters)
 	if err != nil {
 		return
 	}
-	go service.EmailService.Send(emails, translations.Passwordreset.Subject, message)
+	go service.EmailService.Send(emails, translations["passwordreset_subject"], message)
 	key = token.Token
 	return
 }
 
 //SendOrganizationInviteEmail Sends an organization invite email
 func (service *IYOEmailAddressValidationService) SendOrganizationInviteEmail(request *http.Request, invite *invitations.JoinOrganizationInvitation) (err error) {
-	inviteUrl := fmt.Sprintf(invitations.InviteUrl, request.Host, url.QueryEscape(invite.Code))
+	InviteURL := fmt.Sprintf(invitations.InviteURL, request.Host, url.QueryEscape(invite.Code))
 	templateParameters := EmailWithButtonTemplateParams{
-		Url:        inviteUrl,
+		Url:        InviteURL,
 		Username:   invite.EmailAddress,
 		Title:      "It's You Online organization invitation",
 		Text:       fmt.Sprintf("You have been invited to the %s organization on It's You Online. Click the button below to accept the invitation.", invite.Organization),
@@ -226,4 +213,22 @@ func (service *IYOEmailAddressValidationService) ConfirmValidation(request *http
 		return
 	}
 	return
+}
+
+// ConfirmRegistrationValidation checks if the supplied code matches the username and key. It does not add an entry
+// in the validated email addresses collection
+func (service *IYOEmailAddressValidationService) ConfirmRegistrationValidation(r *http.Request, key, secret string) (err error) {
+	info, err := service.getEmailAddressValidationInformation(r, key)
+	if err != nil {
+		return
+	}
+	if info == nil {
+		err = ErrInvalidOrExpiredKey
+		return
+	}
+	if info.Secret != secret {
+		err = ErrInvalidCode
+		return
+	}
+	return validation.NewManager(r).UpdateEmailAddressValidationInformation(key, true)
 }

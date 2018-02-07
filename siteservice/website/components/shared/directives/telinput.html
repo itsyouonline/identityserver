@@ -13,12 +13,19 @@
     <md-input-container flex>
         <label for="sms" translate="phone_number">Phone number</label>
         <input type="tel" ng-model="sms" name="phonenumber" ng-pattern="/^[0-9]*$/" id="sms" ng-change="updateSMS()" ng-model-options="{allowInvalid: true}" required>
-        <div ng-messages="validationerrors">
+        <div ng-messages="validationerrors" md-auto-hide="false">
             <div ng-message="pattern" translate='phonenumberpattern'>
                 Invalid phone number. Phone number may only contain digits.
             </div>
-            <div ng-message="invalid_phonenumber" translate='invalidphonenumber'>Invalid phone number</div>
-            <div ng-message="phone_already_used" translate='phone_already_used'>This phone number is already in use</div> 
+            <div ng-message="invalid_phonenumber" translate='invalidphonenumber'>
+                Invalid phone number
+            </div>
+            <div ng-message="phone_already_used" translate='phone_already_used'>
+                This phone number is already in use
+            </div> 
+            <div ng-message="illegalactionforcurrentstate" translate='change_verified_phone'>
+                You can't change a verified phone number
+            </div>
         </div>
     </md-input-container>
 </div>

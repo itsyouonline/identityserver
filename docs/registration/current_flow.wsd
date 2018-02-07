@@ -1,0 +1,30 @@
+@startuml current_registration_flow
+
+[*] --> BasicInfo
+state "Basic Info screen" as BasicInfo: Creates temporary user in separate collection
+
+BasicInfo --> ConfirmPhone: Send confirmation sms
+state "Confirm phone number" as ConfirmPhone
+
+ConfirmPhone -> ConfirmPhone: Resend validation
+ConfirmPhone --> Timeout: Timeout
+ConfirmPhone --> PhoneConfirmed: Follow sms link
+ConfirmPhone --> PhoneConfirmed: Code in sms
+
+state "Phone confirmed" as PhoneConfirmed
+PhoneConfirmed --> ConfirmEmail: Email confirmation send
+
+state "Confirm email" as ConfirmEmail
+ConfirmEmail -> ConfirmEmail: Resend Validation
+ConfirmEmail --> Timeout: Timeout
+ConfirmEmail --> EmailConfirmed: Email link
+
+state "Email confirmed" as EmailConfirmed
+EmailConfirmed --> CreateUser
+
+state "Create real user from temporary registration object" as CreateUser
+CreateUser --> [*]
+
+state "Removed temporary user" as Timeout
+Timeout --> [*]
+@enduml
