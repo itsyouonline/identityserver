@@ -2227,10 +2227,10 @@ func (api OrganizationsAPI) GetUserGrants(w http.ResponseWriter, r *http.Request
 		return
 	}
 	if err != nil {
+		log.Debug("If the user doesn't exist he also can't have an authorization")
 		// No user found for this identifier, return an empty list of grants
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode([]string{})
+		w.WriteHeader(http.StatusForbidden)
+		return
 	}
 
 	hasAuth, err := hasAuthorization(r, userObj.Username, globalID)
