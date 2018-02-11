@@ -907,10 +907,7 @@ class OrganizationsService:
         resp = self.client.get(uri, None, headers, query_params, content_type)
         try:
             if resp.status_code == 200:
-                resps = []
-                for elem in resp.json():
-                    resps.append(OrganizationTreeItem(elem))
-                return resps, resp
+                return OrganizationTreeItem(resp.json()), resp
 
             message = 'unknown status code={}'.format(resp.status_code)
             raise UnhandledAPIError(response=resp, code=resp.status_code,

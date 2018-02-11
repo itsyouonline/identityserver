@@ -858,9 +858,9 @@ func (s *OrganizationsService) AddRequiredScope(globalid string, body RequiredSc
 }
 
 // Tree structure of all suborganizations
-func (s *OrganizationsService) GetOrganizationTree(globalid string, headers, queryParams map[string]interface{}) ([]OrganizationTreeItem, *http.Response, error) {
+func (s *OrganizationsService) GetOrganizationTree(globalid string, headers, queryParams map[string]interface{}) (OrganizationTreeItem, *http.Response, error) {
 	var err error
-	var respBody200 []OrganizationTreeItem
+	var respBody200 OrganizationTreeItem
 
 	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/organizations/"+globalid+"/tree", headers, queryParams)
 	if err != nil {
