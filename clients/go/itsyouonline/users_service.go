@@ -23,16 +23,24 @@ func (s *UsersService) GetAvatarImage(hash string, headers, queryParams map[stri
 }
 
 // Lookup the username for an iyo id
-func (s *UsersService) LookupIyoID(identifier string, headers, queryParams map[string]interface{}) (*http.Response, error) {
+func (s *UsersService) LookupIyoID(identifier string, headers, queryParams map[string]interface{}) (IyoID, *http.Response, error) {
 	var err error
+	var respBody200 IyoID
 
 	resp, err := s.client.doReqNoBody("GET", s.client.BaseURI+"/users/identifiers/"+identifier, headers, queryParams)
 	if err != nil {
-		return nil, err
+		return respBody200, nil, err
 	}
 	defer resp.Body.Close()
 
-	return resp, err
+	switch resp.StatusCode {
+	case 200:
+		err = json.NewDecoder(resp.Body).Decode(&respBody200)
+	default:
+		err = goraml.NewAPIError(resp, nil)
+	}
+
+	return respBody200, resp, err
 }
 
 // Removes an address

@@ -1652,13 +1652,13 @@ securedBy: [ oauth_2_0 ]
     get:
       displayName: LookupIyoID
       description: Lookup the username for an iyo id
-      repsonses: 
+      responses: 
         200:
           body:
             application/json:
               type: IyoID
         404:
-          descripton: The iyo id is not found, or this azp does not have access to look it up
+          description: The iyo id is not found, or this azp does not have access to look it up
 
 
 /organizations:

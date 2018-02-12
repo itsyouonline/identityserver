@@ -45,7 +45,20 @@ class UsersService:
         It is method for GET /users/identifiers/{identifier}
         """
         uri = self.client.base_url + "/users/identifiers/" + identifier
-        return self.client.get(uri, None, headers, query_params, content_type)
+        resp = self.client.get(uri, None, headers, query_params, content_type)
+        try:
+            if resp.status_code == 200:
+                return IyoID(resp.json()), resp
+
+            message = 'unknown status code={}'.format(resp.status_code)
+            raise UnhandledAPIError(response=resp, code=resp.status_code,
+                                    message=message)
+        except ValueError as msg:
+            raise UnmarshallError(resp, msg)
+        except UnhandledAPIError as uae:
+            raise uae
+        except Exception as e:
+            raise UnmarshallError(resp, e.message)
 
     def DeleteUserAddress(self, label, username, headers=None, query_params=None, content_type="application/json"):
         """
