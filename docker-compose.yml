@@ -10,7 +10,7 @@ services:
       - .:/go/src/github.com/itsyouonline/identityserver
     links:
       - mongo
-    command: -c "mongo:27017"
+    entrypoint: ["sh", "-c", "go generate && go build && ./identityserver -d -c mongo:27017"]
 
   mongo:
     image: mongo
