@@ -15,7 +15,7 @@ A standard ID token has the following claims.
 
 * sub: [required] subject: (unique) identity of the user
 * iss: [required] issuer: the issuing authority
-* aud: [required] audience
+* aud: [required] The intended recipient of the token (currently set to: `ALL_AUDIENCES`)
 * iat: [required] Issued at timestamp
 * exp: [required] Expiration timestamp
 * nonce: [optional]
