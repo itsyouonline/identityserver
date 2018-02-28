@@ -58,7 +58,7 @@ func getIDToken(jwtSigningKey *ecdsa.PrivateKey, r *http.Request, at *AccessToke
 	token.Claims["iss"] = issuer
 	token.Claims["iat"] = at.CreatedAt
 	token.Claims["exp"] = at.ExpirationTime().Unix()
-	token.Claims["aud"] = "ALL_AUDIENCES"
+	token.Claims["aud"] = at.ClientID
 
 	// check scopes for additional claims
 	userMgr := user.NewManager(r)
