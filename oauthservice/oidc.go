@@ -6,36 +6,46 @@ import (
 	"net/http"
 	"strings"
 
+	log "github.com/Sirupsen/logrus"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/itsyouonline/identityserver/db/user"
 )
 
 const (
-	// ScopeOpenID is the mandatory scope for all OpenID Connect OAuth2 requests.
-	ScopeOpenID = "openid"
+	// scopeOpenID is the mandatory scope for all OpenID Connect OAuth2 requests.
+	scopeOpenID = "openid"
 )
 
 // getIDTokenFromCode returns an ID token if scopes associated with the code match
 // the OpenId scope
 // If no openId scope is found, the returned string is empty
-func getIDTokenFromCode(code string, jwtSigningKey *ecdsa.PrivateKey, r *http.Request, at *AccessToken, mgr *Manager) (string, error) {
+// if no error, the int returned represents http.StatusOK
+func getIDTokenFromCode(code string, jwtSigningKey *ecdsa.PrivateKey, r *http.Request, at *AccessToken, mgr *Manager) (string, int) {
 	// get scopes
+	fmt.Println(at.Scope)
 	ar, err := mgr.getAuthorizationRequest(code)
 	if err != nil {
-		return "", err
+		log.Debugf("something went wrong getting authorize request for the ID token: %s", err)
+		return "", http.StatusInternalServerError
 	}
 	scopeStr := ar.Scope
 
-	if !findScope(scopeStr, ScopeOpenID) {
-		return "", nil
+	if !scopePresent(scopeStr, scopeOpenID) {
+		return "", http.StatusOK
 	}
 
-	return getIDToken(jwtSigningKey, r, at, scopeStr)
+	token, err := getIDTokenStr(jwtSigningKey, r, at, scopeStr)
+	if err != nil {
+		log.Debugf("something went wrong getting ID token: %s", err)
+		return "", http.StatusBadRequest
+	}
+
+	return token, http.StatusOK
 }
 
-// findScope returns true if scope is in the scope string
+// scopePresent returns true if scope is in the scope string
 // The scope string is expected to be a comma seperated list of scopes
-func findScope(scopeStr string, scopeToSearch string) bool {
+func scopePresent(scopeStr string, scopeToSearch string) bool {
 	scopeSlice := strings.Split(scopeStr, ",")
 	for _, scope := range scopeSlice {
 		if scope == scopeToSearch {
@@ -46,10 +56,10 @@ func findScope(scopeStr string, scopeToSearch string) bool {
 	return false
 }
 
-// getIDToken returns an oidc ID token string
-// It will check the provided scopes string for supported oidc standard scope values
-// and set the corresponding standard claims if available.
-func getIDToken(jwtSigningKey *ecdsa.PrivateKey, r *http.Request, at *AccessToken, scopeStr string) (string, error) {
+// getIDTokenStr returns an oidc ID token string
+// It will set the default required claims
+// and calls setValuesFromScope to set additional claims
+func getIDTokenStr(jwtSigningKey *ecdsa.PrivateKey, r *http.Request, at *AccessToken, scopeStr string) (string, error) {
 	// for each valid oidc standard scope, fetch related data
 	token := jwt.New(jwt.SigningMethodES384)
 
@@ -61,71 +71,77 @@ func getIDToken(jwtSigningKey *ecdsa.PrivateKey, r *http.Request, at *AccessToke
 	token.Claims["aud"] = at.ClientID
 
 	// check scopes for additional claims
-	userMgr := user.NewManager(r)
-	authorization, err := userMgr.GetAuthorization(at.Username, at.ClientID)
+	err := setValuesFromScope(token, scopeStr, r, at)
 	if err != nil {
-		return "", fmt.Errorf("Failed to get authorization: %s", err)
-	}
-	userObj, err := userMgr.GetByName(at.Username)
-	if err != nil {
-		return "", fmt.Errorf("Failed to get user: %s", err)
-	}
-
-	scopeSlice := strings.Split(scopeStr, ",")
-	for _, scope := range scopeSlice {
-		switch scope {
-		case "email":
-			label := getRealLabel("main", "validatedemail", authorization)
-			err := setEmailClaims(token, userObj, label)
-			if err != nil {
-				return "", err
-			}
-		case "profile":
-			err := setProfileClaims(token, userObj)
-			if err != nil {
-				return "", err
-			}
-		case "phone":
-			label := getRealLabel("main", "validatedphone", authorization)
-			err := setPhoneClaims(token, userObj, label)
-			if err != nil {
-				return "", err
-			}
-		}
+		return "", fmt.Errorf("failed to get additional claims for id token: %s", err)
 	}
 
 	return token.SignedString(jwtSigningKey)
 }
 
-// setEmailClaims sets email claims into provided token
-func setEmailClaims(token *jwt.Token, user *user.User, label string) error {
-	email, err := user.GetEmailAddressByLabel(label)
+// setValuesFromScope check the scopes for additional claims to be added to the provided token
+func setValuesFromScope(token *jwt.Token, scopeStr string, r *http.Request, at *AccessToken) error {
+	userMgr := user.NewManager(r)
+	authorization, err := userMgr.GetAuthorization(at.Username, at.ClientID)
 	if err != nil {
-		return fmt.Errorf("could not get user's email: %s", err)
+		return fmt.Errorf("failed to get authorization: %s", err)
 	}
-	token.Claims["email"] = email.EmailAddress
-	token.Claims["email_verified"] = true
-
-	return nil
-}
-
-// setPhoneClaims sets phone claims into provided token
-func setPhoneClaims(token *jwt.Token, user *user.User, label string) error {
-	phone, err := user.GetPhonenumberByLabel(label)
+	userObj, err := userMgr.GetByName(at.Username)
 	if err != nil {
-		return fmt.Errorf("could not get user's email: %s", err)
+		return fmt.Errorf("failed to get user: %s", err)
 	}
-	token.Claims["phone_number"] = phone.Phonenumber
-	token.Claims["phone_number_verified"] = true
 
-	return nil
-}
-
-// setProfileClaims sets profile claims into provided token
-func setProfileClaims(token *jwt.Token, user *user.User) error {
-	token.Claims["given_name"] = user.Firstname
-	token.Claims["family_name"] = user.Lastname
-	token.Claims["name"] = fmt.Sprintf("%s %s", user.Firstname, user.Lastname)
+	scopeSlice := strings.Split(scopeStr, ",")
+	for _, scope := range scopeSlice {
+		switch {
+		case scope == "user:name":
+			token.Claims[scope] = fmt.Sprintf("%s %s", userObj.Firstname, userObj.Lastname)
+		case strings.HasPrefix(scope, "user:email"):
+			requestedLabel := strings.TrimPrefix(scope, "user:email")
+			if requestedLabel == "" || requestedLabel == "user:email" {
+				requestedLabel = "main"
+			}
+			label := getRealLabel(requestedLabel, "email", authorization)
+			email, err := userObj.GetEmailAddressByLabel(label)
+			if err != nil {
+				return fmt.Errorf("could not get user's email: %s", err)
+			}
+			token.Claims[scope] = email.EmailAddress
+		case strings.HasPrefix(scope, "user:validated:email"):
+			requestedLabel := strings.TrimPrefix(scope, "user:validated:email")
+			if requestedLabel == "" || requestedLabel == "user:validated:email" {
+				requestedLabel = "main"
+			}
+			label := getRealLabel(requestedLabel, "validatedemail", authorization)
+			email, err := userObj.GetEmailAddressByLabel(label)
+			if err != nil {
+				return fmt.Errorf("could not get user's email: %s", err)
+			}
+			token.Claims[scope] = email.EmailAddress
+		case strings.HasPrefix(scope, "user:phone"):
+			requestedLabel := strings.TrimPrefix(scope, "user:phone:")
+			if requestedLabel == "" || requestedLabel == "user:phone" {
+				requestedLabel = "main"
+			}
+			label := getRealLabel(requestedLabel, "phone", authorization)
+			phone, err := userObj.GetPhonenumberByLabel(label)
+			if err != nil {
+				return fmt.Errorf("could not get user's phone: %s", err)
+			}
+			token.Claims[scope] = phone.Phonenumber
+		case strings.HasPrefix(scope, "user:validated:phone"):
+			requestedLabel := strings.TrimPrefix(scope, "user:validated:phone:")
+			if requestedLabel == "" || requestedLabel == "user:validated:phone" {
+				requestedLabel = "main"
+			}
+			label := getRealLabel(requestedLabel, "validatedphone", authorization)
+			phone, err := userObj.GetPhonenumberByLabel(label)
+			if err != nil {
+				return fmt.Errorf("could not get user's phone: %s", err)
+			}
+			token.Claims[scope] = phone.Phonenumber
+		}
+	}
 
 	return nil
 }

@@ -96,6 +96,11 @@ func (authorization Authorization) FilterAuthorizedScopes(requestedscopes []stri
 		if scope == "user:see" && authorization.See {
 			authorizedScopes = append(authorizedScopes, scope)
 		}
+
+		// oidc scopes
+		if scope == "openid" {
+			authorizedScopes = append(authorizedScopes, scope)
+		}
 	}
 
 	return

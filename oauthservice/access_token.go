@@ -119,11 +119,8 @@ func (service *Service) AccessTokenHandler(w http.ResponseWriter, r *http.Reques
 		at, httpStatusCode = convertCodeToAccessTokenHandler(code, clientID, clientSecret, redirectURI, state, mgr)
 
 		if httpStatusCode == http.StatusOK {
-			idToken, err = getIDTokenFromCode(code, service.jwtSigningKey, r, at, mgr)
-			if err != nil {
-				log.Debugf("Something went wrong getting ID token: %s", err)
-				httpStatusCode = http.StatusBadRequest
-			}
+			idToken, httpStatusCode = getIDTokenFromCode(code, service.jwtSigningKey, r, at, mgr)
+			at.Scope = removeScope(at.Scope, scopeOpenID)
 		}
 	}
 

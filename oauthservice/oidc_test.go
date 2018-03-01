@@ -7,9 +7,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsOIDC(t *testing.T) {
+func TestScopePresent(t *testing.T) {
 	assert := assert.New(t)
 
+	const (
+		searchScope = "openid"
+	)
 	cases := []struct {
 		scopes string
 		isOIDC bool
@@ -23,6 +26,6 @@ func TestIsOIDC(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		assert.Equal(c.isOIDC, isOIDC(c.scopes), fmt.Sprintf("'%s' should return %t from isOIDC", c.scopes, c.isOIDC))
+		assert.Equal(c.isOIDC, scopePresent(c.scopes, searchScope), fmt.Sprintf("'%s' should return %t from isOIDC", c.scopes, c.isOIDC))
 	}
 }
