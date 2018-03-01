@@ -56,7 +56,7 @@ func getIDToken(jwtSigningKey *ecdsa.PrivateKey, r *http.Request, at *AccessToke
 	// setup basic claims
 	token.Claims["sub"] = at.Username
 	token.Claims["iss"] = issuer
-	token.Claims["iat"] = at.CreatedAt
+	token.Claims["iat"] = at.CreatedAt.Unix()
 	token.Claims["exp"] = at.ExpirationTime().Unix()
 	token.Claims["aud"] = at.ClientID
 
@@ -99,12 +99,11 @@ func getIDToken(jwtSigningKey *ecdsa.PrivateKey, r *http.Request, at *AccessToke
 
 // setEmailClaims sets email claims into provided token
 func setEmailClaims(token *jwt.Token, user *user.User, label string) error {
-	var err error
-	token.Claims["email"], err = user.GetEmailAddressByLabel(label)
+	email, err := user.GetEmailAddressByLabel(label)
 	if err != nil {
 		return fmt.Errorf("could not get user's email: %s", err)
 	}
-
+	token.Claims["email"] = email.EmailAddress
 	token.Claims["email_verified"] = true
 
 	return nil
@@ -112,12 +111,11 @@ func setEmailClaims(token *jwt.Token, user *user.User, label string) error {
 
 // setPhoneClaims sets phone claims into provided token
 func setPhoneClaims(token *jwt.Token, user *user.User, label string) error {
-	var err error
-	token.Claims["phone_number"], err = user.GetPhonenumberByLabel(label)
+	phone, err := user.GetPhonenumberByLabel(label)
 	if err != nil {
 		return fmt.Errorf("could not get user's email: %s", err)
 	}
-
+	token.Claims["phone_number"] = phone.Phonenumber
 	token.Claims["phone_number_verified"] = true
 
 	return nil
@@ -125,7 +123,6 @@ func setPhoneClaims(token *jwt.Token, user *user.User, label string) error {
 
 // setProfileClaims sets profile claims into provided token
 func setProfileClaims(token *jwt.Token, user *user.User) error {
-	token.Claims["profile"] = "find fields iyo can provide here and add these as claims"
 	token.Claims["given_name"] = user.Firstname
 	token.Claims["family_name"] = user.Lastname
 	token.Claims["name"] = fmt.Sprintf("%s %s", user.Firstname, user.Lastname)
