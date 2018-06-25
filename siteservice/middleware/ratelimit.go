@@ -19,7 +19,7 @@ const (
 	// DefaultRateLimitPeriod is the default time window to track calls
 	DefaultRateLimitPeriod = time.Minute * 10
 	// DefaultRateLimit is the default amount of allowed calls to the protected api in the time window
-	DefaultRateLimit = 5
+	DefaultRateLimit = 50
 )
 
 // RateLimit creates a new rate limiting middleware with in memory store
