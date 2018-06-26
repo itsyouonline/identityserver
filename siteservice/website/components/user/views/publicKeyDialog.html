@@ -36,6 +36,18 @@
                     </div>
                 </md-input-container>
             </div>
+            <div class='md-dialog-content' layout="column">
+                    <label>
+                        <md-checkbox class="md-primary"  ng-model="ctrl.Key.save_info" ng-true-value="true" ng-false-value="false"/>
+                        <span translate='save_info_label'>Are you sure you want us to save this data?</span>
+                    </label>
+                    
+                    <md-input-container class='fake-container'>
+                        <div ng-messages="validationerrors" md-auto-hide="false">
+                        <div ng-message='save_info_box' translate="add_info_error_message">You should check this to be able to add info.</div>
+                    </div>
+                </md-input-container>
+            </div>
         </md-dialog-content>
         <md-dialog-actions layout="row" layout-align="space-between center">
             <md-button class="md-warn" ng-click="ctrl.delete()" ng-if="ctrl.originalLabel" translate='delete'>

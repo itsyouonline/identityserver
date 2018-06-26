@@ -602,6 +602,11 @@
 
                 function createPublicKey() {
                     ctrl.validationerrors = {};
+                    $scope.validationerrors = {};
+                    if (!ctrl.Key.save_info) {
+                        $scope.validationerrors.save_info_box = true;
+                        return;
+                    }
                     UserService.createPublicKey(username, ctrl.label, ctrl.Key.publickey).then(
                         function (data) {
                             ctrl.modified = true;
@@ -617,6 +622,11 @@
                 }
 
                 function updatePublicKey() {
+                    $scope.validationerrors = {};
+                    if (!ctrl.Key.save_info) {
+                        $scope.validationerrors.save_info_box = true;
+                        return;
+                    }
                     UserService.updatePublicKey(username, ctrl.savedLabel, ctrl.label, ctrl.Key.publickey).then(
                         function (data) {
                             $mdDialog.hide({originalLabel: ctrl.savedLabel, newLabel: ctrl.label});
@@ -658,6 +668,10 @@
             }
 
             function create(data) {
+                if (!data.save_info) {
+                    $scope.validationerrors.save_info_box = true;
+                    return;
+                }
                 if (Object.keys($scope.dataform.$error).length > 0) {
                     return;
                 }
@@ -684,6 +698,10 @@
             }
 
             function update(oldLabel, data) {
+                if (!data.save_info) {
+                    $scope.validationerrors.save_info_box = true;
+                    return;
+                }
                 if (Object.keys($scope.dataform.$error).length > 0) {
                     return;
                 }
@@ -755,12 +773,17 @@
             }
 
             function create(data) {
+                if (!data.save_info) {
+                    $scope.validationerrors.save_info_box = true;
+                    return;
+                }
                 if (Object.keys($scope.dataform.$error).length > 0) {
+                    
                     angular.forEach($scope.dataform.$error, function (field) {
                         angular.forEach(field, function(errorField){
                             // Touch all the error fields, so we are sure the error message renders
                             errorField.$setTouched();
-                        })
+                        });
                     });
                     return;
                 }
@@ -778,6 +801,10 @@
             }
 
             function update(oldLabel, data) {
+                if (!data.save_info) {
+                    $scope.validationerrors.save_info_box = true;
+                    return;
+                }
                 if (Object.keys($scope.dataform.$error).length > 0) {
                     return;
                 }

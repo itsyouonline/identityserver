@@ -603,6 +603,8 @@
     },
     "user_not_found": "User not found",
     "user_with_name_exists": "A user with this name already exists. Please pick another name.",
+    "add_info_error_message": "You should check this to be able to add info.",
+    "save_info_label": "Are you sure you want us to save this data?",
     "username": "Username",
     "username_minlength": "Username must be at least 3 characters long",
     "username_or_phone": "Username or phone number",
