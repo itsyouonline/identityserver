@@ -15,8 +15,9 @@ const (
 // InitModels initialize models in mongo, if required.
 func InitModels() {
 	index := mgo.Index{
-		Key:    []string{"phonenumber"},
-		Unique: true,
+		Key:         []string{"createdat"},
+		Unique:      true,
+		ExpireAfter: time.Duration(30*24*60*60) * time.Second, // one month
 	}
 
 	db.EnsureIndex(smshistoryCollectionName, index)

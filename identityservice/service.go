@@ -18,6 +18,7 @@ import (
 	"github.com/itsyouonline/identityserver/db/keystore"
 	organizationdb "github.com/itsyouonline/identityserver/db/organization"
 	"github.com/itsyouonline/identityserver/db/see"
+	smshistroy "github.com/itsyouonline/identityserver/db/smshistory"
 	userdb "github.com/itsyouonline/identityserver/db/user"
 	validationdb "github.com/itsyouonline/identityserver/db/validation"
 	"github.com/itsyouonline/identityserver/globalconfig"
@@ -62,6 +63,7 @@ func (service *Service) AddRoutes(router *mux.Router) {
 	// User API
 	user.UsersInterfaceRoutes(router, user.UsersAPI{SmsService: service.smsService, PhonenumberValidationService: service.phonenumberValidationService, EmailService: service.emailService, EmailAddressValidationService: service.emailaddresValidationService})
 	userdb.InitModels()
+	smshistroy.InitModels()
 	totp.InitModels()
 	see.InitModels()
 	iyoid.InitModels()
