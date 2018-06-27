@@ -206,6 +206,7 @@
                 && !!vm.phone.validationerrors.phone_already_used === false
                 && $scope.signupform.email.$valid
                 && $scope.signupform.password.$valid
+                && vm.agreement === true
                 && $scope.signupform.passwordvalidation.$valid;
         }
 

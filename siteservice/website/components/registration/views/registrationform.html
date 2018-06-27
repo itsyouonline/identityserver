@@ -113,6 +113,14 @@
                                     <div ng-message="passwordIdentical" translate='registration.views.registrationform.passwordmatch'>The passwords do not match</div>
                                 </div>
                             </md-input-container>
+                                <label>
+                                    <md-checkbox class="md-primary" name="agreement" id="agreement" ng-model="vm.agreement" ng-true-value="true" ng-false-value="false"/>
+                                    <span translate='agreement_message'>I hereby agree with the processing of my personal data in accordance with our</span><span> <a href="#">privacy policy</a> </span>
+                                </label>
+                                <div ng-messages="signupform.agreement.$error" md-auto-hide="false" >
+                                    <div ng-message="agreement_error" translate="agreement_error">You should accept the agreement to be able to continue.</div>
+                                </div>
+                            
                         </div>
                         <div layout="column" layout-gt-sm="row" flex="100">
                             <div flex></div>
