@@ -14,7 +14,7 @@ echo 'Switching components in debug'
 go-bindata -debug -pkg components -prefix components -o ./packaged/components/components.go components/...
 
 echo 'Switching html in debug'
-go-bindata -debug -pkg html -o ./packaged/html/html.go index.html registration.html login.html error.html apidocumentation.html emailconfirmation.html smsconfirmation.html base.html
+go-bindata -debug -pkg html -o ./packaged/html/html.go index.html registration.html login.html privacypolicy.html error.html apidocumentation.html emailconfirmation.html smsconfirmation.html base.html
 popd > /dev/null
 echo "Switching templates to debug mode"
 pushd templates > /dev/null

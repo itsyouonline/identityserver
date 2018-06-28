@@ -78,6 +78,7 @@ func (service *Service) AddRoutes(router *mux.Router) {
 	router.Methods("GET").Path("/register/emailconfirmed").HandlerFunc(service.CheckRegistrationEmailConfirmation)
 	router.Methods("POST").Path("/register/smsconfirmation").HandlerFunc(service.ProcessPhonenumberConfirmationForm)
 	router.Methods("POST").Path("/register/validation").HandlerFunc(service.ValidateInfo)
+	router.Methods("GET").Path("/privacypolicy").HandlerFunc(service.ShowPrivacyPolicy)
 	router.Handle("/register/resendvalidation", alice.New(middleware.RateLimit(middleware.DefaultRateLimitPeriod, middleware.DefaultRateLimit).Handler).Then(http.HandlerFunc(service.ResendValidationInfo))).Methods("POST")
 	//Enable us to "forget" users in case we are not in production
 	router.Methods("GET").Path("/register/delete").HandlerFunc(service.ServeForgetAccountPage)
@@ -159,7 +160,18 @@ const (
 	apidocsPageFilename   = "apidocumentation.html"
 	smsconfirmationPage   = "smsconfirmation.html"
 	emailconfirmationPage = "emailconfirmation.html"
+	privacypolicy         = "privacypolicy.html"
 )
+
+//ShowPrivacyPolicy shows the privacy policy
+func (service *Service) ShowPrivacyPolicy(w http.ResponseWriter, request *http.Request) {
+	htmlData, err := html.Asset(privacypolicy)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	w.Write(htmlData)
+}
 
 //ShowPublicSite shows the public website
 func (service *Service) ShowPublicSite(w http.ResponseWriter, request *http.Request) {

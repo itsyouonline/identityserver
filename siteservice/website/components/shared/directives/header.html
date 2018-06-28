@@ -2,7 +2,7 @@
     <header id="header" ng-class="{'cookie-warning': showCookieWarning}">
         <!--cookie warning-->
         <div ng-cloak class="cookie-warning-container" ng-if="showCookieWarning">
-            <span translate='shared.directives.header.cookiewarning'>This site uses cookies. By continuing to browse the site you are agreeing to our use of cookies.</span>
+            <span translate='shared.directives.header.cookiewarning'>This site uses cookies. By continuing to browse the site you are agreeing to our use of cookies.</span> <span><a href="#">Read from here</a></span>
             <md-button class="md-raised" ng-click="hideCookieWarning()">
                 <i class="fa fa-times"></i> <span translate='shared.directives.header.dismiss'>Dismiss</span>
             </md-button>
