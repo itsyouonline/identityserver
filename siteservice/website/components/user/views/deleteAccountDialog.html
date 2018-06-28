@@ -1,0 +1,35 @@
+<md-dialog>
+    <form name="deleteAccountForm" ng-submit="ctrl.deleteAccount()">
+        <md-toolbar>
+            <div class="md-toolbar-tools" style="background-color:red">
+                <h2 class="white text_align_center" translate='user.controller.deleteaccount'>Delete Account</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="ctrl.close()">
+                    <md-icon md-svg-src="assets/img/ic_close_24px.svg" aria-label translate-attr="{ 'aria-label': 'closedialog' }"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content>
+            <div class="md-dialog-content" layout="column">
+                <p style="max-width:500px;" translate='user.controller.deleteaccountconfirm'></p>
+                <md-input-container>
+                    <label translate='user.controller.password'>Enter your password</label>
+                    <input type="password" name="password" required ng-model="ctrl.password" ng-minlength="6" ng-change="ctrl.resetValidation()"/>
+                    <div ng-messages="deleteAccountForm.password.$error">
+                        <div ng-message="incorrect_password" translate='user.controller.currentpassinvalid'>Incorrect password</div>
+                        <div ng-message="only_owner" translate='user.controller.only_owner'>You are the only owner of organizations, please add another owner to these organizations firstly</div>
+                    </div>
+                </md-input-container>
+            </div>
+        </md-dialog-content>
+        <md-dialog-actions layout="row">
+            <div></div>
+            <md-button ng-click="ctrl.close()" translate='cancel'>
+                cancel
+            </md-button>
+            <md-button class="md-warn" type="submit" ng-disabled="!deleteAccountForm.$valid" translate='delete'>
+                Delete
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>

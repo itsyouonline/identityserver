@@ -10,12 +10,19 @@ import (
 	"time"
 
 	"github.com/itsyouonline/identityserver/db"
+	"strings"
 )
 
 const (
-	mongoUsersCollectionName          = "users"
-	mongoAvatarFileCollectionName     = "avatarfiles"
-	mongoAuthorizationsCollectionName = "authorizations"
+	mongoUsersCollectionName          				= "users"
+	mongoAvatarFileCollectionName     				= "avatarfiles"
+	mongoAuthorizationsCollectionName 				= "authorizations"
+	mongoJoinOrganizationInvitations  			    = "join-organization-invitations"
+	mongoTotpCollectionName			  				= "totp"
+	mongoValidatedAddressesCollectionName			= "validatedaddresses"
+	mongoValidatedEmailAddressesCollectionName		= "validatedemailaddresses"
+	mongoValidatedPhoneNumbersCollectionName		= "validatedphonenumbers"
+	mongoOrganizationsCollectionName				= "organizations"
 )
 
 //InitModels initialize models in mongo, if required.
@@ -156,6 +163,64 @@ func (m *Manager) Save(u *User) error {
 func (m *Manager) Delete(u *User) error {
 	if u.ID == "" {
 		return errors.New("User not stored")
+	}
+
+	// Check if the user is the only owner of any organization
+	orgCollection := db.GetCollection(m.session, mongoOrganizationsCollectionName)
+	var organizations []struct{}
+	orgCollection.Find(bson.M{"owners": []string{u.Username}}).All(&organizations)
+	if len(organizations) > 0 {
+		return errors.New("only_owner")
+	}
+
+	// Remove the user from all organizations he is co-owner or member of
+	orgCollection.UpdateAll(bson.M{}, bson.M{
+		"$pull": bson.M{ "owners": u.Username, "members": u.Username },
+	})
+
+	// Remove all authorizations the user granted before for any organization
+	_, err := m.getAuthorizationCollection().RemoveAll(bson.M{"username": u.Username})
+	if err != nil {
+		return err
+	}
+
+	// Delete all avatar files for the user
+	for _, avatar := range u.Avatars {
+		srcParts := strings.Split(avatar.Source, "/")
+		err = m.RemoveAvatarFile(srcParts[len(srcParts)-1])
+		if err != nil {
+			return err
+		}
+	}
+
+	// Delete all user's join organization invitations
+	_, err = db.GetCollection(m.session, mongoJoinOrganizationInvitations).RemoveAll(bson.M{"username": u.Username})
+	if err != nil {
+		return err
+	}
+
+	// Delete all totp for the user
+	_, err = db.GetCollection(m.session, mongoTotpCollectionName).RemoveAll(bson.M{"username": u.Username})
+	if err != nil {
+		return err
+	}
+
+	// Delete all validated addresses
+	_, err = db.GetCollection(m.session, mongoValidatedAddressesCollectionName).RemoveAll(bson.M{"username": u.Username})
+	if err != nil {
+		return err
+	}
+
+	// Delete all validated phone numbers
+	_, err = db.GetCollection(m.session, mongoValidatedPhoneNumbersCollectionName).RemoveAll(bson.M{"username": u.Username})
+	if err != nil {
+		return err
+	}
+
+	// Delete all validated email addresses
+	_, err = db.GetCollection(m.session, mongoValidatedEmailAddressesCollectionName).RemoveAll(bson.M{"username": u.Username})
+	if err != nil {
+		return err
 	}
 
 	return m.getUserCollection().RemoveId(u.ID)

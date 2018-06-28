@@ -127,6 +127,7 @@
             deleteFacebookAccount: deleteFacebookAccount,
             deleteGithubAccount: deleteGithubAccount,
             updatePassword: updatePassword,
+            deleteAccount: deleteAccount,
             updateName: updateName,
             getVerifiedPhones: getVerifiedPhones,
             sendPhoneVerificationCode: sendPhoneVerificationCode,
@@ -557,6 +558,14 @@
         function deleteAvatar(username, label) {
             var url = apiURL + '/' + encodeURIComponent(username) + '/avatar/' + encodeURIComponent(label);
             return genericHttpCall(DELETE, url)
+        }
+
+        function deleteAccount(username, password) {
+            var url = apiURL + '/' + encodeURIComponent(username) + "/delete";
+            var data = {
+                password: password,
+            };
+            return genericHttpCall($http.post, url, data);
         }
     }
 })();

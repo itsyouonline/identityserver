@@ -48,6 +48,8 @@ type UsersInterface interface { // Post is the handler for POST /users
 	GetNotifications(http.ResponseWriter, *http.Request)
 	// GetUser is the handler for GET /users/{username}
 	GetUser(http.ResponseWriter, *http.Request)
+	// DeleteUser is the handler for POST /users/{username}/delete
+	DeleteUser(http.ResponseWriter, *http.Request)
 	// DeleteFacebookAccount is the handler for DELETE /users/{username}/facebook
 	// Delete the associated facebook account
 	DeleteFacebookAccount(http.ResponseWriter, *http.Request)
@@ -219,6 +221,7 @@ func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
 	r.Handle("/users/{username}/banks", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.CreateUserBankAccount))).Methods("POST")
 	r.Handle("/users/{username}/notifications", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.GetNotifications))).Methods("GET")
 	r.Handle("/users/{username}", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.GetUser))).Methods("GET")
+	r.Handle("/users/{username}/delete", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.DeleteUser))).Methods("POST")
 	r.Handle("/users/{username}/apikeys", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.ListAPIKeys))).Methods("GET")
 	r.Handle("/users/{username}/apikeys", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.AddAPIKey))).Methods("POST")
 	r.Handle("/users/{username}/apikeys/{label}", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.GetAPIKey))).Methods("GET")

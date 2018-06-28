@@ -136,6 +136,41 @@ func (api UsersAPI) GetUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(usr)
 }
 
+// DeleteUser is the handler for Post /users/{username}/delete
+func (api UsersAPI) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	body := struct {
+		Password string `json:"password"`
+	}{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+	userMgr := user.NewManager(r)
+	user, err := userMgr.GetByName(username)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	passwordMgr := password.NewManager(r)
+	passwordok, err := passwordMgr.Validate(username, body.Password)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if !passwordok {
+		writeErrorResponse(w, 422, "incorrect_password")
+		return
+	}
+	err = userMgr.Delete(user)
+	if err != nil {
+		writeErrorResponse(w, 422, err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // RegisterNewEmailAddress is the handler for POST /users/{username}/emailaddresses
 // Register a new email address
 func (api UsersAPI) RegisterNewEmailAddress(w http.ResponseWriter, r *http.Request) {

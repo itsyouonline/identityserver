@@ -83,6 +83,7 @@
         vm.removeAuthenticatorApplication = removeAuthenticatorApplication;
         vm.resolveMissingScopeClicked = resolveMissingScopeClicked;
         vm.downloadAccountData = downloadAccountData;
+        vm.deleteAccountData = deleteAccountData;
         init();
 
         function init() {
@@ -889,6 +890,43 @@
                     downloadAnchorNode.remove();
                 }
             );
+        }
+
+        function deleteAccountData(event) {
+            $mdDialog.show({
+                controller: ['$scope', '$mdDialog', 'UserService', deleteAccountController],
+                controllerAs: 'ctrl',
+                templateUrl: 'components/user/views/deleteAccountDialog.html',
+                targetEvent: event,
+                fullscreen: $mdMedia('sm') || $mdMedia('xs'),
+                parent: angular.element(document.body),
+                clickOutsideToClose: true,
+            });
+
+            function deleteAccountController($scope, $mdDialog, UserService) {
+                var ctrl = this;
+                ctrl.close = close;
+                ctrl.deleteAccount = deleteAccount;
+                ctrl.resetValidation = resetValidation;
+
+                function deleteAccount() {
+                    UserService.deleteAccount(vm.username, ctrl.password).then(function(){
+                        $window.location.href = '/logout';
+                    }, function(response){
+                        if (response.status === 422) {
+                            $scope.deleteAccountForm.password.$setValidity(response.data.error, false);
+                        }
+                    });
+                }
+
+                function close() {
+                    $mdDialog.cancel();
+                }
+
+                function resetValidation() {
+                    $scope.deleteAccountForm.password.$setValidity('incorrect_password', true);
+                }
+            }
         }
     }
 
