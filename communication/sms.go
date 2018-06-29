@@ -50,7 +50,7 @@ func (s *TwilioSMSService) Send(phonenumber string, message string) (err error) 
 		log.Error("Problem when sending sms via Twilio: ", resp.StatusCode, "\n", string(body))
 		err = errors.New("Error sending sms")
 	}
-	log.Infof("SMS: sms send to %s", phonenumber)
+	log.Infof("SMS: sms sent to %s", phonenumber)
 	return
 }
 
@@ -89,8 +89,10 @@ func (s *SmsAeroSMSService) Send(phonenumber string, message string) (err error)
 	if resp.StatusCode != http.StatusOK {
 		log.Error("Problem when sending sms via SmsAero: ", resp.StatusCode, "\n", string(body))
 		err = errors.New("Error sending sms")
+	} else {
+		log.Debug("Sms areo response body:", "\n", string(body))
 	}
-	log.Infof("SMS: sms send to %s", phonenumber)
+	log.Infof("SMS: sms sent to %s", phonenumber)
 	return
 }
 
