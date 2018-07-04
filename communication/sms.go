@@ -77,6 +77,7 @@ func (s *SmsAeroSMSService) Send(phonenumber string, message string) (err error)
 	q.Add("text", message)
 	q.Add("from", s.SenderId)
 	q.Add("answer", "json")
+	q.Add("type", "6") // Indicate an "international" message
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := client.Do(req)
