@@ -31,6 +31,12 @@ that the requesting client is allowed to know that he/she is part of the organiz
 
 If the user is no member of the <globalid> organization, the oauth flow continues but the scope will not be available. This scope can be requested multiple times.
 
+## `user:organizations:<globalid>`
+
+A client can request a list of suborganizations a user is member of.
+
+This affects the `/users/{username}/organizations` API only.
+
 ## `user:address[:<label>]`
 
 

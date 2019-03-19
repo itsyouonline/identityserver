@@ -54,6 +54,9 @@ func (authorization Authorization) FilterAuthorizedScopes(requestedscopes []stri
 				authorizedScopes = append(authorizedScopes, scope)
 			}
 		}
+		if strings.HasPrefix(scope, "user:organizations:") {
+			authorizedScopes = append(authorizedScopes, scope)
+		}
 		if scope == "user:github" && authorization.Github {
 			authorizedScopes = append(authorizedScopes, scope)
 		}

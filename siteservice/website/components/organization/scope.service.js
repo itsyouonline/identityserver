@@ -21,6 +21,12 @@
                 organization: true
             }
         }, {
+            scope: 'user:organizations:{organization}',
+            translation: 'list_sub_organizations',
+            vars: {
+                organization: true
+            }
+        }, {
             scope: 'user:address:{label}',
             translation: 'address',
             vars: {

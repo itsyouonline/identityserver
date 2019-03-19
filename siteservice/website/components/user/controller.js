@@ -828,6 +828,9 @@
                         else if (scope.startsWith('user:memberof:')) {
                             authorization.organizations.push(permissionLabel);
                         }
+                        else if (scope.startsWith('user:organizations:')) {
+                            authorization.listsuborganizations.push(permissionLabel);
+                        }
                         else if (scope.startsWith('user:digitalwalletaddress:')) {
                             auth.reallabel = vm.user.digitalwallet.length ? vm.user.digitalwallet[0].label : '';
                             auth.currency = splitPermission.length === 4 ? splitPermission[3] : '';

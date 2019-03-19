@@ -25,7 +25,7 @@ type UsersusernameorganizationsInterface interface { // Get is the handler for G
 
 // UsersusernameorganizationsInterfaceRoutes is routing for /users/{username}/organizations root endpoint
 func UsersusernameorganizationsInterfaceRoutes(r *mux.Router, i UsersusernameorganizationsInterface) {
-	r.Handle("/users/{username}/organizations", alice.New(user.NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.Get))).Methods("GET")
+	r.Handle("/users/{username}/organizations", alice.New(user.NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:info", "user:admin"}).Handler).Then(http.HandlerFunc(i.Get))).Methods("GET")
 	r.Handle("/users/{username}/organizations/{globalid}/roles/{role}", alice.New(user.NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.globalidrolesrolePost))).Methods("POST")
 	r.Handle("/users/{username}/organizations/{globalid}/roles/{role}", alice.New(user.NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.globalidrolesroleDelete))).Methods("DELETE")
 }
