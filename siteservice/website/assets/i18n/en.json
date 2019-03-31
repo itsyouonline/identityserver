@@ -129,7 +129,7 @@
     "no_notifcations": "You have no notifications.",
     "no_see_documents": "You don't have any documents.",
     "no_see_documents_for_organization": "You don't have any documents for this organization.",
-    "oauth_default_description": "Dear {{externalsite}} user, access to {{externalsite}} services is managed by the ItsYou.Online identity management system. To proceed, please login or register at ItsYou.Online.",
+    "oauth_default_description": "Dear {{externalsite}} user, access to {{externalsite}} services is managed by the ItsYou.Online identity management system. To proceed, please register at ItsYou.Online.",
     "ok": "OK",
     "organization": {
         "views": {
