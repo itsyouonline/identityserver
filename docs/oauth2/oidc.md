@@ -27,10 +27,11 @@ A standard ID token has the following claims.
 Additional claims can be added to the ID token.
 OpenID Connect specifies an optional set of standard claims, or user attributes. They are not supported in favor of using the existing scopes, similar to the [JWT](jwt.md#Storing-the-actual-values-of-scopes-in-JWT) implementation of adding values of scopes to the JWT.
 
-The oidc implementation supports the following scopes with their respective claims:
-|Scope Value|Associated claims|
-|-|-|-|
-|user:name|user:name|
+The oidc implementation supports the following scopes with their respective claims:  
+
+| Scope value | Associated claims |
+|-|-|
+| user:name | user:name |
 |user:email[:label]|user:email[:label]|
 |user:validated:email[:label]| user:validated:email[:label]|
 |user:phone[:label]|user:phone[:label]|
