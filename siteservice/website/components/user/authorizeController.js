@@ -42,7 +42,8 @@
         vm.verifyPhoneByLabel = verifyPhoneByLabel;
         var properties = ['avatars', 'addresses', 'emailaddresses', 'phonenumbers', 'bankaccounts', 'digitalwallet', 'publicKeys', 'validatedemailaddresses', 'validatedphonenumbers'];
         $scope.requested = {
-            organizations: {}
+            organizations: {},
+            listsuborganizations: {}
         };
         $scope.authorizations = {
             ownerof: {
@@ -132,6 +133,9 @@
                     }
                     else if (scope.startsWith('user:memberof:')) {
                         $scope.requested.organizations[permissionLabel] = true;
+                    }
+                    else if (scope.startsWith('user:organizations:')) {
+                        $scope.requested.listsuborganizations[permissionLabel] = true;
                     }
                     else if (scope.startsWith('user:digitalwalletaddress:')) {
                         auth.reallabel = vm.user.digitalwallet.length ? vm.user.digitalwallet[0].label : null;

@@ -101,6 +101,15 @@
         </p>
         <md-checkbox ng-disabled="isRequired('name')" class="md-secondary" ng-model="requested.organizations[label]" name="memberof_{{label}}"></md-checkbox>
     </md-list-item>
+    <md-list-item ng-repeat="(label, i) in requested.listsuborganizations">
+        <p><i class="fa fa-users">
+            <md-tooltip><span translate='user.directives.authorizationdetails.listsuborgs'>List suborganization membership</span></md-tooltip>
+        </i>
+            <span translate='user.directives.authorizationdetails.listsuborgs' translate-values='{label: label}'>List suborganizations <span ng-bind="::label"></span></span>
+            <span ng-if="vm.pendingOrganizationInvites[label]"><span translate='user.directives.authorizationdetails.acceptinvite'>(this will accept the invitation for this organization)</span></span>
+        </p>
+        <md-checkbox ng-disabled="isRequired('name')" class="md-secondary" ng-model="requested.listsuborganizations[label]" name="listsuboriganizations_{{label}}"></md-checkbox>
+    </md-list-item>
     <md-list-item ng-repeat="auth in authorizations.emailaddresses track by auth.requestedlabel" layout="column"
                   layout-gt-sm="row"
                   layout-align="space-between start" layout-align-gt-sm="start center">

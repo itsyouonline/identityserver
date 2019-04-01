@@ -5,10 +5,13 @@ package userorganization
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 
+	"github.com/itsyouonline/identityserver/credentials/oauth2"
 	organizationdb "github.com/itsyouonline/identityserver/db/organization"
 	"github.com/itsyouonline/identityserver/db/validation"
 	"github.com/itsyouonline/identityserver/identityservice/invitations"
@@ -25,6 +28,24 @@ func exists(value string, list []string) bool {
 	}
 
 	return false
+}
+
+func filterOrgs(orgs []string, scopes []string) []string {
+	result := []string{}
+	filterorgs := []string{}
+	for _, scope := range scopes {
+		if strings.HasPrefix(scope, "user:organizations:") {
+			filterorgs = append(filterorgs, strings.TrimPrefix(scope, "user:organizations:"))
+		}
+	}
+	for _, org := range orgs {
+		for _, prefixorg := range filterorgs {
+			if strings.HasPrefix(org, prefixorg+".") || org == prefixorg {
+				result = append(result, org)
+			}
+		}
+	}
+	return result
 }
 
 // Get the list organizations a user is owner or member of
@@ -50,7 +71,17 @@ func (api UsersusernameorganizationsAPI) Get(w http.ResponseWriter, r *http.Requ
 		Owner:  []string{},
 	}
 
-	userOrgs.Member = orgs
+	availableScopes, _ := context.Get(r, "availablescopes").(string)
+	scopes := oauth2.SplitScopeString(availableScopes)
+	isAdmin := oauth2.CheckScopes([]string{"user:admin"}, scopes)
+
+	// if not isAdmin filter out orgs our scopes have access to
+	if !isAdmin {
+		userOrgs.Member = filterOrgs(orgs, scopes)
+	} else {
+		userOrgs.Member = orgs
+	}
+
 	userOrgs.Owner, userOrgs.Member, err = orgMgr.SplitOwnedOrgs(userOrgs.Member, username)
 	if err != nil {
 		log.Error("Failed to sort organizations to owner and member: ", err)
