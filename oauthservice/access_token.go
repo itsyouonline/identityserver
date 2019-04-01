@@ -102,6 +102,7 @@ func (service *Service) AccessTokenHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	var at *AccessToken
+	var idToken string
 	httpStatusCode := http.StatusOK
 
 	mgr := NewManager(r)
@@ -116,6 +117,11 @@ func (service *Service) AccessTokenHandler(w http.ResponseWriter, r *http.Reques
 		redirectURI := r.FormValue("redirect_uri")
 		state := r.FormValue("state")
 		at, httpStatusCode = convertCodeToAccessTokenHandler(code, clientID, clientSecret, redirectURI, state, mgr)
+
+		if httpStatusCode == http.StatusOK {
+			idToken, httpStatusCode = getIDTokenFromCode(code, service.jwtSigningKey, r, at, mgr)
+			at.Scope = removeScope(at.Scope, scopeOpenID)
+		}
 	}
 
 	if httpStatusCode != http.StatusOK {
@@ -179,12 +185,14 @@ func (service *Service) AccessTokenHandler(w http.ResponseWriter, r *http.Reques
 
 	response := struct {
 		AccessToken string      `json:"access_token"`
+		IDToken     string      `json:"id_token,omitempty"`
 		TokenType   string      `json:"token_type"`
 		Scope       string      `json:"scope"`
 		ExpiresIn   int64       `json:"expires_in"`
 		Info        interface{} `json:"info"`
 	}{
 		AccessToken: at.AccessToken,
+		IDToken:     idToken,
 		TokenType:   at.Type,
 		Scope:       scope,
 		ExpiresIn:   int64(at.ExpirationTime().Sub(time.Now()).Seconds() - 600),
