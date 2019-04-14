@@ -208,7 +208,9 @@
                 "sharedwith": "Gedeeld met: ",
                 "description": "Organizatie beschrijving",
                 "descriptionhelp": "Deze beschrijving wordt getoond wanneer een gebruiker aanmeld bij een externe site via OAuth2",
-                "changedescription": "Wijzig organizatie beschrijving"
+                "changedescription": "Wijzig organizatie beschrijving",
+                "organizationsecurity": "Organisatie beveiliging",
+                "forcetwofactorauth" : "Force Two-factor authenticatie"
             },
             "dnsdialog": {
                 "newdomain": "Nieuwe domeinnaam",

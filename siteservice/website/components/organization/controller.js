@@ -59,6 +59,8 @@
         vm.removeInvitation = removeInvitation;
         vm.includeChanged = includeChanged;
         vm.trackinvite = trackinvite;
+        vm.toggleTwoFA = toggleTwoFA;
+        vm.isChecked = isChecked;
 
         activate();
 
@@ -72,6 +74,9 @@
                 .then(
                     function(data) {
                         vm.organization = data;
+                        vm.requiresTwoFA = data.forcetwofactorauth;
+                        console.log("seee")
+                        console.log(vm.requiresTwoFA)
                         if (!vm.organization.orgowners) {
                           vm.organization.orgowners = [];
                         }
@@ -584,6 +589,26 @@
 
         function trackinvite(invite) {
             return invite.user + invite.role;
+        }
+
+        function isChecked(){
+            if(vm.requiresTwoFA){
+                return true;
+            }
+            return false;
+        }
+
+        function toggleTwoFA(){
+            if(vm.requiresTwoFA === true){
+                OrganizationService.forceTwoFA(globalid).then(
+                    function() {}
+                );
+                
+            }else{
+                OrganizationService.unforceTwoFA(globalid).then(
+                    function() {}
+                );
+            }
         }
     }
 

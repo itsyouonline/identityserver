@@ -50,7 +50,10 @@
             updateDescription: updateDescription,
             saveDescription: saveDescription,
             addInclude: addInclude,
-            removeInclude: removeInclude
+            removeInclude: removeInclude,
+            checkRequiresTwoFA: checkRequiresTwoFA,
+            forceTwoFA: forceTwoFA,
+            unforceTwoFA: unforceTwoFA
         };
 
         function genericHttpCall(httpFunction, url, data) {
@@ -294,6 +297,21 @@
         function removeInclude(globalId, include) {
             var url = apiURL + '/' + encodeURIComponent(globalId) + '/orgmembers/includesuborgs/' + encodeURIComponent(include);
             return genericHttpCall(DELETE, url);
+        }
+
+        function checkRequiresTwoFA(globalId) {
+            var url = apiURL + '/' + encodeURIComponent(globalId) + '/2fa/isrequired';
+            return genericHttpCall(GET, url);
+        }
+
+        function forceTwoFA(globalId) {
+            var url = apiURL + '/' + encodeURIComponent(globalId) + '/2fa/setrequired';
+            return genericHttpCall(PUT, url);
+        }
+
+        function unforceTwoFA(globalId) {
+            var url = apiURL + '/' + encodeURIComponent(globalId) + '/2fa/setoptional';
+            return genericHttpCall(PUT, url);
         }
     }
 })();

@@ -117,6 +117,19 @@
     </md-list>
     <md-toolbar>
         <div class="md-toolbar-tools" layout-align="space-between center">
+            <span translate='organization.views.detail.organizationsecurity'>Organization Security</span>
+        </div>
+    </md-toolbar>
+    <div layout-padding>
+        
+        <md-checkbox ng-model="vm.requiresTwoFA" md-no-ink ng-change="vm.toggleTwoFA()" aria-label="Force Two Factor authentication?">
+                Force Two Factor Authentication ?   <b>( RECOMMENDED )</b> 
+                </md-checkbox>            
+        </md-checkbox>
+    </div>
+
+    <md-toolbar>
+        <div class="md-toolbar-tools" layout-align="space-between center">
             <span translate='organization.views.detail.deleteorganization'>Delete organization</span>
         </div>
     </md-toolbar>

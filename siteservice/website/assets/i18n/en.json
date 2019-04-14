@@ -208,7 +208,9 @@
                 "sharedwith": "Shared with: ",
                 "description": "Organization description",
                 "descriptionhelp": "This description is displayed when a user logs in to an external site using OAuth2",
-                "changedescription": "Change organization description"
+                "changedescription": "Change organization description",
+                "organizationsecurity": "Organization Security",
+                "forcetwofactorauth" : "Force Two Factor Authentication"
             },
             "dnsdialog": {
                 "newdomain": "New domain name",
