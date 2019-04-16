@@ -1052,6 +1052,50 @@ func (api UsersAPI) VerifyPhoneNumber(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+func (api UsersAPI) GetUserTwoFASettings(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	userMgr := user.NewManager(r)
+
+	u, err := userMgr.GetByName(username)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(u.TwoFA)
+}
+
+func (api UsersAPI) UpdateUserTwoFASettings(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	userMgr := user.NewManager(r)
+
+	body := user.TwoFactorAuthSettings{}
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	_, err := userMgr.GetByName(username)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	if err = userMgr.SaveTwoFASettings(username, body); err != nil {
+		log.Error("ERROR while saving Two FA settings - ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(body)
+}
+
 // UpdatePhonenumber is the handler for PUT /users/{username}/phonenumbers/{label}
 // Update the label and/or value of an existing phonenumber.
 func (api UsersAPI) UpdatePhonenumber(w http.ResponseWriter, r *http.Request) {

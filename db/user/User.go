@@ -42,6 +42,7 @@ type User struct {
 	Firstname      string                `json:"firstname"`
 	Lastname       string                `json:"lastname"`
 	Avatars        []Avatar              `json:"avatars"`
+	TwoFA          TwoFactorAuthSettings `json:"twofa"`
 }
 
 func (u *User) GetEmailAddressByLabel(label string) (email EmailAddress, err error) {

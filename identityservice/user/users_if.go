@@ -201,6 +201,12 @@ type UsersInterface interface { // Post is the handler for POST /users
 	// LookupIyoID is the handler for GET /users/{username}/identifiers/{identifier}
 	// Lookup the username behind an iyo id
 	LookupIyoID(http.ResponseWriter, *http.Request)
+	// GetUserTwoFASettings is the handler for GET /users/{username}/twofasettings
+	// Get the 2 FA settings for user identified by username
+	GetUserTwoFASettings(http.ResponseWriter, *http.Request)
+	// updateUserTwoFASettings is the handler for PUT /users/{username}/twofasettings
+	// Updates 2 FA settings for user identified by username
+	UpdateUserTwoFASettings(http.ResponseWriter, *http.Request)
 }
 
 // UsersInterfaceRoutes is routing for /users root endpoint
@@ -283,4 +289,7 @@ func UsersInterfaceRoutes(r *mux.Router, i UsersInterface) {
 	r.Handle("/users/{username}/identifiers", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin", "user:info"}).Handler).Then(http.HandlerFunc(i.ListIyoIDs))).Methods("GET")
 	r.Handle("/users/{username}/identifiers", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin", "user:info"}).Handler).Then(http.HandlerFunc(i.GenerateIyoID))).Methods("POST")
 	r.Handle("/users/identifiers/{identifier}", alice.New(newClientIDMiddleware([]string{}).Handler).Then(http.HandlerFunc(i.LookupIyoID))).Methods("GET")
+	r.Handle("/users/{username}/twofasettings", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.GetUserTwoFASettings))).Methods("GET")
+	r.Handle("/users/{username}/twofasettings", alice.New(NewUserIdentifierMiddleware().Handler, newOauth2oauth_2_0Middleware([]string{"user:admin"}).Handler).Then(http.HandlerFunc(i.UpdateUserTwoFASettings))).Methods("PUT")
+
 }

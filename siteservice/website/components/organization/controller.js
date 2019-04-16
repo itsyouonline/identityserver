@@ -75,8 +75,6 @@
                     function(data) {
                         vm.organization = data;
                         vm.requiresTwoFA = data.forcetwofactorauth;
-                        console.log("seee")
-                        console.log(vm.requiresTwoFA)
                         if (!vm.organization.orgowners) {
                           vm.organization.orgowners = [];
                         }

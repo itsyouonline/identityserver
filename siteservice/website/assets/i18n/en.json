@@ -482,7 +482,11 @@
                 "change": "Change",
                 "authenticatorapp": "Authenticator application",
                 "setup": "Setup",
-                "remove": "Remove"
+                "remove": "Remove",
+                "twofa": "Two Factor Authentication",
+                "enable2fa": "Enable Two Factor Authentication",
+                "skip2fafororgs": "Skip 2-FA for organizations when not required"
+
             },
             "totpdialog": {
                 "setupapp": "Setup authenticator application",

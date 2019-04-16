@@ -483,7 +483,10 @@
                 "change": "Verander",
                 "authenticatorapp": "Authenticatie-toepassing",
                 "setup": "Instellen",
-                "remove": "Verwijder"
+                "remove": "Verwijder",
+                "enable2fa": "Schakel twee-factorenauthenticatie in",
+                "skip2fafororgs": "Twee-factor-authenticatie overslaan voor organisaties wanneer zij deze niet nodig hebben"
+
             },
             "totpdialog": {
                 "setupapp": "Authenticatie-toepassing opzetten",
