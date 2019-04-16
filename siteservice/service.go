@@ -82,6 +82,7 @@ func (service *Service) AddRoutes(router *mux.Router) {
 	//Enable us to "forget" users in case we are not in production
 	router.Methods("GET").Path("/register/delete").HandlerFunc(service.ServeForgetAccountPage)
 	router.Methods("POST").Path("/register/delete").HandlerFunc(service.ForgetAccountHandler)
+	router.Methods("POST").Path("/register/skip2fa").HandlerFunc(service.SkipTwoFA)
 	//Login forms
 	router.Methods("GET").Path("/login").HandlerFunc(service.ShowLoginForm)
 	router.Methods("POST").Path("/login").HandlerFunc(service.ProcessLoginForm)

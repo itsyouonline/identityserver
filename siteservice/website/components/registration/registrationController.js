@@ -44,6 +44,8 @@
         vm.phoneConfirmed = false;
 
         vm.basicInfoFailed = false;
+        vm.skipTwoFA = skipTwoFA
+        vm.skipPhoneValidation = false;
 
         init();
 
@@ -103,7 +105,7 @@
             }
             var redirectparams = $window.location.search.replace('?', '');
             registrationService
-                .register(vm.firstname, vm.lastname, vm.email, vm.emailcode, vm.sms, vm.smscode, vm.password, redirectparams)
+                .register(vm.firstname, vm.lastname, vm.email, vm.emailcode, vm.sms, vm.smscode, vm.password, vm.skipPhoneValidation, redirectparams)
                 .then(function (response) {
                     var url = response.data.redirecturl;
                     if (url === '/') {
@@ -322,10 +324,21 @@
         }
 
         function checkPhoneConfirmation() {
+            
+            if (vm.skipPhoneValidation === true){
+                vm.phoneConfirmed = false;
+                $scope.signupform.smscode.required = false;
+                $scope.signupform['smscode'].$setValidity("invalid_sms_code", true);
+                // trigger email validation
+                resendValidation();
+                return;
+            }
+
             $http.get('register/smsconfirmed' + $window.location.search).then(
                 function(response) {
                     if (response.data.confirmed) {
                         vm.phoneConfirmed = response.data.confirmed;
+                        
                         // trigger email validation
                         resendValidation();
                     } else {
@@ -354,7 +367,12 @@
         }
 
         function resendValidation() {
-            registrationService.resendValidation(vm.email, vm.sms);
+            registrationService.resendValidation(vm.email, vm.sms, vm.skipPhoneValidation);
+        }
+
+        function skipTwoFA(){
+            vm.skipPhoneValidation = true;
+            goToNextTabIfValid();
         }
 
     }

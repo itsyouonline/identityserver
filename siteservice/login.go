@@ -102,7 +102,7 @@ func (service *Service) ShowLoginForm(w http.ResponseWriter, request *http.Reque
 func (service *Service) ProcessLoginForm(w http.ResponseWriter, request *http.Request) {
 	//TODO: validate csrf token
 	//TODO: limit the number of failed/concurrent requests
-
+	
 	err := request.ParseForm()
 	if err != nil {
 		log.Debug("ERROR parsing registration form")

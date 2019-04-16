@@ -12,7 +12,8 @@
             getLogo: getLogo,
             getDescription: getDescription,
             resendValidation: resendValidation,
-            submitSMSCode: submitSMSCode
+            submitSMSCode: submitSMSCode,
+            skipTwoFA: skipTwoFA
         };
 
         function requestValidation(firstname, lastname, email, phone, password) {
@@ -28,7 +29,7 @@
             return $http.post(url, data);
         }
 
-        function register(firstname, lastname, email, emailcode, sms, phonenumbercode, password, redirectparams) {
+        function register(firstname, lastname, email, emailcode, sms, phonenumbercode, password, skipphonevalidation, redirectparams) {
             var url = '/register?' + redirectparams;
             var data = {
                 firstname: firstname,
@@ -39,7 +40,8 @@
                 phonenumbercode: phonenumbercode,
                 password: password,
                 redirectparams: redirectparams,
-                langkey: localStorage.getItem('langKey')
+                langkey: localStorage.getItem('langKey'),
+                skipphonevalidation: skipphonevalidation
             };
             return $http.post(url, data);
         }
@@ -69,12 +71,13 @@
             );
         }
 
-        function resendValidation(email, phone) {
+        function resendValidation(email, phone, skipphonevalidation) {
           var url = '/register/resendvalidation';
           var data = {
               email: email,
               phone: phone,
-              langkey: localStorage.getItem('langKey')
+              langkey: localStorage.getItem('langKey'),
+              skipphonevalidation: skipphonevalidation
           };
           return $http.post(url, data);
         }
@@ -85,6 +88,11 @@
                 smscode: code
             };
             return $http.post(url, data);
+        }
+
+        function skipTwoFA(){
+            var url = '/register/skip2fa';
+            return $http.post(url, null);
         }
     }
 })();

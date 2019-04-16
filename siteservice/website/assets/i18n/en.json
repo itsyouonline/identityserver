@@ -336,7 +336,8 @@
                 "smscode": "Code sent by sms",
                 "invalidcode": "Invalid code",
                 "resend": "Resend code",
-                "submit": "Submit"
+                "submit": "Submit",
+                "skip": "Skip"
             }
         }
     },

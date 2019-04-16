@@ -337,7 +337,8 @@
                 "smscode": "Code gestuurd via sms",
                 "invalidcode": "Ongeldige code",
                 "resend": "Herstuur code",
-                "submit": "Dien in"
+                "submit": "Dien in",
+                "skip": "overspringen"
             }
         }
     },
