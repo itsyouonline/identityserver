@@ -27,36 +27,47 @@
 
         function init() {
             LoginService
-                .getTwoFactorAuthenticationMethods()
-                .then(function (data) {
-                    vm.possibleTwoFaMethods = {};
-                    if (data['totp']) {
-                        vm.possibleTwoFaMethods['totp'] = 'Authenticator application';
-                    }
-                    if (data['sms'] && Object.keys(data['sms']).length) {
-                        angular.forEach(data['sms'], function (sms, label) {
-                            vm.possibleTwoFaMethods['sms-' + label] = 'SMS - ' + sms + ' (' + label + ')';
-                        });
-                    }
-                    var methods = Object.keys(vm.possibleTwoFaMethods);
-                    if (!methods.length) {
-                        // Redirect to resend sms page
-                        $window.location.hash = '#/resendsms';
-                        return;
-                    }
-                    vm.hasMoreThanOneTwoFaMethod = methods.length > 1;
-                    if (vm.hasMoreThanOneTwoFaMethod) {
-                        // Preselect based on what was selected when previously logging in
-                        var method = localStorage.getItem('itsyouonline.last2falabel');
-                        if (!method || methods.indexOf(method) === -1) {
-                            method = methods[0];
-                        }
-                        vm.selectedTwoFaMethod = method;
-                    } else {
-                        vm.selectedTwoFaMethod = methods[0];
-                        nextStep();
+                .getTwoFASettings().then(function(data){
+                    if(data.enable == true){
+                        LoginService
+                            .getTwoFactorAuthenticationMethods()
+                            .then(function (data) {
+                                vm.possibleTwoFaMethods = {};
+                                if (data['totp']) {
+                                    vm.possibleTwoFaMethods['totp'] = 'Authenticator application';
+                                }
+                                if (data['sms'] && Object.keys(data['sms']).length) {
+                                    angular.forEach(data['sms'], function (sms, label) {
+                                        vm.possibleTwoFaMethods['sms-' + label] = 'SMS - ' + sms + ' (' + label + ')';
+                                    });
+                                }
+                                var methods = Object.keys(vm.possibleTwoFaMethods);
+                                if (!methods.length) {
+                                    // Redirect to resend sms page
+                                    $window.location.hash = '#/resendsms';
+                                    return;
+                                }
+                                vm.hasMoreThanOneTwoFaMethod = methods.length > 1;
+                                if (vm.hasMoreThanOneTwoFaMethod) {
+                                    // Preselect based on what was selected when previously logging in
+                                    var method = localStorage.getItem('itsyouonline.last2falabel');
+                                    if (!method || methods.indexOf(method) === -1) {
+                                        method = methods[0];
+                                    }
+                                    vm.selectedTwoFaMethod = method;
+                                } else {
+                                    vm.selectedTwoFaMethod = methods[0];
+                                    nextStep();
+                                }
+                            });
+                    }else{
+                        // 2 FA not enabled
+                        vm.selectedTwoFaMethod = null;
+                        loginNoTwoFA();
                     }
                 });
+
+                
             // translations have to be preloaded, because loading them in the getHelpText method currently causes a digest loop issue and angular will go haywire
             $translate(['login.2facontroller.sms', 'login.2facontroller.totp']).then(function(translations){
                 vm.smshelp = translations['login.2facontroller.sms'];
@@ -104,34 +115,47 @@
                 });
         }
 
+        function loginNoTwoFA(){
+            console.log("here");
+            LoginService.loginNoTwoFA()
+                .then(function(data){
+                    vm.loading = false;
+                    localStorage.setItem('itsyouonline.last2falabel', vm.selectedTwoFaMethod);
+                    goToPage(data.redirecturl);
+                });
+        }
+
         function login() {
             vm.loading = true;
             var method;
+           
+            
             if (vm.selectedTwoFaMethod === 'totp') {
                 method = LoginService.submitTotpCode;
             } else if (vm.selectedTwoFaMethod.indexOf('sms-') === 0) {
                 method = LoginService.submitSmsCode;
             }
+
             method(vm.code, queryString)
-                .then(
-                    function (data) {
-                        vm.loading = false;
-                        localStorage.setItem('itsyouonline.last2falabel', vm.selectedTwoFaMethod);
-                        if (interval) {
-                            $interval.cancel(interval);
-                        }
-                        goToPage(data.redirecturl);
-                    },
-                    function (response) {
-                        switch (response.status) {
-                            case 422:
-                                $scope.twoFaForm.code.$setValidity("invalid_code", false);
-                                break;
-                        }
-                        vm.loading = false;
-                    });
+            .then(
+                function (data) {
+                    vm.loading = false;
+                    localStorage.setItem('itsyouonline.last2falabel', vm.selectedTwoFaMethod);
+                    if (interval) {
+                        $interval.cancel(interval);
+                    }
+                    goToPage(data.redirecturl);
+                },
+                function (response) {
+                    switch (response.status) {
+                        case 422:
+                            $scope.twoFaForm.code.$setValidity("invalid_code", false);
+                            break;
+                    }
+                    vm.loading = false;
+                });
         }
-          
+        
         function checkSmsConfirmation() {
             LoginService.checkSmsConfirmation()
                 .then(function (data) {
