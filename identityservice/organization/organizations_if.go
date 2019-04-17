@@ -224,7 +224,7 @@ func OrganizationsInterfaceRoutes(r *mux.Router, i OrganizationsInterface) {
 	r.Handle("/organizations/{globalid}/2fa/validity", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.Set2faValidityTime))).Methods("PUT")
 	r.Handle("/organizations/{globalid}/2fa/setrequired", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:member", "organization:owner"}).Handler).Then(http.HandlerFunc(i.ForceTwoFA))).Methods("PUT")
 	r.Handle("/organizations/{globalid}/2fa/setoptional", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:member", "organization:owner"}).Handler).Then(http.HandlerFunc(i.UnForceTwoFA))).Methods("PUT")
-	r.Handle("/organizations/{globalid}/2fa/isrequired", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:member", "organization:owner"}).Handler).Then(http.HandlerFunc(i.CheckRequiresTwoFA))).Methods("GET")
+	r.Handle("/organizations/{globalid}/2fa/isrequired", alice.New().Then(http.HandlerFunc(i.CheckRequiresTwoFA))).Methods("GET")
 	r.Handle("/organizations/{globalid}/orgmembers", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.SetOrgMember))).Methods("POST")
 	r.Handle("/organizations/{globalid}/orgowners", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.SetOrgOwner))).Methods("POST")
 	r.Handle("/organizations/{globalid}/orgmembers/{globalid2}", alice.New(newOauth2oauth_2_0Middleware([]string{"organization:owner"}).Handler).Then(http.HandlerFunc(i.DeleteOrgMember))).Methods("DELETE")

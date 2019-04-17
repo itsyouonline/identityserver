@@ -20,7 +20,8 @@
             getLogo: getLogo,
             getDescription: getDescription,
             getTwoFASettings: getTwoFASettings,
-            loginNoTwoFA: loginNoTwoFA
+            loginNoTwoFA: loginNoTwoFA,
+            checkRequiresTwoFA:checkRequiresTwoFA
         };
 
         function genericHttpCall(httpFunction, url, data) {
@@ -102,7 +103,9 @@
             return genericHttpCall($http.get, url);
         }
 
-
-        
+        function checkRequiresTwoFA(globalId) {
+            var url = 'api/organizations' + '/' + encodeURIComponent(globalId) + '/2fa/isrequired';
+            return genericHttpCall($http.get, url);
+        }
     }
 })();

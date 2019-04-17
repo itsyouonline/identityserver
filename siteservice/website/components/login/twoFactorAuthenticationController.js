@@ -23,12 +23,28 @@
         var interval;
         var queryString = $window.location.search;
         vm.loading = false;
+        vm.organization = null;
+
         init();
 
         function init() {
+            var org = getParameterByName("client_id")
+            console.log(org);
+            if (org){
+                LoginService.checkRequiresTwoFA(org).then(
+                    function(forceTwoFA){
+                        determineLoginMethod(forceTwoFA);
+                    }
+                );                
+            }else{
+                determineLoginMethod(false)
+            }
+        }
+
+        function determineLoginMethod(forceTwoFA){
             LoginService
                 .getTwoFASettings().then(function(data){
-                    if(data.enable == true){
+                    if(data.enable === true || forceTwoFA === true){
                         LoginService
                             .getTwoFactorAuthenticationMethods()
                             .then(function (data) {
@@ -67,13 +83,14 @@
                     }
                 });
 
-                
+            
             // translations have to be preloaded, because loading them in the getHelpText method currently causes a digest loop issue and angular will go haywire
             $translate(['login.2facontroller.sms', 'login.2facontroller.totp']).then(function(translations){
                 vm.smshelp = translations['login.2facontroller.sms'];
                 vm.totphelp = translations['login.2facontroller.totp'];
             })
         }
+
 
         function nextStep() {
             vm.step = steps[steps.indexOf(vm.step) + 1];
