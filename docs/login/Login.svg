@@ -1,711 +1,208 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   version="1.1"
-   id="svg2"
-   viewBox="0 0 744.09448819 1052.3622047"
-   height="297mm"
-   width="210mm">
-  <defs
-     id="defs4">
-    <marker
-       orient="auto"
-       refY="0.0"
-       refX="0.0"
-       id="marker4791"
-       style="overflow:visible;">
-      <path
-         id="path4793"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         transform="scale(0.8) rotate(180) translate(12.5,0)" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="marker4777"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path4779" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="marker4656"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path4658" />
-    </marker>
-    <marker
-       orient="auto"
-       refY="0.0"
-       refX="0.0"
-       id="marker4650"
-       style="overflow:visible;">
-      <path
-         id="path4652"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         transform="scale(0.8) rotate(180) translate(12.5,0)" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="marker4640"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path4642" />
-    </marker>
-    <marker
-       orient="auto"
-       refY="0.0"
-       refX="0.0"
-       id="marker4586"
-       style="overflow:visible;">
-      <path
-         id="path4333"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         transform="scale(0.8) rotate(180) translate(12.5,0)" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="marker5415"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path5417" />
-    </marker>
-    <marker
-       orient="auto"
-       refY="0.0"
-       refX="0.0"
-       id="marker5351"
-       style="overflow:visible;">
-      <path
-         id="path5353"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         transform="scale(0.8) rotate(180) translate(12.5,0)" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="marker5289"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path5291" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="marker5160"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path5162" />
-    </marker>
-    <marker
-       orient="auto"
-       refY="0.0"
-       refX="0.0"
-       id="marker5114"
-       style="overflow:visible;">
-      <path
-         id="path5116"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         transform="scale(0.8) rotate(180) translate(12.5,0)" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="marker5004"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path5006" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="marker4838"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path4840" />
-    </marker>
-    <marker
-       style="overflow:visible;"
-       id="Arrow1Lend"
-       refX="0.0"
-       refY="0.0"
-       orient="auto">
-      <path
-         transform="scale(0.8) rotate(180) translate(12.5,0)"
-         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
-         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
-         id="path4161" />
-    </marker>
-    <filter
-       height="1.1805695"
-       y="-0.090284759"
-       width="1.0898828"
-       x="-0.044941404"
-       id="filter4704"
-       style="color-interpolation-filters:sRGB">
-      <feGaussianBlur
-         id="feGaussianBlur4706"
-         stdDeviation="3.540389" />
-    </filter>
-    <filter
-       height="1.1805695"
-       y="-0.090284757"
-       width="1.0898829"
-       x="-0.044941403"
-       id="filter4704-3"
-       style="color-interpolation-filters:sRGB">
-      <feGaussianBlur
-         id="feGaussianBlur4706-6"
-         stdDeviation="3.540389" />
-    </filter>
-    <marker
-       style="overflow:visible"
-       id="marker5160-9"
-       refX="0"
-       refY="0"
-       orient="auto">
-      <path
-         transform="matrix(-0.8,0,0,-0.8,-10,0)"
-         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         id="path5162-7" />
-    </marker>
-    <marker
-       style="overflow:visible"
-       id="marker5160-9-3"
-       refX="0"
-       refY="0"
-       orient="auto">
-      <path
-         transform="matrix(-0.8,0,0,-0.8,-10,0)"
-         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         id="path5162-7-8" />
-    </marker>
-    <filter
-       height="1.1805695"
-       y="-0.090284757"
-       width="1.0898829"
-       x="-0.044941403"
-       id="filter4704-31"
-       style="color-interpolation-filters:sRGB">
-      <feGaussianBlur
-         id="feGaussianBlur4706-8"
-         stdDeviation="3.540389" />
-    </filter>
-    <marker
-       style="overflow:visible"
-       id="marker5160-9-3-3"
-       refX="0"
-       refY="0"
-       orient="auto">
-      <path
-         transform="matrix(-0.8,0,0,-0.8,-10,0)"
-         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         id="path5162-7-8-3" />
-    </marker>
-    <marker
-       style="overflow:visible"
-       id="marker5160-9-3-3-0"
-       refX="0"
-       refY="0"
-       orient="auto">
-      <path
-         transform="matrix(-0.8,0,0,-0.8,-10,0)"
-         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1"
-         d="M 0,0 5,-5 -12.5,0 5,5 0,0 Z"
-         id="path5162-7-8-3-4" />
-    </marker>
-  </defs>
-  <metadata
-     id="metadata7">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <ellipse
-     style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.71602714px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     id="path3336"
-     cx="369.54431"
-     cy="35.597988"
-     rx="11.195366"
-     ry="10.514221" />
-  <path
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.41117948px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-     d="m 368.62779,46.222298 -0.34892,29.565058"
-     id="path4152" />
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:28.64108467px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="321.33694"
-     y="64.712242"
-     id="text4712"
-     transform="scale(1.0318833,0.96910184)"><tspan
-       id="tspan4714"
-       x="321.33694"
-       y="64.712242"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.74040699px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start">Log in</tspan></text>
-  <g
-     id="g5054"
-     transform="matrix(0.83544787,0,0,0.68764015,81.733261,60.266248)">
-    <rect
-       transform="matrix(1.0095527,0,0,1.0084574,18.043081,-113.11182)"
-       style="fill:#060606;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.83200002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4704)"
-       id="rect4454"
-       width="189.06694"
-       height="94.112602"
-       x="237.32196"
-       y="141.12038"
-       ry="24.263405" />
-    <rect
-       ry="24.263405"
-       y="26.064524"
-       x="256.47424"
-       height="94.112602"
-       width="189.06694"
-       id="rect4140"
-       style="fill:#fff1c7;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-  </g>
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.90067863px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="365.01984"
-     y="108.44634"
-     id="text4722"
-     transform="scale(1.0318833,0.96910184)"><tspan
-       id="tspan4304"
-       x="365.01984"
-       y="108.44634">User/password</tspan><tspan
-       id="tspan4306"
-       x="365.01984"
-       y="130.82219">Form</tspan></text>
-  <g
-     transform="matrix(0.73885643,0,0,0.69390321,-50.474695,234.34374)"
-     id="g4738">
-    <rect
-       ry="24.263405"
-       y="141.12038"
-       x="237.32196"
-       height="94.112602"
-       width="189.06694"
-       id="rect4740"
-       style="fill:#060606;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.83200002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4704)"
-       transform="matrix(1.0095527,0,0,1.0084574,-2.1599704,-2.0965688)" />
-    <rect
-       style="fill:#fff1c7;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="rect4742"
-       width="189.06694"
-       height="94.112602"
-       x="236.27119"
-       y="137.07977"
-       ry="24.263405" />
-  </g>
-  <text
-     id="text4744"
-     y="377.77072"
-     x="190.24986"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.90067863px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     xml:space="preserve"
-     transform="scale(1.0318833,0.96910184)">SMS validation</text>
-  <path
-     d="m 47.203577,334.22033 c 3.565236,-19.29833 39.52863,-30.37684 73.826483,-26.60237 23.31978,2.56635 43.83401,11.27563 55.37109,22.69457"
-     id="path4324"
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.59589523;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker4586)" />
-  <g
-     id="g5230"
-     transform="matrix(0.73885643,0,0,0.69390321,-116.89905,448.4157)">
-    <g
-       transform="translate(0,6)"
-       id="g4754">
-      <circle
-         r="15.152288"
-         cy="71.504082"
-         cx="651.56873"
-         id="circle4750"
-         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <circle
-         style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.48402786px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         id="circle4752"
-         cx="651.97229"
-         cy="71.907631"
-         r="22.486418" />
-    </g>
-    <text
-       id="text5212"
-       y="117.9711"
-       x="615.42651"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       xml:space="preserve"><tspan
-         id="tspan5214"
-         x="615.42651"
-         y="117.9711">Logged In</tspan></text>
-  </g>
-  <text
-     id="text5226"
-     y="22.39979"
-     x="344.02502"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.74040699px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     xml:space="preserve"
-     transform="scale(1.0318833,0.96910184)"><tspan
-       id="tspan5228"
-       x="344.02502"
-       y="22.39979">Initial</tspan></text>
-  <g
-     id="g4312"
-     transform="matrix(0.73885643,0,0,0.69390321,311.72348,233.80895)">
-    <rect
-       transform="matrix(1.0095527,0,0,1.0084574,-2.1599704,-2.0965688)"
-       style="fill:#060606;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.83200002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4704)"
-       id="rect4314"
-       width="189.06694"
-       height="94.112602"
-       x="237.32196"
-       y="141.12038"
-       ry="24.263405" />
-    <rect
-       ry="24.263405"
-       y="137.07977"
-       x="236.27119"
-       height="94.112602"
-       width="189.06694"
-       id="rect4316"
-       style="fill:#fff1c7;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-  </g>
-  <text
-     transform="scale(1.0318833,0.96910184)"
-     xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.90067863px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="541.96399"
-     y="379.17438"
-     id="text4318">TOTP Code</text>
-  <text
-     id="text4605"
-     y="553.97583"
-     x="60.366131"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.5698204px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     xml:space="preserve"
-     transform="scale(0.96139888,1.040151)">Legend:</text>
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.5698204px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="181.50581"
-     y="579.89276"
-     id="text4607"
-     transform="scale(0.96139888,1.040151)">Form shown to the user</text>
-  <text
-     id="text4589"
-     y="357.84882"
-     x="55.725788"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:12.5px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     xml:space="preserve"><tspan
-       id="tspan4625"
-       x="55.725788"
-       y="357.84882">Check if user</tspan><tspan
-       id="tspan4627"
-       x="55.725788"
-       y="373.47382">followed link</tspan></text>
-  <g
-     id="g4595"
-     transform="matrix(0.6756642,0,0,0.73101061,-153.67526,331.92097)">
-    <g
-       id="g4597"
-       transform="matrix(0.31196421,0,0,0.30921207,189.77221,308.23581)">
-      <rect
-         transform="matrix(1.0095527,0,0,1.0084574,-2.1599704,-2.0965688)"
-         style="fill:#060606;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.83200002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4704)"
-         id="rect4599"
-         width="189.06694"
-         height="94.112602"
-         x="237.32196"
-         y="141.12038"
-         ry="24.263405" />
-      <rect
-         ry="24.263405"
-         y="137.07977"
-         x="236.27119"
-         height="94.112602"
-         width="189.06694"
-         id="rect4601"
-         style="fill:#fff1c7;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
-    </g>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:25px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="363.63461"
-       y="407.70215"
-       id="text4603" />
-  </g>
-  <path
-     id="path4609"
-     d="M 324.07834,361.48972 272.16792,361.0139"
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.59677893px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker5160)" />
-  <path
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.59677893px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker5160)"
-     d="m 433.49441,360.59996 51.908,0.69147"
-     id="path4611" />
-  <rect
-     style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.60500002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="rect4623"
-     width="47.192215"
-     height="45.140388"
-     x="256.74261"
-     y="211.25072"
-     ry="17.351801"
-     rx="0"
-     transform="matrix(0.7459017,0.66605604,-0.66605604,0.7459017,0,0)" />
-  <text
-     transform="scale(1.0318833,0.96910184)"
-     id="text4634"
-     y="307.66055"
-     x="94.257172"
-     style="font-style:normal;font-weight:normal;font-size:28.64108467px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     xml:space="preserve"><tspan
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.74040699px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
-       y="307.66055"
-       x="94.257172"
-       id="tspan4636">No</tspan></text>
-  <path
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.02796066;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker4640)"
-     id="path4638"
-     d="M 54.067804,388.03522 C 69.109283,454.50743 200.22552,500.98707 347.93936,503.71288" />
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:28.64108467px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="157.93213"
-     y="509.47162"
-     id="text4644"
-     transform="scale(1.0318833,0.96910184)"><tspan
-       id="tspan4646"
-       x="157.93213"
-       y="509.47162"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.74040699px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start">Yes</tspan></text>
-  <path
-     d="m 560.5489,395.64944 c -9.01178,62.83521 -87.56728,106.77174 -176.06688,109.34841"
-     id="path4648"
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.77360278;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker4650)" />
-  <path
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.69498724;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker4656)"
-     id="path4654"
-     d="m 194.15899,394.54107 c 7.86528,58.10544 76.4268,98.73475 153.66731,101.11746" />
-  <text
-     transform="scale(1.0318833,0.96910184)"
-     id="text4660"
-     y="460.00925"
-     x="227.63982"
-     style="font-style:normal;font-weight:normal;font-size:28.64108467px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     xml:space="preserve"><tspan
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.74040699px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
-       y="460.00925"
-       x="227.63982"
-       id="tspan4662">Code entered</tspan></text>
-  <path
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.845388;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker4777)"
-     id="path4775"
-     d="M 564.10339,325.97094 C 558.76902,199.20385 512.26943,110.56397 459.88357,105.36567" />
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:28.64108467px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="551.27216"
-     y="279.20163"
-     id="text4781"
-     transform="scale(1.0318833,0.96910184)"><tspan
-       id="tspan4783"
-       x="551.27216"
-       y="279.20163"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.74040699px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start">3 failed attempts</tspan></text>
-  <text
-     transform="scale(1.0318833,0.96910184)"
-     id="text4785"
-     y="174.22406"
-     x="106.28889"
-     style="font-style:normal;font-weight:normal;font-size:28.64108467px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     xml:space="preserve"><tspan
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.74040699px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
-       y="174.22406"
-       x="106.28889"
-       id="tspan4787">3 failed attempts</tspan></text>
-  <path
-     d="m 180.94114,328.13431 c 5.66457,-124.11178 55.04244,-210.895 110.67092,-215.9844"
-     id="path4789"
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.86198741;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker4791)" />
-  <g
-     transform="matrix(0.58020115,0,0,0.63720705,185.21412,242.81685)"
-     id="g4738-7">
-    <rect
-       ry="24.263405"
-       y="141.12038"
-       x="237.32196"
-       height="94.112602"
-       width="189.06694"
-       id="rect4740-5"
-       style="fill:#060606;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.83200002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4704-3)"
-       transform="matrix(1.0095527,0,0,1.0084574,-2.1599704,-2.0965688)" />
-    <rect
-       style="fill:#fff1c7;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="rect4742-3"
-       width="189.06694"
-       height="94.112602"
-       x="236.27119"
-       y="137.07977"
-       ry="24.263405" />
-  </g>
-  <text
-     id="text4226"
-     y="356.43179"
-     x="377.52554"
-     style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     xml:space="preserve"><tspan
-       id="tspan4234"
-       style="font-size:15px;line-height:125%;text-align:center;writing-mode:lr-tb;text-anchor:middle"
-       y="356.43179"
-       x="377.52554">2FA method</tspan><tspan
-       id="tspan4238"
-       style="font-size:15px;line-height:125%;text-align:center;writing-mode:lr-tb;text-anchor:middle"
-       y="375.18179"
-       x="377.52554">choice</tspan></text>
-  <rect
-     style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.61906523;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     id="rect4623-5"
-     width="48.165798"
-     height="46.308308"
-     x="465.87488"
-     y="-178.4485"
-     ry="17.800745"
-     rx="0"
-     transform="matrix(0.73062923,0.68277443,-0.64908419,0.76071658,0,0)" />
-  <text
-     id="text4257"
-     y="214.42494"
-     x="460.35312"
-     style="font-style:normal;font-weight:normal;font-size:40px;line-height:125%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     xml:space="preserve"><tspan
-       id="tspan4311"
-       style="font-size:12.5px;line-height:125%;text-align:center;writing-mode:lr-tb;text-anchor:middle"
-       y="214.42494"
-       x="460.35312">user has verified phone</tspan><tspan
-       id="tspan4315"
-       style="font-size:12.5px;line-height:125%;text-align:center;writing-mode:lr-tb;text-anchor:middle"
-       y="230.04994"
-       x="460.35312">or uses TOTP</tspan></text>
-  <path
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.90430337px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker5160-9)"
-     d="m 393.38429,143.51228 59.15046,48.85287"
-     id="path5106-5" />
-  <text
-     id="text4301"
-     y="287.53375"
-     x="462.71109"
-     style="font-style:normal;font-weight:normal;font-size:15px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
-     xml:space="preserve"><tspan
-       id="tspan4305"
-       style="font-size:15px;"
-       y="287.53375"
-       x="462.71109">Yes</tspan></text>
-  <path
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.70000368px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker5160-9-3)"
-     d="m 423.29065,223.84294 -87.4518,0.75064"
-     id="path5106-5-8" />
-  <g
-     transform="matrix(0.55353821,0,0,0.5103324,95.978266,130.47416)"
-     id="g4738-9">
-    <rect
-       ry="24.263405"
-       y="141.12038"
-       x="237.32196"
-       height="94.112602"
-       width="189.06694"
-       id="rect4740-6"
-       style="fill:#060606;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.83200002;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4704-31)"
-       transform="matrix(1.0095527,0,0,1.0084574,-2.1599704,-2.0965688)" />
-    <rect
-       style="fill:#fff1c7;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       id="rect4742-4"
-       width="189.06694"
-       height="94.112602"
-       x="236.27119"
-       y="137.07977"
-       ry="24.263405" />
-  </g>
-  <path
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.67631638px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker5160-9-3-3)"
-     d="m 464.55548,241.21477 -49.14891,88.15005"
-     id="path5106-5-8-3" />
-  <text
-     transform="scale(1.0318833,0.96910184)"
-     id="text4634-8"
-     y="251.12941"
-     x="355.32571"
-     style="font-style:normal;font-weight:normal;font-size:15px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     xml:space="preserve"><tspan
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:start;writing-mode:lr-tb;text-anchor:start"
-       y="251.12941"
-       x="355.32571"
-       id="tspan4636-6">No</tspan></text>
-  <text
-     id="text4404"
-     y="218.93919"
-     x="280.02026"
-     style="font-style:normal;font-weight:normal;font-size:17.5px;line-height:125%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;"
-     xml:space="preserve"><tspan
-       y="218.93919"
-       x="280.02026"
-       id="tspan4406">Enter sms</tspan><tspan
-       id="tspan4408"
-       y="246.53746"
-       x="280.02026">number</tspan></text>
-  <path
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.58685589px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker5160-9-3-3-0)"
-     d="m 253.84047,253.43015 -42.64768,76.4899"
-     id="path5106-5-8-3-8" />
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 23.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 595.3 841.9" style="enable-background:new 0 0 595.3 841.9;" xml:space="preserve">
+<style type="text/css">
+	.st0{display:none;}
+	.st1{fill-rule:evenodd;clip-rule:evenodd;stroke:#000000;stroke-width:0.716;}
+	.st2{fill:none;}
+	.st3{fill-rule:evenodd;clip-rule:evenodd;stroke:#000000;}
+	.st4{font-family:'HelveticaNeue-Condensed';}
+	.st5{font-size:8.3268px;}
+	.st6{fill-rule:evenodd;clip-rule:evenodd;fill:#FFF1C7;}
+	.st7{font-size:13.8781px;}
+	.st8{fill:none;stroke:#000000;stroke-width:1.484;}
+	.st9{font-size:14.6202px;}
+	.st10{font-size:10px;}
+	.st11{fill-rule:evenodd;clip-rule:evenodd;}
+	.st12{fill:none;stroke:#000000;stroke-width:0.605;}
+	.st13{fill-rule:evenodd;clip-rule:evenodd;stroke:#000000;stroke-width:1.4441;}
+	.st14{font-size:12px;}
+	.st15{fill:none;stroke:#000000;stroke-width:0.4078;}
+	.st16{font-size:7.9296px;}
+	.st17{fill-rule:evenodd;clip-rule:evenodd;stroke:#000000;stroke-width:0.6588;}
+	.st18{fill:none;stroke:#000000;stroke-width:0.4367;}
+	.st19{enable-background:new    ;}
+	.st20{font-size:8.6268px;}
+	.st21{fill-rule:evenodd;clip-rule:evenodd;stroke:#000000;stroke-width:0.7055;}
+	.st22{font-size:12.1469px;}
+	.st23{font-size:11.6292px;}
+	.st24{font-size:14px;}
+	.st25{fill-rule:evenodd;clip-rule:evenodd;fill:none;stroke:#000000;stroke-width:0.25;}
+	.st26{fill-rule:evenodd;clip-rule:evenodd;fill:none;stroke:#000000;stroke-width:0.5;}
+	.st27{fill-rule:evenodd;clip-rule:evenodd;fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
+</style>
+<g id="Layer_3" class="st0">
+	
+		<image style="display:inline;overflow:visible;" width="2480" height="3508" xlink:href="Login.jpg"  transform="matrix(0.24 0 0 0.24 -2.9226 -1.511475e-02)">
+	</image>
+</g>
+<g id="svg2" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg">
+	<ellipse id="path3336" class="st1" cx="295.6" cy="28.5" rx="9" ry="8.4"/>
+	<path class="st2" d=""/>
+	<path id="path4161" class="st3" d="M294.7,57.3l-1.3-1.3l1.3,4.6L296,56L294.7,57.3z"/>
+	<path id="path4152" class="st3" d="M294.6,60.6"/>
+	<text transform="matrix(1.0648 0 0 1 265.2656 50.1699)" class="st4 st5">Log in</text>
+	<g id="g5054" transform="matrix(0.83544787,0,0,0.68764015,81.733261,60.266248)">
+		
+			<image style="overflow:visible;opacity:0.4;" width="134" height="59" xlink:href="92A6B8F4.png"  transform="matrix(1.197 0 0 1.4542 183.4546 0.9068)">
+		</image>
+		<g>
+			<g>
+				<path id="rect4140_12_" class="st6" d="M205,3.3h112.4c10.7,0,19.4,8.7,19.4,19.4v36.5c0,10.7-8.7,19.4-19.4,19.4H205
+					c-10.7,0-19.4-8.7-19.4-19.4V22.7C185.6,12,194.3,3.3,205,3.3z"/>
+			</g>
+		</g>
+	</g>
+	<text transform="matrix(1.0648 0 0 1 260.498 84.0762)" class="st4 st7">User/password</text>
+	<text transform="matrix(1.0648 0 0 1 287.3916 101.4238)" class="st4 st7">Form</text>
+	<g id="g4738" transform="matrix(0.73885643,0,0,0.69390321,-50.474695,234.34374)">
+		
+			<image style="overflow:visible;opacity:0.4;" width="119" height="59" xlink:href="92A6B8F3.png"  transform="matrix(1.3534 0 0 1.4411 200.9521 39.6972)">
+		</image>
+		<g>
+			<g>
+				<path id="rect4742_12_" class="st6" d="M222.1,42.1h112.4c10.7,0,19.4,8.7,19.4,19.4V98c0,10.7-8.7,19.4-19.4,19.4H222.1
+					c-10.7,0-19.4-8.7-19.4-19.4V61.5C202.7,50.8,211.4,42.1,222.1,42.1z"/>
+			</g>
+		</g>
+	</g>
+	<text id="text4744" transform="matrix(1.0648 0 0 1 116.4976 292.8789)" class="st4 st7">SMS validation</text>
+	<path class="st2" d=""/>
+	<path id="path4333" class="st3" d="M137.7,260.9l-2.7,0l6.1,3.3l-3.4-6.1L137.7,260.9z"/>
+	<path id="path4324" class="st3" d="M112.9,188.6"/>
+	<g id="g5230" transform="matrix(0.73885643,0,0,0.69390321,-116.89905,448.4157)">
+		<g id="g4754" transform="translate(0,6)">
+			<ellipse id="circle4750" class="st3" cx="552.9" cy="-73.2" rx="9" ry="8.4"/>
+			<ellipse id="circle4752" class="st8" cx="553.2" cy="-72.9" rx="13.3" ry="12.5"/>
+		</g>
+		<text transform="matrix(1.4411 0 0 1.4411 523.9844 -34.868)" class="st4 st5">Logged In</text>
+	</g>
+	<text transform="matrix(1.0648 0 0 1 283.9951 17.3662)" class="st4 st5">Initial</text>
+	<g id="rect4316">
+		
+			<image style="overflow:visible;opacity:0.4;" width="118" height="59" xlink:href="92A6B8FC.png"  transform="matrix(1 0 0 1 388 261.8898)">
+		</image>
+		<g>
+			<path class="st6" d="M403.4,263.1h83.1c7.9,0,14.3,6,14.3,13.5v25.3c0,7.4-6.4,13.5-14.3,13.5h-83.1c-7.9,0-14.3-6-14.3-13.5
+				v-25.3C389,269.2,395.5,263.1,403.4,263.1z"/>
+		</g>
+	</g>
+	<text id="text4318" transform="matrix(1.0648 0 0 1 417.3018 293.9668)" class="st4 st7">TOTP Code</text>
+	<text id="text4605" transform="matrix(0.9243 0 0 1 26.4229 460.9746)" class="st4 st9">Legend:</text>
+	<text id="text4607" transform="matrix(0.9243 0 0 1 80.4131 482.541)" class="st4 st9">Form shown to the user</text>
+	<text transform="matrix(1 0 0 1 20.3359 286.2793)" class="st4 st10">Check if user</text>
+	<text transform="matrix(1 0 0 1 21.2061 298.7793)" class="st4 st10">followed link</text>
+	<g id="g4595" transform="matrix(0.6756642,0,0,0.73101061,-153.67526,331.92097)">
+		
+			<image style="overflow:visible;opacity:0.4;" width="39" height="24" xlink:href="92A6B8FF.png"  transform="matrix(1.48 0 0 1.368 254.0838 187.369)">
+		</image>
+		<g>
+			<g>
+				<g id="g4597_9_" transform="matrix(0.31196421,0,0,0.30921207,189.77221,308.23581)">
+					<path id="rect4601_12_" class="st6" d="M232.6-383.4H345c10.7,0,19.4,8.7,19.4,19.4v36.5c0,10.7-8.7,19.4-19.4,19.4H232.6
+						c-10.7,0-19.4-8.7-19.4-19.4V-364C213.2-374.7,221.9-383.4,232.6-383.4z"/>
+				</g>
+			</g>
+		</g>
+	</g>
+	<path class="st2" d=""/>
+	<path id="path5162" class="st11" d="M216.5,289.9l1.9-1.9l-6.7,1.8l6.7,2L216.5,289.9z"/>
+	<path id="path4609" class="st3" d="M217.7,288.8"/>
+	<path class="st2" d=""/>
+	<path class="st11" d="M383.5,288l-1.9,1.9l6.7-1.8l-6.7-2L383.5,288z"/>
+	<path id="path4611" class="st3" d="M388.3,289"/>
+	
+		<rect id="rect4623" x="24.6" y="270" transform="matrix(0.6661 -0.7459 0.7459 0.6661 -201.2359 128.3228)" class="st12" width="36.1" height="37.8"/>
+	<text transform="matrix(1.0648 0 0 1 77.8101 234.5234)" class="st4 st5">No</text>
+	<path class="st2" d=""/>
+	<path id="path4642" class="st3" d="M270.1,402.8l-3.3,3.2l11.6-3.1l-11.5-3.5L270.1,402.8z"/>
+	<path id="path4638" class="st3" d="M222.7,77.6"/>
+	<text transform="matrix(1.0648 0 0 1 130.374 394.9844)" class="st4 st5">Yes</text>
+	<path class="st2" d=""/>
+	<path id="path4652" class="st11" d="M310.2,396.4l2.4-2.5l-8.6,2.7l8.7,2.2L310.2,396.4z"/>
+	<path id="path4652_1_" class="st11" d="M312.5,409l4.1-4.3l-14.7,4.7l14.9,3.8L312.5,409z"/>
+	<path id="path4648" class="st3" d="M246.1,76.8"/>
+	<path class="st2" d=""/>
+	<path id="path4658" class="st3" d="M271.7,396.4l-2.3,2.2l7.8-2l-7.7-2.5L271.7,396.4z"/>
+	<path id="path4654" class="st3" d="M222.6,82.8"/>
+	<text transform="matrix(1.0648 0 0 1 187.9185 356.6367)" class="st4 st5">Code entered</text>
+	<path class="st2" d=""/>
+	<path id="path4779" class="st11" d="M373.4,85.9l4.2-3.4l-13.7,2.5l12.9,5.1L373.4,85.9z"/>
+	<path id="path4775" class="st3" d="M294.3,332.6"/>
+	<text transform="matrix(1.0648 0 0 1 455.0791 216.46)" class="st4 st5">3 failed attempts</text>
+	<text transform="matrix(1.0648 0 0 1 87.7422 135.0728)" class="st4 st5">3 failed attempts</text>
+	<path class="st2" d=""/>
+	<path id="path4793" class="st13" d="M225.6,91.2l-3.6,4.3l13.5-5.2l-14.2-2.7L225.6,91.2z"/>
+	<path id="path4789" class="st3" d="M186.6,328.2"/>
+	<g id="g4738-7" transform="matrix(0.58020115,0,0,0.63720705,185.21412,242.81685)">
+		
+			<image style="overflow:visible;opacity:0.4;" width="95" height="55" xlink:href="92A6B8FD.png"  transform="matrix(1.7235 0 0 1.5693 122.0023 31.5014)">
+		</image>
+		<g>
+			<g>
+				<path id="rect4742-3_12_" class="st6" d="M144.6,33.5H257c10.7,0,19.4,8.7,19.4,19.4v36.5c0,10.7-8.7,19.4-19.4,19.4H144.6
+					c-10.7,0-19.4-8.7-19.4-19.4V52.9C125.2,42.1,133.9,33.5,144.6,33.5z"/>
+			</g>
+		</g>
+	</g>
+	<text transform="matrix(1 0 0 1 275.5908 285.1455)" class="st4 st14">2FA method</text>
+	<text transform="matrix(1 0 0 1 287.5791 300.1455)" class="st4 st14">choice</text>
+	<polygon id="rect4623-5" class="st15" points="392.2,187.3 410.7,204.7 394.9,223.2 376.3,205.9 	"/>
+	<text transform="matrix(1 0 0 1 360.1133 203.8418)" class="st4 st16">user has verified phone</text>
+	<text transform="matrix(1 0 0 1 375.0771 213.7539)" class="st4 st16">or uses TOTP</text>
+	<path class="st2" d=""/>
+	<path id="path5162-7" class="st17" d="M391.9,183.1l-2.2-1.5l3.1,7.2l0.6-7.9L391.9,183.1z"/>
+	<path id="path5106-5" class="st17" d="M373.6,184.2"/>
+	<polygon id="rect4623-5_2_" class="st18" points="386.9,119.1 406.7,137.7 389.8,157.6 369.9,139 	"/>
+	<text transform="matrix(1 0 0 1 363.3398 136.8184)" class="st19"><tspan x="0" y="0" class="st4 st20">Tow factor auth</tspan><tspan x="10.5" y="10.4" class="st4 st20">enabled?</tspan></text>
+	<path id="path5162-7_2_" class="st21" d="M380.9,121.6l-2.9,0.3l6.8,3l-4.2-6.1L380.9,121.6z"/>
+	<path id="path5106-5_2_" class="st21" d="M384.8,124.8"/>
+	<text transform="matrix(1 0 0 1 388.322 236.7355)" class="st4 st14">Yes</text>
+	<text transform="matrix(1 0 0 1 370.7515 170.3464)" class="st4 st22">Yes</text>
+	<path class="st2" d=""/>
+	<path id="path5162-7-8" class="st3" d="M270.9,179l2.8-1.6l-8.2,0.1l7,4.2L270.9,179z"/>
+	<path id="path5106-5-8" class="st3" d="M268.7,179.7"/>
+	<g id="g4738-9" transform="matrix(0.55353821,0,0,0.5103324,95.978266,130.47416)">
+		
+			<image style="overflow:visible;opacity:0.4;" width="91" height="45" xlink:href="92A6B8F2.png"  transform="matrix(1.8066 0 0 1.9595 151.7904 55.6806)">
+		</image>
+		<g>
+			<g>
+				<path id="rect4742-4_12_" class="st6" d="M173.7,58.5h112.4c10.7,0,19.4,8.7,19.4,19.4v36.5c0,10.7-8.7,19.4-19.4,19.4H173.7
+					c-10.7,0-19.4-8.7-19.4-19.4V77.9C154.3,67.2,163,58.5,173.7,58.5z"/>
+			</g>
+		</g>
+	</g>
+	<path class="st2" d=""/>
+	<path id="path5162-7-8-3" class="st11" d="M337.4,258l0.3-5.5l-7.6,12.1l12.8-6.3L337.4,258z"/>
+	<path id="path5106-5-8-3" class="st3" d="M332.3,263.5"/>
+	<text transform="matrix(1.0648 0 0 1 293.3242 194.6958)" class="st4 st23">No</text>
+	<text transform="matrix(1.0648 0 0 1 428.6313 138.3672)" class="st4 st23">No</text>
+	<text transform="matrix(1 0 0 1 198.1099 175.1514)" class="st4 st24">Enter sms</text>
+	<text transform="matrix(1 0 0 1 204.0596 191.23)" class="st4 st24">number</text>
+	<path class="st2" d=""/>
+	<path id="path5162-7-8-3-4" class="st3" d="M171.2,259.8l-0.7-2.6l-1.6,6.7l4.8-4.8L171.2,259.8z"/>
+	<path id="path5106-5-8-3-8" class="st3" d="M169,263.9"/>
+	<path class="st25" d="M389.8,157.6c1.8,12.5,0.2,5.6,2.2,25.5"/>
+	<path class="st11" d="M406.7,137.7"/>
+	<path class="st26" d="M406.7,137.7c0,0,62.2,15.5,91,37.4c46.4,35.5,42.1,139-17.4,184.8c-63,48.5-167.8,49-167.8,49"/>
+</g>
+<g id="Layer_4">
+	<path class="st27" d="M449.2,261.8c0,0-6-151.4-79.1-176.9"/>
+	<path class="st27" d="M449.2,315.4c0,0-16.6,83-139,81"/>
+	<path class="st27" d="M40.4,311.5c0,0,16.6,79.4,227.1,91.5"/>
+	<path class="st27" d="M225.6,91.2c-25.3,0-84.3,59-83.5,174.6"/>
+	<path class="st27" d="M152.6,311.5c0,0-0.4,73.7,117.5,85.4"/>
+	<line class="st27" x1="384.8" y1="196" x2="270.2" y2="178.5"/>
+	<line class="st27" x1="388.3" y1="217.1" x2="337.9" y2="257.9"/>
+	<line class="st27" x1="339.7" y1="287.7" x2="383" y2="287.7"/>
+	<line class="st27" x1="257.7" y1="290" x2="217.1" y2="290"/>
+	<line class="st27" x1="203.6" y1="198.5" x2="171.2" y2="259.8"/>
+	<path class="st27" d="M40.6,262.9c0,0,31.8-50.4,97.1-2"/>
+	<line class="st27" x1="359.9" y1="109" x2="380.9" y2="121.6"/>
+	<line class="st26" x1="294.6" y1="35.6" x2="294.6" y2="57.3"/>
+</g>
+<g id="Layer_2">
+</g>
 </svg>
