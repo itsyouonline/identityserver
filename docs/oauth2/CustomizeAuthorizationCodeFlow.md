@@ -19,6 +19,22 @@ When a user is asked to login, this logo and text are added to the login/registe
 
 When an external site uses ItsYou.online using the authorization code flow, it can add the `lang` query parameter to change the default language if a user has not explicitly changed it. Possible values are `en` and `nl`, if no `lang` query parameter is supplied, English is taken.
 
+
+### Make 2 Factor Auth optional 
+
+By default, for newly created organizations,
+Two factor Authentication is forced by default.
+![](./2faoptional.png)
+
+If this option is disabled, then it's up to user to decide, to use whether to use `Two Factor Authentication` or not.
+In `User Settings / Two Factor Authentication` a user can choose to `Skip 2-FA for organizations whren not required`
+
+![](user2fa.png)
+
+If Organization required `Two Factor Authentication` then user must use Two factor Authentication in this case to login through pkatforms using this organization and no way around this.
+This means if user does npt have `2 Factor Authentication` enabled, they will be required to verify a `phone number` and `2 Factor Authentication` will be used nontheless.
+
+
 ### Configuring the frequency of the 2FA challenge
 
 
@@ -68,3 +84,5 @@ For new users, they can't skip the `2 Factor authentication` step if they are tr
 If this option `Force Two Factor Authentication` is disabled, then `Two Factor Authentication` now is optional and up to user to use it or not.
 Users can use `Two Factor Authentication` everywhere but in same time skip it for organizations that don not require it by activating this option in their account settings
 `Skip 2 Factor Auth for organizations when not required`This option is not enabled by default and thus by default user is forced to use 2 Factor Auth for all organizations
+
+

@@ -10,7 +10,9 @@ ConfirmPhone -> ConfirmPhone: Resend validation
 ConfirmPhone --> Timeout: Timeout
 ConfirmPhone --> PhoneConfirmed: Follow sms link
 ConfirmPhone --> PhoneConfirmed: Code in sms
-
+ConfirmPhone --> ConfirmEmail
+ConfirmPhone --> SkipPhoneVerification: Skip SMS Verification
+SkipPhoneVerification --> ConfirmEmail
 state "Phone confirmed" as PhoneConfirmed
 PhoneConfirmed --> ConfirmEmail: Email confirmation send
 

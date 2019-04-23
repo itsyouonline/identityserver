@@ -44,7 +44,9 @@ state RegisterScreen {
     CheckSMSCode --> ValidateInfoScreen: No code or invalid code
     CheckSMSCode --> BasicInfoScreen: Validation key expired
     CheckSMSCode --> CheckIfValidatedEmailIsRequired: SMSCode is valid\nNumber is confirmed
-    CheckIfValidatedEmailIsRequired: No clientid query param\nuser:validated:email scope requested\nrequirevalidatedemail queryparam set with non empty value
+    CheckSMSCode --> CheckIfPhoneValidationIsSkipped: User skipped SMS validation
+    CheckIfPhoneValidationIsSkipped --> CheckIfValidatedEmailIsRequired
+    IfValidatedEmailIsRequired: No clientid query param\nuser:validated:email scope requested\nrequirevalidatedemail queryparam set with non empty value
     CheckIfValidatedEmailIsRequired --> CheckIfEmailIsValidated: Validated email required 
     CheckIfEmailIsValidated: Must be validated by\npressing the button in the email
     CheckIfEmailIsValidated -right--> ValidateInfoScreen: Email not validated yet
