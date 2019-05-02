@@ -1052,6 +1052,7 @@ func (api UsersAPI) VerifyPhoneNumber(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// GetUserTwoFASettings is the handler for GET /users/{username}/twofasettings
 func (api UsersAPI) GetUserTwoFASettings(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	userMgr := user.NewManager(r)
@@ -1067,6 +1068,7 @@ func (api UsersAPI) GetUserTwoFASettings(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(u.TwoFA)
 }
 
+// UpdateUserTwoFASettings is the handler for PUT /users/{username}/twofasettings
 func (api UsersAPI) UpdateUserTwoFASettings(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	userMgr := user.NewManager(r)

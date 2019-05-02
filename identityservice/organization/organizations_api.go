@@ -2550,12 +2550,12 @@ func (api OrganizationsAPI) ListUsersWithGrant(w http.ResponseWriter, r *http.Re
 	json.NewEncoder(w).Encode(userIdentifiers)
 }
 
-// RequiresTwoFA is the handler for GET /organizations/globalid/2fa/isrequired
+// CheckRequiresTwoFA is the handler for GET /organizations/globalid/2fa/isrequired
 // Check if organization requires Two Factor Authentication
 func (api OrganizationsAPI) CheckRequiresTwoFA(w http.ResponseWriter, r *http.Request) {
 	globalid := mux.Vars(r)["globalid"]
 	orgMgr := organization.NewManager(r)
-	
+
 	org, err := orgMgr.GetByName(globalid)
 	if err != nil {
 		if err == mgo.ErrNotFound {
@@ -2575,7 +2575,7 @@ func (api OrganizationsAPI) CheckRequiresTwoFA(w http.ResponseWriter, r *http.Re
 func (api OrganizationsAPI) ForceTwoFA(w http.ResponseWriter, r *http.Request) {
 	globalid := mux.Vars(r)["globalid"]
 	orgMgr := organization.NewManager(r)
-	
+
 	_, err := orgMgr.GetByName(globalid)
 	if err != nil {
 		if err == mgo.ErrNotFound {
@@ -2588,7 +2588,7 @@ func (api OrganizationsAPI) ForceTwoFA(w http.ResponseWriter, r *http.Request) {
 
 	err = orgMgr.UpdateRequiresTwoFA(globalid, true)
 
-	if err != nil{
+	if err != nil {
 		handleServerError(w, "Err forcing 2fa", err)
 	}
 
@@ -2597,12 +2597,12 @@ func (api OrganizationsAPI) ForceTwoFA(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// ForceTwoFA is the handler for PUT /organization/{globalid}/2fa/setoptional
-// Force Two FA through organization
+// UnForceTwoFA is the handler for PUT /organization/{globalid}/2fa/setoptional
+// UnForceTwoFA Two FA through organization
 func (api OrganizationsAPI) UnForceTwoFA(w http.ResponseWriter, r *http.Request) {
 	globalid := mux.Vars(r)["globalid"]
 	orgMgr := organization.NewManager(r)
-	
+
 	_, err := orgMgr.GetByName(globalid)
 	if err != nil {
 		if err == mgo.ErrNotFound {
@@ -2615,7 +2615,7 @@ func (api OrganizationsAPI) UnForceTwoFA(w http.ResponseWriter, r *http.Request)
 
 	err = orgMgr.UpdateRequiresTwoFA(globalid, false)
 
-	if err != nil{
+	if err != nil {
 		handleServerError(w, "Err unforcing 2fa", err)
 	}
 

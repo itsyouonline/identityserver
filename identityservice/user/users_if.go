@@ -204,7 +204,7 @@ type UsersInterface interface { // Post is the handler for POST /users
 	// GetUserTwoFASettings is the handler for GET /users/{username}/twofasettings
 	// Get the 2 FA settings for user identified by username
 	GetUserTwoFASettings(http.ResponseWriter, *http.Request)
-	// updateUserTwoFASettings is the handler for PUT /users/{username}/twofasettings
+	// UpdateUserTwoFASettings is the handler for PUT /users/{username}/twofasettings
 	// Updates 2 FA settings for user identified by username
 	UpdateUserTwoFASettings(http.ResponseWriter, *http.Request)
 }
