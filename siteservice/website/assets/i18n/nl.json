@@ -486,7 +486,7 @@
                 "authenticatorapp": "Authenticatie-toepassing",
                 "setup": "Instellen",
                 "remove": "Verwijder",
-                "enable2fa": "Schakel tweestraps beveiligin in",
+                "enable2fa": "Schakel tweestraps beveiliging in",
                 "skip2fafororgs": "Tweetraps beveiliging overslaan voor organisaties wanneer zij deze niet nodig hebben"
 
             },
