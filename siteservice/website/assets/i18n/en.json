@@ -210,7 +210,8 @@
                 "descriptionhelp": "This description is displayed when a user logs in to an external site using OAuth2",
                 "changedescription": "Change organization description",
                 "organizationsecurity": "Organization Security",
-                "forcetwofactorauth" : "Force Two Factor Authentication"
+                "forcetwofactorauth" : "Force Two Factor Authentication",
+                "forcetwofactorauthrecommended": "Force Two Factor Authentication? (RECOMMENDED)"
             },
             "dnsdialog": {
                 "newdomain": "New domain name",
