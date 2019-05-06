@@ -208,7 +208,10 @@
                 "sharedwith": "Shared with: ",
                 "description": "Organization description",
                 "descriptionhelp": "This description is displayed when a user logs in to an external site using OAuth2",
-                "changedescription": "Change organization description"
+                "changedescription": "Change organization description",
+                "organizationsecurity": "Organization Security",
+                "forcetwofactorauth" : "Force Two Factor Authentication",
+                "forcetwofactorauthrecommended": "Force Two Factor Authentication? (RECOMMENDED)"
             },
             "dnsdialog": {
                 "newdomain": "New domain name",
@@ -334,7 +337,8 @@
                 "smscode": "Code sent by sms",
                 "invalidcode": "Invalid code",
                 "resend": "Resend code",
-                "submit": "Submit"
+                "submit": "Submit",
+                "skip": "Skip"
             }
         }
     },
@@ -480,7 +484,11 @@
                 "change": "Change",
                 "authenticatorapp": "Authenticator application",
                 "setup": "Setup",
-                "remove": "Remove"
+                "remove": "Remove",
+                "twofa": "Two Factor Authentication",
+                "enable2fa": "Enable Two Factor Authentication",
+                "skip2fafororgs": "Skip 2-FA for organizations when not required"
+
             },
             "totpdialog": {
                 "setupapp": "Setup authenticator application",

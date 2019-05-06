@@ -82,6 +82,8 @@
         vm.showExistingAuthenticatorApplication = showExistingAuthenticatorApplication;
         vm.removeAuthenticatorApplication = removeAuthenticatorApplication;
         vm.resolveMissingScopeClicked = resolveMissingScopeClicked;
+        vm.updateUserTwoFASettings = updateUserTwoFASettings;
+    
         init();
 
         function init() {
@@ -96,6 +98,28 @@
             UserService.getUserIdentifier().then(function (userIdentifier) {
                 vm.userIdentifier = userIdentifier;
             });
+        }
+
+        function updateUserTwoFASettings(){
+            UserService.getTwoFAMethods(vm.user.username).then(
+                function(data){
+                    console.log(data)
+                    // Don't enable Two FA if no 2 FA methods exists
+                    if (data.totp == false && (data.sms == null || data.sms == undefined || data.sms.length == 0) && vm.user.twofa.enable == true){
+                        vm.user.twofa.enable = false;
+                        alert("Can not Enable Two FA, please verify phone or setup Authenticator app 1st")
+                    }
+                    
+                    var data = {
+                        "enable": vm.user.twofa.enable,
+                        "skipfororgsifoptional": vm.user.twofa.skipfororgsifoptional
+                    }
+
+                    UserService.updateTwoFASettings(vm.user.username, data).then(
+                        function() {}
+                    );
+                }
+            );
         }
 
         //redirect notification to right page

@@ -156,7 +156,9 @@
             deleteAvatar: deleteAvatar,
             getUsername: getUsername,
             setUsername: setUsername,
-            GetAllUserIdentifiers: GetAllUserIdentifiers
+            GetAllUserIdentifiers: GetAllUserIdentifiers,
+            getTwoFASettings: getTwoFASettings,
+            updateTwoFASettings:updateTwoFASettings
         };
 
         function genericHttpCall(httpFunction, url, data, config) {
@@ -557,6 +559,16 @@
         function deleteAvatar(username, label) {
             var url = apiURL + '/' + encodeURIComponent(username) + '/avatar/' + encodeURIComponent(label);
             return genericHttpCall(DELETE, url)
+        }
+
+        function getTwoFASettings(username){
+            var url = apiURL + '/' + encodeURIComponent(username) + '/twofasettings';
+            return genericHttpCall(GET, url); 
+        }
+
+        function updateTwoFASettings(username, data){
+            var url = apiURL + '/' + encodeURIComponent(username) + '/twofasettings';
+            return genericHttpCall(PUT, url, data); 
         }
     }
 })();

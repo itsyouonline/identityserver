@@ -205,6 +205,13 @@ func (m *Manager) SavePhone(username string, phonenumber Phonenumber) error {
 		bson.M{"$push": bson.M{"phonenumbers": phonenumber}})
 }
 
+// SaveTwoFASettings save or update 2 FA settings
+func (m *Manager) SaveTwoFASettings(username string, twoFASettings TwoFactorAuthSettings) error {
+	return m.getUserCollection().Update(
+		bson.M{"username": username},
+		bson.M{"$set": bson.M{"twofa": twoFASettings}})
+}
+
 // RemovePhone remove phone associated with label
 func (m *Manager) RemovePhone(username string, label string) error {
 	return m.getUserCollection().Update(

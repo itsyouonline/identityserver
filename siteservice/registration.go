@@ -252,6 +252,7 @@ func (service *Service) ProcessRegistrationForm(w http.ResponseWriter, r *http.R
 		Password        string `json:"password"`
 		RedirectParams  string `json:"redirectparams"`
 		LangKey         string `json:"langkey"`
+		SkipPhoneValidation bool `json:"skipphonevalidation"`
 	}{}
 	if err := json.NewDecoder(r.Body).Decode(&values); err != nil {
 		log.Debug("Error decoding the registration request:", err)
@@ -290,41 +291,44 @@ func (service *Service) ProcessRegistrationForm(w http.ResponseWriter, r *http.R
 
 	logMgr := persistentlog.NewManager(r)
 
-	// check if phone number is validated or sms code is provided to validate phone
-	phonevalidationkey := registeringUser.PhoneValidationKey
+	if !values.SkipPhoneValidation{
 
-	if isConfirmed, _ := service.phonenumberValidationService.IsConfirmed(r, phonevalidationkey); !isConfirmed {
+		// check if phone number is validated or sms code is provided to validate phone
+		phonevalidationkey := registeringUser.PhoneValidationKey
 
-		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User tried to register without validated phone"))
+		if isConfirmed, _ := service.phonenumberValidationService.IsConfirmed(r, phonevalidationkey); !isConfirmed {
 
-		smscode := values.PhonenumberCode
-		if smscode == "" {
-			log.Debug("no sms code provided and phone not confirmed yet")
-			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-			return
+			logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User tried to register without validated phone"))
+
+			smscode := values.PhonenumberCode
+			if smscode == "" {
+				log.Debug("no sms code provided and phone not confirmed yet")
+				http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+				return
+			}
+
+			err = service.phonenumberValidationService.ConfirmRegistrationValidation(r, phonevalidationkey, smscode)
+			if err == validation.ErrInvalidCode {
+				w.WriteHeader(http.StatusUnprocessableEntity)
+				response.Error = "invalid_sms_code"
+				json.NewEncoder(w).Encode(&response)
+				return
+			}
+			if err == validation.ErrInvalidOrExpiredKey {
+				sessions.Save(r, w)
+				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+				json.NewEncoder(w).Encode(&response)
+				return
+			}
+			if err != nil {
+				log.Error("Error while trying to validate phone number in regsitration flow: ", err)
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+
+			logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User confirmed phone number in final registration step"))
+
 		}
-
-		err = service.phonenumberValidationService.ConfirmRegistrationValidation(r, phonevalidationkey, smscode)
-		if err == validation.ErrInvalidCode {
-			w.WriteHeader(http.StatusUnprocessableEntity)
-			response.Error = "invalid_sms_code"
-			json.NewEncoder(w).Encode(&response)
-			return
-		}
-		if err == validation.ErrInvalidOrExpiredKey {
-			sessions.Save(r, w)
-			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-			json.NewEncoder(w).Encode(&response)
-			return
-		}
-		if err != nil {
-			log.Error("Error while trying to validate phone number in regsitration flow: ", err)
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-			return
-		}
-
-		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "User confirmed phone number in final registration step"))
-
 	}
 
 	emailvalidationkey := registeringUser.EmailValidationKey
@@ -355,6 +359,7 @@ func (service *Service) ProcessRegistrationForm(w http.ResponseWriter, r *http.R
 		Lastname:       registeringUser.Lastname,
 		EmailAddresses: []user.EmailAddress{{Label: "main", EmailAddress: registeringUser.Email}},
 		Phonenumbers:   []user.Phonenumber{{Label: "main", Phonenumber: registeringUser.Phonenumber}},
+		TwoFA:          user.TwoFactorAuthSettings{Enable: !values.SkipPhoneValidation, SkipForOrgsIfOptional: false},
 	}
 
 	err = userMgr.Save(userObj)
@@ -380,11 +385,13 @@ func (service *Service) ProcessRegistrationForm(w http.ResponseWriter, r *http.R
 
 	// Add correct validated phone number and validated email address
 	valMgr := validationdb.NewManager(r)
-	p := valMgr.NewValidatedPhonenumber(username, registeringUser.Phonenumber)
-	if err = valMgr.SaveValidatedPhonenumber(p); err != nil {
-		log.Error("Failed to add validated phone number of new user: ", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+	if !values.SkipPhoneValidation{
+		p := valMgr.NewValidatedPhonenumber(username, registeringUser.Phonenumber)
+		if err = valMgr.SaveValidatedPhonenumber(p); err != nil {
+			log.Error("Failed to add validated phone number of new user: ", err)
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
 	}
 	e := valMgr.NewValidatedEmailAddress(username, registeringUser.Email)
 	if err = valMgr.SaveValidatedEmailAddress(e); err != nil {
@@ -594,9 +601,10 @@ func (service *Service) ValidateInfo(w http.ResponseWriter, r *http.Request) {
 // ResendValidationInfo resends validation info for either the phone number or email address
 func (service *Service) ResendValidationInfo(w http.ResponseWriter, r *http.Request) {
 	data := struct {
-		Email   string `json:"email"`
-		Phone   string `json:"phone"`
-		LangKey string `json:"langkey"`
+		Email   			string `json:"email"`
+		Phone   			string `json:"phone"`
+		LangKey 			string `json:"langkey"`
+		SkipPhoneValidation bool 	`json:"skipphonevalidation"`
 	}{}
 
 	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
@@ -639,41 +647,46 @@ func (service *Service) ResendValidationInfo(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	// There is no point in resending the validation request if the phone is already
-	// verified
-	phonevalidationkey := registeringUser.PhoneValidationKey
-	phoneConfirmed, err := service.phonenumberValidationService.IsConfirmed(r, phonevalidationkey)
-	if err != nil {
-		log.Error("Failed to check if phone number is already confirmed: ", err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
+	var phoneConfirmed bool
 
-	if !phoneConfirmed {
-		// Invalidate the previous phone validation request, ignore a possible error
-		_ = service.phonenumberValidationService.ExpireValidation(r, registeringUser.PhoneValidationKey)
-
-		phonenumber := registeringUser.Phonenumber
-
-		if phonenumber != data.Phone {
-			sessions.Save(r, w)
-			log.Info("Attempt to trigger registration flow phone (resend) validation with a different phone number than the one stored in the session")
-			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
-			return
-		}
-
-		log.Debug("Sending new phone number confirmation")
-
-		validationkey, err := service.phonenumberValidationService.RequestValidation(r, registeringUser.SessionKey, user.Phonenumber{Phonenumber: phonenumber}, fmt.Sprintf("https://%s/phoneregistrationvalidation", r.Host), data.LangKey)
+	if !data.SkipPhoneValidation {
+		// There is no point in resending the validation request if the phone is already
+		// verified
+		phonevalidationkey := registeringUser.PhoneValidationKey
+		phoneConfirmed, err = service.phonenumberValidationService.IsConfirmed(r, phonevalidationkey)
 		if err != nil {
-			log.Error("ResendPhonenumberConfirmation: Could not get validationkey: ", err)
+			log.Error("Failed to check if phone number is already confirmed: ", err)
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
-		registeringUser.PhoneValidationKey = validationkey
 
-		logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "Resending phone validation"))
+		if !phoneConfirmed {
+			// Invalidate the previous phone validation request, ignore a possible error
+			_ = service.phonenumberValidationService.ExpireValidation(r, registeringUser.PhoneValidationKey)
+
+			phonenumber := registeringUser.Phonenumber
+
+			if phonenumber != data.Phone {
+				sessions.Save(r, w)
+				log.Info("Attempt to trigger registration flow phone (resend) validation with a different phone number than the one stored in the session")
+				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+				return
+			}
+
+			log.Debug("Sending new phone number confirmation")
+
+			validationkey, err := service.phonenumberValidationService.RequestValidation(r, registeringUser.SessionKey, user.Phonenumber{Phonenumber: phonenumber}, fmt.Sprintf("https://%s/phoneregistrationvalidation", r.Host), data.LangKey)
+			if err != nil {
+				log.Error("ResendPhonenumberConfirmation: Could not get validationkey: ", err)
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+			registeringUser.PhoneValidationKey = validationkey
+
+			logMgr.SaveLog(persistentlog.New(sessionKey, persistentlog.RegistrationFlow, "Resending phone validation"))
+		}
 	}
+	
 
 	// There is no point in resending the validation request if the email is already
 	// verified
@@ -685,7 +698,7 @@ func (service *Service) ResendValidationInfo(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	if phoneConfirmed && !emailConfirmed {
+	if (phoneConfirmed || data.SkipPhoneValidation) && !emailConfirmed {
 		// Invalidate the previous email validation request, ignore a possible error
 		_ = service.emailaddressValidationService.ExpireValidation(r, registeringUser.EmailValidationKey)
 
@@ -719,6 +732,11 @@ func (service *Service) ResendValidationInfo(w http.ResponseWriter, r *http.Requ
 
 	sessions.Save(r, w)
 	w.WriteHeader(http.StatusOK)
+}
+
+// SkipTwoFA skips 2FA during registration
+func (service *Service) SkipTwoFA(w http.ResponseWriter, r *http.Request) {
+
 }
 
 // generateUsername generates a new username

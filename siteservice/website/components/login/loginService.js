@@ -18,7 +18,10 @@
             submitSmsCode: submitSmsCode,
             checkSmsConfirmation: checkSmsConfirmation,
             getLogo: getLogo,
-            getDescription: getDescription
+            getDescription: getDescription,
+            getTwoFASettings: getTwoFASettings,
+            loginNoTwoFA: loginNoTwoFA,
+            checkRequiresTwoFA:checkRequiresTwoFA
         };
 
         function genericHttpCall(httpFunction, url, data) {
@@ -48,6 +51,16 @@
 
         function getTwoFactorAuthenticationMethods() {
             var url = apiURL + '/twofamethods';
+            return genericHttpCall($http.get, url);
+        }
+
+        function loginNoTwoFA() {
+            var url = apiURL + '/loginno2fa';
+            return genericHttpCall($http.post, url);
+        }
+
+        function getTwoFASettings(){
+            var url = apiURL + '/twofasettings';
             return genericHttpCall($http.get, url);
         }
 
@@ -87,6 +100,11 @@
 
         function getDescription(globalId, langKey) {
             var url = '/api/organizations/' + encodeURIComponent(globalId) + '/description/' + encodeURIComponent(langKey) + '/withfallback';
+            return genericHttpCall($http.get, url);
+        }
+
+        function checkRequiresTwoFA(globalId) {
+            var url = 'api/organizations' + '/' + encodeURIComponent(globalId) + '/2fa/isrequired';
             return genericHttpCall($http.get, url);
         }
     }

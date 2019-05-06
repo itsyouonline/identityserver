@@ -22,6 +22,7 @@ type Organization struct {
 	OrgMembers       []string        `json:"orgmembers"` //OrgMembers are other organizations that are member of this organization
 	RequiredScopes   []RequiredScope `json:"requiredscopes"`
 	IncludeSubOrgsOf []string        `json:"includesuborgsof"`
+	ForceTwoFactorAuth bool          `json:"forcetwofactorauth"` // Force Two factor authentication
 }
 
 // IsValid performs basic validation on the content of an organizations fields
@@ -47,6 +48,7 @@ func (org *Organization) ConvertToView(usrMgr *user.Manager, valMgr *validation.
 	view.OrgMembers = org.OrgMembers
 	view.RequiredScopes = org.RequiredScopes
 	view.IncludeSubOrgsOf = org.IncludeSubOrgsOf
+	view.ForceTwoFactorAuth = org.ForceTwoFactorAuth
 
 	var err error
 	view.Members, err = ConvertUsernamesToIdentifiers(org.Members, valMgr)
@@ -174,4 +176,5 @@ type OrganizationView struct {
 	OrgMembers       []string        `json:"orgmembers"` //OrgMembers are other organizations that are member of this organization
 	RequiredScopes   []RequiredScope `json:"requiredscopes"`
 	IncludeSubOrgsOf []string        `json:"includesuborgsof"`
+	ForceTwoFactorAuth bool          `json:"forcetwofactorauth"`
 }

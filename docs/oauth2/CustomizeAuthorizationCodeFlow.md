@@ -19,6 +19,24 @@ When a user is asked to login, this logo and text are added to the login/registe
 
 When an external site uses ItsYou.online using the authorization code flow, it can add the `lang` query parameter to change the default language if a user has not explicitly changed it. Possible values are `en` and `nl`, if no `lang` query parameter is supplied, English is taken.
 
+
+### Choose to force 2-Factor authentication or not 
+
+Two factor Authentication is forced by default.
+
+![](./2faoptional.png)
+
+- When enabled (Default behavior)
+    - User will be forced to use `2-FA` to authenticate through this specific organization.
+    - If user had not setup `2-FA` to their account, they will be asked to do so first time they authenticate through this specific organization
+
+- When disabled (NOT RECOMMENDED)
+    - It's up to `User Settings` who authenticate through this specific organization.
+     ![](user2fa.png)
+
+        - If user had enabled `2-FA` for their account, then `2-FA` will be used even if organization does not force it.
+        - If user had enabled the option `Skip 2-FA for organizations when not required`, at then user will not be required to use `2-FA` with organizations that do not force `2-FA`
+
 ### Configuring the frequency of the 2FA challenge
 
 
@@ -55,3 +73,18 @@ Also note that an access token will have to be specified, either by appending it
 ### Show the register screen instead of the login screen
 
 If you are think the user has no account with ItsYou.online yet, you can supply the `prefer=register` queryparameter in the oauth flow. This will show the user the register screen instead of the login screen if we do do not detect a previous login (this is registered in the local storage).
+
+### Make 2 Factor Authentication optional for organization
+
+By default, any newly created organization has the option 
+`Force Two Factor Authentication` set to true in `organization settings`
+which means, that user is required have `2 Factor Authentication` set up 
+before they can login throguh this organization.
+For users who don't have `2 Factor Authentication` setup, they will be required to verify a phone number the 1st tmie they login with that organization.
+For new users, they can't skip the `2 Factor authentication` step if they are trying to registering new user while using this organization.
+
+If this option `Force Two Factor Authentication` is disabled, then `Two Factor Authentication` now is optional and up to user to use it or not.
+Users can use `Two Factor Authentication` everywhere but in same time skip it for organizations that don not require it by activating this option in their account settings
+`Skip 2 Factor Auth for organizations when not required`This option is not enabled by default and thus by default user is forced to use 2 Factor Auth for all organizations
+
+

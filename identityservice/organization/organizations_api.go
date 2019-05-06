@@ -186,6 +186,7 @@ func (api OrganizationsAPI) actualOrganizationCreation(org organization.Organiza
 	org.Members = []string{}
 	org.OrgMembers = []string{}
 	org.OrgOwners = []string{}
+	org.ForceTwoFactorAuth = true // By default, 2fa is required for organizations
 
 	orgMgr := organization.NewManager(r)
 	userMgr := user.NewManager(r)
@@ -2547,6 +2548,80 @@ func (api OrganizationsAPI) ListUsersWithGrant(w http.ResponseWriter, r *http.Re
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(userIdentifiers)
+}
+
+// CheckRequiresTwoFA is the handler for GET /organizations/globalid/2fa/isrequired
+// Check if organization requires Two Factor Authentication
+func (api OrganizationsAPI) CheckRequiresTwoFA(w http.ResponseWriter, r *http.Request) {
+	globalid := mux.Vars(r)["globalid"]
+	orgMgr := organization.NewManager(r)
+
+	org, err := orgMgr.GetByName(globalid)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		} else {
+			handleServerError(w, "getting organization", err)
+		}
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(org.ForceTwoFactorAuth)
+}
+
+// ForceTwoFA is the handler for PUT /organization/{globalid}/2fa/setrequired
+// Force Two FA through organization
+func (api OrganizationsAPI) ForceTwoFA(w http.ResponseWriter, r *http.Request) {
+	globalid := mux.Vars(r)["globalid"]
+	orgMgr := organization.NewManager(r)
+
+	_, err := orgMgr.GetByName(globalid)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		} else {
+			handleServerError(w, "getting organization", err)
+		}
+		return
+	}
+
+	err = orgMgr.UpdateRequiresTwoFA(globalid, true)
+
+	if err != nil {
+		handleServerError(w, "Err forcing 2fa", err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	return
+}
+
+// UnForceTwoFA is the handler for PUT /organization/{globalid}/2fa/setoptional
+// UnForceTwoFA Two FA through organization
+func (api OrganizationsAPI) UnForceTwoFA(w http.ResponseWriter, r *http.Request) {
+	globalid := mux.Vars(r)["globalid"]
+	orgMgr := organization.NewManager(r)
+
+	_, err := orgMgr.GetByName(globalid)
+	if err != nil {
+		if err == mgo.ErrNotFound {
+			http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		} else {
+			handleServerError(w, "getting organization", err)
+		}
+		return
+	}
+
+	err = orgMgr.UpdateRequiresTwoFA(globalid, false)
+
+	if err != nil {
+		handleServerError(w, "Err unforcing 2fa", err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	return
 }
 
 func writeErrorResponse(responseWriter http.ResponseWriter, httpStatusCode int, message string) {

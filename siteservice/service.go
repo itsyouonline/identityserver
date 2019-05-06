@@ -82,13 +82,16 @@ func (service *Service) AddRoutes(router *mux.Router) {
 	//Enable us to "forget" users in case we are not in production
 	router.Methods("GET").Path("/register/delete").HandlerFunc(service.ServeForgetAccountPage)
 	router.Methods("POST").Path("/register/delete").HandlerFunc(service.ForgetAccountHandler)
+	router.Methods("POST").Path("/register/skip2fa").HandlerFunc(service.SkipTwoFA)
 	//Login forms
 	router.Methods("GET").Path("/login").HandlerFunc(service.ShowLoginForm)
 	router.Methods("POST").Path("/login").HandlerFunc(service.ProcessLoginForm)
 	router.Methods("GET").Path("/login/twofamethods").HandlerFunc(service.GetTwoFactorAuthenticationMethods)
+	router.Methods("GET").Path("/login/twofasettings").HandlerFunc(service.GetTwoFactorAuthenticationSettings)
 	router.Methods("POST").Path("/login/totpconfirmation").HandlerFunc(service.ProcessTOTPConfirmation)
 	router.Handle("/login/smscode/{phoneLabel}", alice.New(middleware.RateLimit(middleware.DefaultRateLimitPeriod, middleware.DefaultRateLimit).Handler).Then(http.HandlerFunc(service.GetSmsCode))).Methods("POST")
 	router.Methods("POST").Path("/login/smsconfirmation").HandlerFunc(service.Process2FASMSConfirmation)
+	router.Methods("POST").Path("/login/loginno2fa").HandlerFunc(service.LoginWithoutTwoFA)
 	router.Handle("/login/resendsms", alice.New(middleware.RateLimit(middleware.DefaultRateLimitPeriod, middleware.DefaultRateLimit).Handler).Then(http.HandlerFunc(service.LoginResendPhonenumberConfirmation))).Methods("POST")
 	router.Methods("GET").Path("/sc").HandlerFunc(service.MobileSMSConfirmation)
 	router.Methods("GET").Path("/login/smsconfirmed").HandlerFunc(service.Check2FASMSConfirmation)

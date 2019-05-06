@@ -1093,6 +1093,21 @@ func (m *Manager) SetValidity(globalID string, secondsDuration int) error {
 		bson.M{"$set": bson.M{"secondsvalidity": secondsDuration}})
 }
 
+// CheckRequiresTwoFA Check if organization requires Two Factor Auth or not
+func (m *Manager) CheckRequiresTwoFA(globalID string) (bool, error) {
+	org, err := m.Get(globalID)
+	if err != nil {
+		return false, err
+	}
+	return org.ForceTwoFactorAuth, nil
+}
+
+// UpdateRequiresTwoFA Updates (Two Factor Auth settings)  for organization
+func (m *Manager) UpdateRequiresTwoFA(globalID string, val bool) error {
+	err := m.collection.Update(bson.M{"globalid": globalID}, bson.M{"$set": bson.M{"forcetwofactorauth": val}})
+	return err
+}
+
 // SaveLogo save or update logo
 func (m *LogoManager) SaveLogo(globalID string, logo string) (*mgo.ChangeInfo, error) {
 	return m.collection.Upsert(

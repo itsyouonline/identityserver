@@ -102,7 +102,6 @@ func (service *Service) ShowLoginForm(w http.ResponseWriter, request *http.Reque
 func (service *Service) ProcessLoginForm(w http.ResponseWriter, request *http.Request) {
 	//TODO: validate csrf token
 	//TODO: limit the number of failed/concurrent requests
-
 	err := request.ParseForm()
 	if err != nil {
 		log.Debug("ERROR parsing registration form")
@@ -250,6 +249,31 @@ func (service *Service) verifyExistingAuthorization(request *http.Request, usern
 		}
 	}
 	return validAuthorization, err
+}
+
+// GetTwoFactorAuthenticationSettings returns the Two FA settings for current user.
+func (service *Service) GetTwoFactorAuthenticationSettings(w http.ResponseWriter, request *http.Request) {
+	loginSession, err := service.GetSession(request, SessionLogin, "loginsession")
+	if err != nil {
+		log.Error(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	username, ok := loginSession.Values["username"].(string)
+	if username == "" || !ok {
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
+	}
+	userMgr := user.NewManager(request)
+	userFromDB, err := userMgr.GetByName(username)
+	if err != nil {
+		log.Error(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(userFromDB.TwoFA)
+	return
 }
 
 // GetTwoFactorAuthenticationMethods returns the possible two factor authentication methods the user can use to login with.
@@ -622,6 +646,35 @@ func (service *Service) Check2FASMSConfirmation(w http.ResponseWriter, request *
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 
+}
+
+// LoginWithoutTwoFA gets user logged in without 2 FA
+func (service *Service) LoginWithoutTwoFA(w http.ResponseWriter, request *http.Request) {
+	username, err := service.getUserLoggingIn(request)
+	if err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	if username == "" {
+		sessions.Save(request, w)
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
+	}
+
+	_, err = service.GetSession(request, SessionLogin, "loginsession")
+	if err != nil {
+		log.Error("Failed to get loginsession: ", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	userMgr := user.NewManager(request)
+	userMgr.RemoveExpireDate(username)
+
+	//add last 2fa date if logging in with oauth2
+	service.storeLast2FALogin(request, username)
+
+	service.loginUser(w, request, username)
 }
 
 //Process2FASMSConfirmation checks the totp 2 factor authentication code

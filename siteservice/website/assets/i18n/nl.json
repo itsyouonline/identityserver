@@ -208,7 +208,10 @@
                 "sharedwith": "Gedeeld met: ",
                 "description": "Organizatie beschrijving",
                 "descriptionhelp": "Deze beschrijving wordt getoond wanneer een gebruiker aanmeld bij een externe site via OAuth2",
-                "changedescription": "Wijzig organizatie beschrijving"
+                "changedescription": "Wijzig organizatie beschrijving",
+                "organizationsecurity": "Organisatie beveiliging",
+                "forcetwofactorauth" : "Verplicht tweestraps beveiliging",
+                "forcetwofactorauthrecommended": "Verplich tweestrap beveiliging? (AANGERADEN)"
             },
             "dnsdialog": {
                 "newdomain": "Nieuwe domeinnaam",
@@ -335,7 +338,8 @@
                 "smscode": "Code gestuurd via sms",
                 "invalidcode": "Ongeldige code",
                 "resend": "Herstuur code",
-                "submit": "Dien in"
+                "submit": "Dien in",
+                "skip": "overslaan"
             }
         }
     },
@@ -481,7 +485,10 @@
                 "change": "Verander",
                 "authenticatorapp": "Authenticatie-toepassing",
                 "setup": "Instellen",
-                "remove": "Verwijder"
+                "remove": "Verwijder",
+                "enable2fa": "Schakel tweestraps beveiliging in",
+                "skip2fafororgs": "Tweetraps beveiliging overslaan voor organisaties wanneer zij deze niet nodig hebben"
+
             },
             "totpdialog": {
                 "setupapp": "Authenticatie-toepassing opzetten",

@@ -42,9 +42,33 @@
                             Change
                         </md-button>
                     </md-list-item>
+                </md-list>
+                <md-toolbar>
+                        <div class="md-toolbar-tools" layout-align="space-between center">
+                            <span><i class="fa fa-lock"></i> <span translate='user.views.settings.twofa'>Two FA Authentication</span></span>
+                        </div>
+                </md-toolbar>
+                <md-list>
+                        <md-list-item>
+                                <span translate="user.views.settings.enable2fa">Enable Two Factor Authentication</span> 
+                                <md-checkbox ng-model="vm.user.twofa.enable" md-no-ink ng-change="vm.updateUserTwoFASettings()" aria-label="Enable Two Factor authentication?">
+                                       
+                                        </md-checkbox>            
+                                </md-checkbox>
+                        </md-list-item>
+                        <md-list-item>
+                                <span translate="user.views.settings.skip2fafororgs">Skip 2-FA for organizations when not required</span> 
+                                <md-checkbox ng-model="vm.user.twofa.skipfororgsifoptional" md-no-ink ng-change="vm.updateUserTwoFASettings()" aria-label="Enable Two Factor authentication?">
+                                         </md-checkbox>            
+                                 </md-checkbox>
+                        </md-list-item>
+                </md-list>
+                <hr>
+                <md-list>
+                   
                     <md-list-item>
-                        <div class="md-list-item-text">
-                            <p translate='user.views.settings.authenticatorapp'>Authenticator application</p>
+                        <div class="md-toolbar-tools" layout-align="space-between center" >
+                            <span><i class="fa fa-lock"></i> <span translate='user.views.settings.authenticatorapp'>Authenticator application</span></span>
                         </div>
                         <md-button class="md-primary md-secondary"
                                    ng-click="vm.showSetupAuthenticatorApplication($event)"
@@ -67,6 +91,37 @@
                             View existing QR code
                         </md-button>
                     </md-list-item>
+                </md-list>
+                <hr>
+                <md-list>
+                    <md-list-item>
+                            <div class="md-toolbar-tools" layout-align="space-between center">
+                                    <span><i class="fa fa-phone"></i> <span translate='user.views.profile.phonenumbers'>Phone numbers</span></span>
+                                    <md-button ng-click="vm.showPhonenumberDetailDialog($event)">
+                                        <i class="fa fa-plus"></i> <span translate='add'>Add</span>
+                                    </md-button>
+                                </div>
+                    </md-list-item>
+                                <md-list>
+                                        <div ng-repeat="phone in vm.user.phonenumbers track by phone.label"
+                                             layout="row" layout-align="space-between center">
+                                            <md-list-item class="md-2-line" flex="80"
+                                                          ng-click="vm.showPhonenumberDetailDialog($event, phone)"
+                                                          aria-label="Phone {{ phone.label }} - {{ phone.phonenumber }}">
+                                                <div class="md-list-item-text">
+                                                    <h4 ng-bind="phone.phonenumber"></h4>
+                                                    <p ng-bind="phone.label"></p>
+                                                </div>
+                                            </md-list-item>
+                                            <p ng-if="phone.verified" class="md-body-1 verified">
+                                                <i class="fa fa-check green"></i> <span translate='user.views.profile.verified'>Verified</span>
+                                            </p>
+                                            <md-button ng-click="vm.verifyPhone($event, phone)"
+                                                       class="md-primary md-secondary"
+                                                       ng-if="vm.loaded.verifiedPhones && !phone.verified">
+                                                <span translate="verify">Verify</span>
+                                            </md-button>
+                                        </div>
                 </md-list>
             </div>
         </md-card-content>
